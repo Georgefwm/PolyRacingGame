@@ -28,5 +28,7 @@ public:
     AVehiclePreview* PreviewVehicle;
 
 	// Holds base vehicle types
-	TSoftObjectPtr<UDataTable> VehicleTypes;
+	UDataTable* VehicleTypes;
+
+	static UDataTable* LoadDataTableAsset(FString const &Path);
 };
