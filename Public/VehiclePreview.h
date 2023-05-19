@@ -47,19 +47,28 @@ public:
 
 	// wheels require a few more fields than others
 	UPROPERTY()
-	USkeletalMeshComponent* WheelFrontLeft;
+	USkeletalMeshComponent* FrontLeftRim;
+	
 	UPROPERTY()
-	USkeletalMeshComponent* WheelFrontRight;
+	USkeletalMeshComponent* FrontRightRim;
+	
 	UPROPERTY()
-	USkeletalMeshComponent* WheelRearLeft;
+	USkeletalMeshComponent* RearLeftRim;
+	
 	UPROPERTY()
-	USkeletalMeshComponent* WheelRearRight;
-
+	USkeletalMeshComponent* RearRightRim;
+	
 	UPROPERTY()
-	USkeletalMeshComponent* RimMesh;
-
+	USkeletalMeshComponent* FrontLeftTyre;
+	
 	UPROPERTY()
-	USkeletalMeshComponent* TyreMesh;
+	USkeletalMeshComponent* FrontRightTyre;
+	
+	UPROPERTY()
+	USkeletalMeshComponent* RearLeftTyre;
+	
+	UPROPERTY()
+	USkeletalMeshComponent* RearRightTyre;
 
     UPROPERTY()
     UMaterial* ColorScheme;
@@ -71,4 +80,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void SetWheelOffsets(FVehicleType* VehicleType);
 };

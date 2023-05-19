@@ -3,6 +3,7 @@
 
 #include "VehiclePreview.h"
 
+#include "DataTables.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -35,18 +36,32 @@ AVehiclePreview::AVehiclePreview()
     
     UndercarriageMesh = CreateDefaultSubobject<USkeletalMeshComponent>("VehicleUndercarriage");
     UndercarriageMesh->SetupAttachment(BodyMesh);
+
+	// TODO: Setup Wheels (rims + tyres) and rest of customisable parts
 }
 
 // Called when the game starts or when spawned
 void AVehiclePreview::BeginPlay()
 {
 	Super::BeginPlay();
-	//USlateStyleSubsystem* MySubsystem = UGameplayStatics::GetGameInstance(GetWorld())->GetSubsystem<USlateStyleSubsystem>();
 }
 
 // Called every frame
 void AVehiclePreview::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AVehiclePreview::SetWheelOffsets(FVehicleType* VehicleType)
+{
+	FrontLeftRim->SetRelativeLocation(FVector(VehicleType->FrontAxelOffset, -VehicleType->AxelLength, 40.f));
+	FrontLeftRim->SetRelativeScale3D(FVector(1.f, -1.f, 1.f));
+	
+	FrontRightRim->SetRelativeLocation(FVector(VehicleType->FrontAxelOffset, VehicleType->AxelLength, 40.f));
+
+	RearLeftRim->SetRelativeLocation(FVector(VehicleType->RearAxelOffset, -VehicleType->AxelLength, 40.f));
+	RearLeftRim->SetRelativeScale3D(FVector(1.f, -1.f, 1.f));
+	
+	RearRightRim->SetRelativeLocation(FVector(VehicleType->RearAxelOffset, VehicleType->AxelLength, 40.f));
 }
 

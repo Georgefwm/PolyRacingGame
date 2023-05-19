@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "DataTables.h"
 #include "VehiclePreview.h"
 #include "Engine/DataTable.h"
 
@@ -20,15 +21,20 @@ private:
 	
 	// Stores the singleton instance
 	static TSharedPtr<FVehicleCustomiser> Instance;
-	
-	
+
 public:
 	void SetupVehicle();
+	void SetupVehicle(FVehicleConfiguration);
+
+	void SetRim(USkeletalMesh* Mesh, const FVehicleType* VehicleType);
+	void SetTyre(USkeletalMesh* Mesh, const FVehicleType* VehicleType);
 	
     AVehiclePreview* PreviewVehicle;
 
 	// Holds base vehicle types
 	UDataTable* VehicleTypes;
+
+	TMap<FString, UDataTable*> VehicleOptions;
 
 	static UDataTable* LoadDataTableAsset(FString const &Path);
 };
