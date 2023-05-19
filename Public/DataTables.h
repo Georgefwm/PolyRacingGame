@@ -9,7 +9,7 @@
 
 
 USTRUCT(BlueprintType)
-struct FCustomisationOptions : public FTableRowBase
+struct FCustomisationOption : public FTableRowBase
 {
     GENERATED_BODY()
     
@@ -17,7 +17,10 @@ struct FCustomisationOptions : public FTableRowBase
     FString ComponentName;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<TSoftObjectPtr<USkeletalMesh>> SkeletalMesh;
+    TSoftObjectPtr<USkeletalMesh> SkeletalMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector MeshLocationOffset;
 };
 
 USTRUCT(BlueprintType)
