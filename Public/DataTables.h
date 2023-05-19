@@ -9,19 +9,17 @@
 
 
 USTRUCT(BlueprintType)
-struct FCustomisationOption : public FTableRowBase
+struct FVehicleSlotOptions : public FTableRowBase
 {
     GENERATED_BODY()
-    
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FString ComponentName;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TSoftObjectPtr<USkeletalMesh> SkeletalMesh;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSoftObjectPtr<USkeletalMesh>> Meshes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector MeshLocationOffset;
+	TArray<FVector> Offsets;
 };
+
 
 USTRUCT(BlueprintType)
 struct FColorOptions : public FTableRowBase
@@ -31,6 +29,7 @@ struct FColorOptions : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr<UMaterial> ColorScheme;
 };
+
 
 USTRUCT(BlueprintType)
 struct FVehicleType : public FTableRowBase
@@ -58,13 +57,14 @@ struct FVehicleType : public FTableRowBase
 	float AxelLength;
 };
 
+
 USTRUCT(BlueprintType)
 struct FVehicleConfiguration : public FTableRowBase
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int VehicleType = 0;
+	FString VehicleType = TEXT("Exotic");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int Bonnet = 0;
