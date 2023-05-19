@@ -1,7 +1,6 @@
 ﻿#include "Customisation/VehicleCustomiser.h"
 
 #include "DataTables.h"
-#include "Editor.h"
 #include "Engine/DataTable.h"
 
 
@@ -25,31 +24,106 @@ TSharedRef<FVehicleCustomiser> FVehicleCustomiser::Create()
 {
 	TSharedRef<FVehicleCustomiser> NewCustomiser = MakeShareable(new FVehicleCustomiser());
 
-	// Import vehicle customisation data tables
+	// Import vehicle customisation data table
 	FString const VehicleTypesPath = TEXT("/Script/Engine.DataTable'/Game/VehicleCustomisation/VehicleTypes.VehicleTypes'");
 	NewCustomiser->VehicleTypes = LoadDataTableAsset(VehicleTypesPath);
 
 	if (!NewCustomiser->VehicleTypes)
 		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No vehicle type data table found!"));
+
+	// Import exotic options data table
+	FString const ExoticOptionsPath = TEXT("/Script/Engine.DataTable'/Game/VehicleCustomisation/ExoticOptions.ExoticOptions'");
+	UDataTable* Test = LoadDataTableAsset(ExoticOptionsPath);
+	NewCustomiser->VehicleOptions.Emplace(FString("Exotic"), Test);
+
+	if (!Test)
+		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No exotic options data table found!"));
 	
 	return NewCustomiser;
 }
 
 void FVehicleCustomiser::SetupVehicle()
 {
-	if (!VehicleTypes)
+	SetupVehicle(FVehicleConfiguration());
+}
+
+// Sets up the preview vehicle with default configuration
+void FVehicleCustomiser::SetupVehicle(FVehicleConfiguration DesiredConfig)
+{
+	if (!VehicleTypes || VehicleOptions.IsEmpty())
 		return;
 
-	const FVehicleType* DefaultBody = VehicleTypes->FindRow<FVehicleType>(FName("Exotic"), "");
+	// Set what type of car is being used and available customisation options
+	const FVehicleType* SelectedType = VehicleTypes->FindRow<FVehicleType>(FName(DesiredConfig.VehicleType), "");
+	const UDataTable* OptionSlots = VehicleOptions.FindRef(SelectedType->VehicleName);
 	
-	UE_LOG(LogTemp, Warning, TEXT("###### FVehicleCustomiser Start ######"));
-	UE_LOG(LogTemp, Warning, TEXT("MyFunction called with value: %s"), *DefaultBody->Mesh.ToString());
-	PreviewVehicle->BodyMesh->SetSkeletalMesh(DefaultBody->Mesh.LoadSynchronous());
+	if (!OptionSlots)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No vehicle Options found!"));
+		return;
+	}
+
+	// Mesh and offset setting
+
+	PreviewVehicle->BodyMesh->SetSkeletalMesh(SelectedType->Mesh.LoadSynchronous());
+	
+	FVehicleSlotOptions* Bonnet = OptionSlots->FindRow<FVehicleSlotOptions>(FName("Bonnet"), "");
+	if (!Bonnet->Meshes.IsEmpty())
+	{
+		PreviewVehicle->BonnetMesh->SetSkeletalMesh(Bonnet->Meshes[DesiredConfig.Bonnet].LoadSynchronous());
+		PreviewVehicle->BonnetMesh->SetRelativeLocation(Bonnet->Offsets[DesiredConfig.Bonnet], false);
+	}
+
+	FVehicleSlotOptions* FrontBumper = OptionSlots->FindRow<FVehicleSlotOptions>(FName("BumperFront"), "");
+	if (!FrontBumper->Meshes.IsEmpty())
+	{
+		PreviewVehicle->BumperFrontMesh->SetSkeletalMesh(FrontBumper->Meshes[DesiredConfig.BumperFront].LoadSynchronous());
+		PreviewVehicle->BumperFrontMesh->SetRelativeLocation(FrontBumper->Offsets[DesiredConfig.BumperFront], false);
+	}
+
+	FVehicleSlotOptions* RearBumper = OptionSlots->FindRow<FVehicleSlotOptions>(FName("BumperRear"), "");
+	if (!RearBumper->Meshes.IsEmpty())
+	{
+		PreviewVehicle->BumperRearMesh->SetSkeletalMesh(RearBumper->Meshes[DesiredConfig.BumperRear].LoadSynchronous());
+		PreviewVehicle->BumperRearMesh->SetRelativeLocation(RearBumper->Offsets[DesiredConfig.BumperRear], false);
+	}
+
+	FVehicleSlotOptions* SideSkirts = OptionSlots->FindRow<FVehicleSlotOptions>(FName("SideSkirt"), "");
+	if (!SideSkirts->Meshes.IsEmpty())
+	{
+		PreviewVehicle->SideSkirtMesh->SetSkeletalMesh(SideSkirts->Meshes[DesiredConfig.SideSkirt].LoadSynchronous());
+		PreviewVehicle->SideSkirtMesh->SetRelativeLocation(SideSkirts->Offsets[DesiredConfig.SideSkirt], false);
+	}
+
+	FVehicleSlotOptions* Rims = OptionSlots->FindRow<FVehicleSlotOptions>(FName("Rim"), "");
+	if (!Rims->Meshes.IsEmpty())
+	{
+		SetRim(Rims->Meshes[DesiredConfig.Rim].LoadSynchronous(), SelectedType);
+	}
+
+	
+
+	
+	
+	
+	
+	
+	
 	
 	// PreviewVehicle->WheelFrontLeft->SetRelativeLocation(FVector(-DefaultBody->AxelLength, DefaultBody->FrontAxelOffset, 0.f));
 	// PreviewVehicle->WheelFrontRight->SetRelativeLocation(FVector(DefaultBody->AxelLength, DefaultBody->FrontAxelOffset, 0.f));
 	// PreviewVehicle->WheelFrontLeft->SetRelativeLocation(FVector(-DefaultBody->AxelLength, DefaultBody->RearAxelOffset, 0.f));
 	// PreviewVehicle->WheelFrontRight->SetRelativeLocation(FVector(DefaultBody->AxelLength, DefaultBody->RearAxelOffset, 0.f));
+}
+
+void FVehicleCustomiser::SetRim(USkeletalMesh* Mesh, const FVehicleType* VehicleType)
+{
+	
+}
+
+void FVehicleCustomiser::SetTyre(USkeletalMesh* Mesh, const FVehicleType* VehicleType)
+{
+	
 }
 
 UDataTable* FVehicleCustomiser::LoadDataTableAsset(FString const &Path)
