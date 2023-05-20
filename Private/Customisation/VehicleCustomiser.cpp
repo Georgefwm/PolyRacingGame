@@ -54,8 +54,8 @@ void FVehicleCustomiser::SetupVehicle(FVehicleConfiguration DesiredConfig)
 		return;
 
 	// Set what type of car is being used and available customisation options
-	const FVehicleType* SelectedType = VehicleTypes->FindRow<FVehicleType>(FName(DesiredConfig.VehicleType), "");
-	const UDataTable* OptionSlots = VehicleOptions.FindRef(SelectedType->VehicleName);
+	FVehicleType* const SelectedType = VehicleTypes->FindRow<FVehicleType>(FName(DesiredConfig.VehicleType), "");
+	UDataTable* const OptionSlots = VehicleOptions.FindRef(SelectedType->VehicleName);
 	
 	if (!OptionSlots)
 	{
@@ -66,6 +66,8 @@ void FVehicleCustomiser::SetupVehicle(FVehicleConfiguration DesiredConfig)
 	// Mesh and offset setting
 
 	PreviewVehicle->BodyMesh->SetSkeletalMesh(SelectedType->Mesh.LoadSynchronous());
+	PreviewVehicle->SetWheelOffsets(SelectedType);
+
 	
 	FVehicleSlotOptions* Bonnet = OptionSlots->FindRow<FVehicleSlotOptions>(FName("Bonnet"), "");
 	if (!Bonnet->Meshes.IsEmpty())
@@ -98,32 +100,31 @@ void FVehicleCustomiser::SetupVehicle(FVehicleConfiguration DesiredConfig)
 	FVehicleSlotOptions* Rims = OptionSlots->FindRow<FVehicleSlotOptions>(FName("Rim"), "");
 	if (!Rims->Meshes.IsEmpty())
 	{
-		SetRim(Rims->Meshes[DesiredConfig.Rim].LoadSynchronous(), SelectedType);
+		SetRim(Rims->Meshes[DesiredConfig.Rim].LoadSynchronous());
 	}
 
-	
-
-	
-	
-	
-	
-	
-	
-	
-	// PreviewVehicle->WheelFrontLeft->SetRelativeLocation(FVector(-DefaultBody->AxelLength, DefaultBody->FrontAxelOffset, 0.f));
-	// PreviewVehicle->WheelFrontRight->SetRelativeLocation(FVector(DefaultBody->AxelLength, DefaultBody->FrontAxelOffset, 0.f));
-	// PreviewVehicle->WheelFrontLeft->SetRelativeLocation(FVector(-DefaultBody->AxelLength, DefaultBody->RearAxelOffset, 0.f));
-	// PreviewVehicle->WheelFrontRight->SetRelativeLocation(FVector(DefaultBody->AxelLength, DefaultBody->RearAxelOffset, 0.f));
-}
-
-void FVehicleCustomiser::SetRim(USkeletalMesh* Mesh, const FVehicleType* VehicleType)
-{
+	FVehicleSlotOptions* Tyres = OptionSlots->FindRow<FVehicleSlotOptions>(FName("Tyre"), "");
+	if (!Tyres->Meshes.IsEmpty())
+	{
+		SetTyre(Tyres->Meshes[DesiredConfig.Rim].LoadSynchronous());
+	}
 	
 }
 
-void FVehicleCustomiser::SetTyre(USkeletalMesh* Mesh, const FVehicleType* VehicleType)
+void FVehicleCustomiser::SetRim(USkeletalMesh* Mesh)
 {
-	
+	PreviewVehicle->FrontLeftRim->SetSkeletalMesh(Mesh);
+	PreviewVehicle->FrontRightRim->SetSkeletalMesh(Mesh);
+	PreviewVehicle->RearLeftRim->SetSkeletalMesh(Mesh);
+	PreviewVehicle->RearRightRim->SetSkeletalMesh(Mesh);
+}
+
+void FVehicleCustomiser::SetTyre(USkeletalMesh* Mesh)
+{
+	PreviewVehicle->FrontLeftTyre->SetSkeletalMesh(Mesh);
+	PreviewVehicle->FrontRightTyre->SetSkeletalMesh(Mesh);
+	PreviewVehicle->RearLeftTyre->SetSkeletalMesh(Mesh);
+	PreviewVehicle->RearRightTyre->SetSkeletalMesh(Mesh);
 }
 
 UDataTable* FVehicleCustomiser::LoadDataTableAsset(FString const &Path)

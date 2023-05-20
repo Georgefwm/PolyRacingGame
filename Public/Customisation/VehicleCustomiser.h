@@ -26,8 +26,8 @@ public:
 	void SetupVehicle();
 	void SetupVehicle(FVehicleConfiguration);
 
-	void SetRim(USkeletalMesh* Mesh, const FVehicleType* VehicleType);
-	void SetTyre(USkeletalMesh* Mesh, const FVehicleType* VehicleType);
+	void SetRim(USkeletalMesh* Mesh);
+	void SetTyre(USkeletalMesh* Mesh);
 	
     AVehiclePreview* PreviewVehicle;
 

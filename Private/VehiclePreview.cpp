@@ -4,7 +4,6 @@
 #include "VehiclePreview.h"
 
 #include "DataTables.h"
-#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AVehiclePreview::AVehiclePreview()
@@ -37,7 +36,33 @@ AVehiclePreview::AVehiclePreview()
     UndercarriageMesh = CreateDefaultSubobject<USkeletalMeshComponent>("VehicleUndercarriage");
     UndercarriageMesh->SetupAttachment(BodyMesh);
 
-	// TODO: Setup Wheels (rims + tyres) and rest of customisable parts
+	// Wheels
+    
+	FrontLeftRim = CreateDefaultSubobject<USkeletalMeshComponent>("FrontLeftRim");
+	FrontLeftRim->SetupAttachment(UndercarriageMesh);
+
+	FrontRightRim = CreateDefaultSubobject<USkeletalMeshComponent>("FrontRightRim");
+	FrontRightRim->SetupAttachment(UndercarriageMesh);
+
+	RearLeftRim = CreateDefaultSubobject<USkeletalMeshComponent>("RearLeftRim");
+	RearLeftRim->SetupAttachment(UndercarriageMesh);
+
+	RearRightRim = CreateDefaultSubobject<USkeletalMeshComponent>("RearRightRim");
+	RearRightRim->SetupAttachment(UndercarriageMesh);
+
+	FrontLeftTyre = CreateDefaultSubobject<USkeletalMeshComponent>("FrontLeftTyre");
+	FrontLeftTyre->SetupAttachment(FrontLeftRim);
+
+	FrontRightTyre = CreateDefaultSubobject<USkeletalMeshComponent>("FrontRightTyre");
+	FrontRightTyre->SetupAttachment(FrontRightRim);
+
+	RearLeftTyre = CreateDefaultSubobject<USkeletalMeshComponent>("RearLeftTyre");
+	RearLeftTyre->SetupAttachment(RearLeftRim);
+
+	RearRightTyre = CreateDefaultSubobject<USkeletalMeshComponent>("RearRightTyre");
+	RearRightTyre->SetupAttachment(RearRightRim);
+
+	// TODO: Setup rest of customisable parts
 }
 
 // Called when the game starts or when spawned
