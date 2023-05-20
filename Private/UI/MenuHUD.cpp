@@ -5,6 +5,7 @@
 #include "UI/MainMenuWidget.h"
 #include "Widgets/SWeakWidget.h"
 #include "Engine/Engine.h"
+#include "UI/GarageMenuWidget.h"
 
 void AMenuHUD::BeginPlay()
 {
@@ -40,4 +41,13 @@ void AMenuHUD::RemoveMenu()
 			PlayerOwner->SetInputMode(FInputModeGameOnly());
 		}
 	}
+}
+
+void AMenuHUD::ChangeActiveMenuWidget(TSubclassOf<SCompoundWidget> DesiredWidget)
+{
+	
+
+	
+	
+	
 }

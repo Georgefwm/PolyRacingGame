@@ -14,13 +14,17 @@ class POLYRACINGGAME_API AMenuHUD : public AHUD
 {
 	GENERATED_BODY()
 	
-protected:
+public:
 	TSharedPtr<class SMainMenuWidget> MenuWidget;
-	TSharedPtr<class SWidget> MenuWidgetContainer;
+	TSharedPtr<class SGarageMenuWidget> GarageWidget;
+
+	
+	TSharedPtr<class SWeakWidget> MenuWidgetContainer;
 
 	virtual void BeginPlay() override;
 
 public:
 	void ShowMenu();
 	void RemoveMenu();
+	void ChangeActiveMenuWidget(TSubclassOf<SCompoundWidget> MenuWidget);
 };

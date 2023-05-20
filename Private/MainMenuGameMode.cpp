@@ -14,9 +14,6 @@ AMainMenuGameMode::AMainMenuGameMode()
 {
 	PlayerControllerClass = AMenuPlayerController::StaticClass();
 	HUDClass = AMenuHUD::StaticClass();
-	
-
-	auto MeshAsset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("DataTable'/Engine/BasicShapes/Cube.Cube'"));
 }
 
 void AMainMenuGameMode::BeginPlay()
@@ -28,7 +25,7 @@ void AMainMenuGameMode::BeginPlay()
 	TSharedPtr<FVehicleCustomiser> VehicleCustomiser = FVehicleCustomiser::Get();
 	
 	VehicleCustomiser->PreviewVehicle = GetWorld()->SpawnActor<AVehiclePreview>(AVehiclePreview::StaticClass(),
-		FVector(-2020.f,-1700.f,0.f),
+		FVector(-2020.f, -1700.f, 15.f),
 		FRotator(0.f, 90.f, 0.f));
 
 	VehicleCustomiser->SetupVehicle();

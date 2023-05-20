@@ -3,6 +3,7 @@
 
 #include "UI/MainMenuWidget.h"
 
+#include "UI/GarageMenuWidget.h"
 #include "UI/GlobalMenuStyle.h"
 #include "UI/MenuHUD.h"
 #include "UI/UiStyles.h"
@@ -113,6 +114,9 @@ FReply SMainMenuWidget::OnPlayClicked() const
 
 FReply SMainMenuWidget::OnGarageClicked() const
 {
+	OwningHUD->GarageWidget = SNew(SGarageMenuWidget).OwningHUD(OwningHUD);
+	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->GarageWidget.ToSharedRef());
+	
 	return FReply::Handled();
 }
 
@@ -127,9 +131,9 @@ FReply SMainMenuWidget::OnQuitClicked() const
 {
 	if (!OwningHUD.IsValid()) return FReply::Handled();
 
-	if (APlayerController* controller = OwningHUD->PlayerOwner)
+	if (APlayerController* Controller = OwningHUD->PlayerOwner)
 	{
-		controller->ConsoleCommand("quit");
+		Controller->ConsoleCommand("quit");
 	}
 
 	return FReply::Handled();
