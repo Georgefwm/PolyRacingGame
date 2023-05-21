@@ -16,8 +16,6 @@ void SMainMenuWidget::Construct(const FArguments& InArgs)
 
 	OwningHUD = InArgs._OwningHUD;
 	Style = &FUiStyles::Get().GetWidgetStyle<FGlobalStyle>("PolyRacingMenuStyle");
-	
-	const FMargin ButtonPadding			= FMargin(0.f, 10.f);
 
 	/** Text */
 	const FText TitleText		= LOCTEXT("Game title", "Poly Racing");
@@ -62,7 +60,7 @@ void SMainMenuWidget::Construct(const FArguments& InArgs)
 				SNew(SVerticalBox)
 				// Play Button
 				+ SVerticalBox::Slot()
-				.Padding(ButtonPadding)
+				.Padding(Style->MenuButtonSpacingMargin)
 				[
 					SNew(SButton)
 					.ButtonStyle(&Style->MenuButtonStyle)
@@ -73,7 +71,7 @@ void SMainMenuWidget::Construct(const FArguments& InArgs)
 
 				// Play Button
 				+ SVerticalBox::Slot()
-				.Padding(ButtonPadding)
+				.Padding(Style->MenuButtonSpacingMargin)
 				[
 					SNew(SButton)
 					.ButtonStyle(&Style->MenuButtonStyle)
@@ -84,7 +82,7 @@ void SMainMenuWidget::Construct(const FArguments& InArgs)
 
 				// Settings Button
 				+ SVerticalBox::Slot()
-				.Padding(ButtonPadding)
+				.Padding(Style->MenuButtonSpacingMargin)
 				[
 					SNew(SButton)
 					.ButtonStyle(&Style->MenuButtonStyle)
@@ -95,7 +93,7 @@ void SMainMenuWidget::Construct(const FArguments& InArgs)
 
 				// Quit Button
 				+ SVerticalBox::Slot()
-				.Padding(ButtonPadding)
+				.Padding(Style->MenuButtonSpacingMargin)
 				[
 					SNew(SButton)
 					.ButtonStyle(&Style->MenuButtonStyle)
@@ -114,7 +112,9 @@ FReply SMainMenuWidget::OnPlayClicked() const
 
 FReply SMainMenuWidget::OnGarageClicked() const
 {
-	OwningHUD->GarageWidget = SNew(SGarageMenuWidget).OwningHUD(OwningHUD);
+	if (!OwningHUD->GarageWidget)
+		OwningHUD->GarageWidget = SNew(SGarageMenuWidget).OwningHUD(OwningHUD);
+	
 	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->GarageWidget.ToSharedRef());
 	
 	return FReply::Handled();
