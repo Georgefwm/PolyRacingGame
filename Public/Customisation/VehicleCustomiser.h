@@ -25,11 +25,23 @@ private:
 public:
 	void SetupVehicle();
 	void SetupVehicle(FVehicleConfiguration);
+	
+	void SetComponentFromSlotName(FString &OptionSlotName, int DesiredIndex);
 
-	void SetRim(USkeletalMesh* Mesh);
-	void SetTyre(USkeletalMesh* Mesh);
+	void SetBonnet(int DesiredOptionIndex);
+	void SetBumperFront(int DesiredOptionIndex);
+	void SetBumperRear(int DesiredOptionIndex);
+	void SetSideSkirt(int DesiredOptionIndex);
+	void SetRim(int DesiredOptionIndex);
+	void SetTyre(int DesiredOptionIndex);
+
+	FText GetOptionSlotCurrentIndex(FString OptionSlotName);
 
 	TArray<FVehicleConfiguration> SavedConfigurations[5];
+
+	FVehicleType* CurrentVehicleType;
+	UDataTable* CurrentOptions;
+	TMap<FString, int> CurrentIndices;
 	
     AVehiclePreview* PreviewVehicle;
 

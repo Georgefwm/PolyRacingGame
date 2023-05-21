@@ -1,6 +1,7 @@
 ﻿#include "Customisation/VehicleCustomiser.h"
 
 #include "DataTables.h"
+#include "HairStrandsInterface.h"
 #include "Engine/DataTable.h"
 
 
@@ -9,9 +10,7 @@ TSharedPtr<FVehicleCustomiser> FVehicleCustomiser::Instance = nullptr;
 void FVehicleCustomiser::Initialize()
 {
 	if (!Instance.IsValid())
-	{
 		Instance = Create();
-	}
 }
 
 void FVehicleCustomiser::Shutdown()
@@ -42,22 +41,22 @@ TSharedRef<FVehicleCustomiser> FVehicleCustomiser::Create()
 	return NewCustomiser;
 }
 
+// Sets up the preview vehicle with default configuration
 void FVehicleCustomiser::SetupVehicle()
 {
 	SetupVehicle(FVehicleConfiguration());
 }
 
-// Sets up the preview vehicle with default configuration
 void FVehicleCustomiser::SetupVehicle(FVehicleConfiguration DesiredConfig)
 {
 	if (!VehicleTypes || VehicleOptions.IsEmpty())
 		return;
 
 	// Set what type of car is being used and available customisation options
-	FVehicleType* const SelectedType = VehicleTypes->FindRow<FVehicleType>(FName(DesiredConfig.VehicleType), "");
-	UDataTable* const OptionSlots = VehicleOptions.FindRef(SelectedType->VehicleName);
+	CurrentVehicleType = VehicleTypes->FindRow<FVehicleType>(FName(DesiredConfig.VehicleType), "");
+	CurrentOptions = VehicleOptions.FindRef(CurrentVehicleType->VehicleName);
 	
-	if (!OptionSlots)
+	if (!CurrentOptions)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No vehicle Options found!"));
 		return;
@@ -65,66 +64,149 @@ void FVehicleCustomiser::SetupVehicle(FVehicleConfiguration DesiredConfig)
 
 	// Mesh and offset setting
 
-	PreviewVehicle->BodyMesh->SetSkeletalMesh(SelectedType->Mesh.LoadSynchronous());
-	PreviewVehicle->SetWheelOffsets(SelectedType);
-
+	PreviewVehicle->BodyMesh->SetSkeletalMesh(CurrentVehicleType->Mesh.LoadSynchronous());
 	
-	FVehicleSlotOptions* Bonnet = OptionSlots->FindRow<FVehicleSlotOptions>(FName("Bonnet"), "");
-	if (!Bonnet->Meshes.IsEmpty())
-	{
-		PreviewVehicle->BonnetMesh->SetSkeletalMesh(Bonnet->Meshes[DesiredConfig.Bonnet].LoadSynchronous());
-		PreviewVehicle->BonnetMesh->SetRelativeLocation(Bonnet->Offsets[DesiredConfig.Bonnet], false);
-	}
-
-	FVehicleSlotOptions* FrontBumper = OptionSlots->FindRow<FVehicleSlotOptions>(FName("BumperFront"), "");
-	if (!FrontBumper->Meshes.IsEmpty())
-	{
-		PreviewVehicle->BumperFrontMesh->SetSkeletalMesh(FrontBumper->Meshes[DesiredConfig.BumperFront].LoadSynchronous());
-		PreviewVehicle->BumperFrontMesh->SetRelativeLocation(FrontBumper->Offsets[DesiredConfig.BumperFront], false);
-	}
-
-	FVehicleSlotOptions* RearBumper = OptionSlots->FindRow<FVehicleSlotOptions>(FName("BumperRear"), "");
-	if (!RearBumper->Meshes.IsEmpty())
-	{
-		PreviewVehicle->BumperRearMesh->SetSkeletalMesh(RearBumper->Meshes[DesiredConfig.BumperRear].LoadSynchronous());
-		PreviewVehicle->BumperRearMesh->SetRelativeLocation(RearBumper->Offsets[DesiredConfig.BumperRear], false);
-	}
-
-	FVehicleSlotOptions* SideSkirts = OptionSlots->FindRow<FVehicleSlotOptions>(FName("SideSkirt"), "");
-	if (!SideSkirts->Meshes.IsEmpty())
-	{
-		PreviewVehicle->SideSkirtMesh->SetSkeletalMesh(SideSkirts->Meshes[DesiredConfig.SideSkirt].LoadSynchronous());
-		PreviewVehicle->SideSkirtMesh->SetRelativeLocation(SideSkirts->Offsets[DesiredConfig.SideSkirt], false);
-	}
-
-	FVehicleSlotOptions* Rims = OptionSlots->FindRow<FVehicleSlotOptions>(FName("Rim"), "");
-	if (!Rims->Meshes.IsEmpty())
-	{
-		SetRim(Rims->Meshes[DesiredConfig.Rim].LoadSynchronous());
-	}
-
-	FVehicleSlotOptions* Tyres = OptionSlots->FindRow<FVehicleSlotOptions>(FName("Tyre"), "");
-	if (!Tyres->Meshes.IsEmpty())
-	{
-		SetTyre(Tyres->Meshes[DesiredConfig.Rim].LoadSynchronous());
-	}
+	PreviewVehicle->SetWheelOffsets(CurrentVehicleType);
 	
+	SetBonnet(		DesiredConfig.Bonnet		);
+	SetBumperFront(	DesiredConfig.BumperFront	);
+	SetBumperRear(	DesiredConfig.BumperRear	);
+	SetSideSkirt(	DesiredConfig.SideSkirt		);
+	SetRim(			DesiredConfig.Rim			);
+	SetTyre(		DesiredConfig.Tyre			);
 }
 
-void FVehicleCustomiser::SetRim(USkeletalMesh* Mesh)
+// Is there a better way to do this? seems very verbose
+// See SOptionSelectionWidget
+void FVehicleCustomiser::SetComponentFromSlotName(FString &OptionSlotName, int IndexDelta)
 {
-	PreviewVehicle->FrontLeftRim->SetSkeletalMesh(Mesh);
-	PreviewVehicle->FrontRightRim->SetSkeletalMesh(Mesh);
-	PreviewVehicle->RearLeftRim->SetSkeletalMesh(Mesh);
-	PreviewVehicle->RearRightRim->SetSkeletalMesh(Mesh);
+	if (OptionSlotName == TEXT("Bonnet"))		return SetBonnet(		IndexDelta + *CurrentIndices.Find(OptionSlotName));
+	if (OptionSlotName == TEXT("BumperFront"))	return SetBumperFront(	IndexDelta + *CurrentIndices.Find(OptionSlotName));
+	if (OptionSlotName == TEXT("BumperRear"))	return SetBumperRear(	IndexDelta + *CurrentIndices.Find(OptionSlotName));
+	if (OptionSlotName == TEXT("SideSkirt"))	return SetSideSkirt(	IndexDelta + *CurrentIndices.Find(OptionSlotName));
+	if (OptionSlotName == TEXT("Rim"))			return SetRim(			IndexDelta + *CurrentIndices.Find(OptionSlotName));
+	if (OptionSlotName == TEXT("Tyre"))			return SetTyre(			IndexDelta + *CurrentIndices.Find(OptionSlotName));
+	
+	UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: OptionSlot name not found!"));
 }
 
-void FVehicleCustomiser::SetTyre(USkeletalMesh* Mesh)
+void FVehicleCustomiser::SetBonnet(int DesiredOptionIndex)
 {
-	PreviewVehicle->FrontLeftTyre->SetSkeletalMesh(Mesh);
-	PreviewVehicle->FrontRightTyre->SetSkeletalMesh(Mesh);
-	PreviewVehicle->RearLeftTyre->SetSkeletalMesh(Mesh);
-	PreviewVehicle->RearRightTyre->SetSkeletalMesh(Mesh);
+	FVehicleSlotOptions* Bonnet = CurrentOptions->FindRow<FVehicleSlotOptions>(FName("Bonnet"), "");
+	if (Bonnet->Meshes.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No Options were found for 'Bonnet'!"));
+		return;
+	}
+	
+	int const UsingIndex = DesiredOptionIndex % Bonnet->Meshes.Num();
+	
+	PreviewVehicle->BonnetMesh->SetSkeletalMesh(Bonnet->Meshes[UsingIndex].LoadSynchronous());
+	PreviewVehicle->BonnetMesh->SetRelativeLocation(Bonnet->Offsets[UsingIndex], false);
+
+	CurrentIndices.Add(FString("Bonnet"), UsingIndex);
+}
+
+void FVehicleCustomiser::SetBumperFront(int DesiredOptionIndex)
+{
+	FVehicleSlotOptions* BumperFront = CurrentOptions->FindRow<FVehicleSlotOptions>(FName("BumperFront"), "");
+	if (BumperFront->Meshes.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No Options were found for 'BumperFront'!"));
+		return;
+	}
+	
+	int const UsingIndex = DesiredOptionIndex % BumperFront->Meshes.Num();
+	
+	PreviewVehicle->BumperFrontMesh->SetSkeletalMesh(BumperFront->Meshes[UsingIndex].LoadSynchronous());
+	PreviewVehicle->BumperFrontMesh->SetRelativeLocation(BumperFront->Offsets[UsingIndex], false);
+
+	CurrentIndices.Add(FString("BumperFront"), UsingIndex);
+}
+
+void FVehicleCustomiser::SetBumperRear(int DesiredOptionIndex)
+{
+	FVehicleSlotOptions* BumperRear = CurrentOptions->FindRow<FVehicleSlotOptions>(FName("BumperRear"), "");
+	if (BumperRear->Meshes.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No Options were found for 'BumperRear'!"));
+		return;
+	}
+	
+	int const UsingIndex = DesiredOptionIndex % BumperRear->Meshes.Num();
+	
+	PreviewVehicle->BumperRearMesh->SetSkeletalMesh(BumperRear->Meshes[UsingIndex].LoadSynchronous());
+	PreviewVehicle->BumperRearMesh->SetRelativeLocation(BumperRear->Offsets[UsingIndex], false);
+
+	CurrentIndices.Add(FString("BumperRear"), UsingIndex);
+}
+
+void FVehicleCustomiser::SetSideSkirt(int DesiredOptionIndex)
+{
+	FVehicleSlotOptions* SideSkirt = CurrentOptions->FindRow<FVehicleSlotOptions>(FName("SideSkirt"), "");
+	if (SideSkirt->Meshes.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No Options were found for 'SideSkirt'!"));
+		return;
+	}
+	
+	int const UsingIndex = DesiredOptionIndex % SideSkirt->Meshes.Num();
+	
+	PreviewVehicle->SideSkirtMesh->SetSkeletalMesh(SideSkirt->Meshes[UsingIndex].LoadSynchronous());
+	PreviewVehicle->SideSkirtMesh->SetRelativeLocation(SideSkirt->Offsets[UsingIndex], false);
+
+	CurrentIndices.Add(FString("SideSkirt"), UsingIndex);
+}
+
+void FVehicleCustomiser::SetRim(int DesiredOptionIndex)
+{
+	FVehicleSlotOptions* Rim = CurrentOptions->FindRow<FVehicleSlotOptions>(FName("Rim"), "");
+	if (Rim->Meshes.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No Options were found for 'Rim'!"));
+		return;
+	}
+	
+	int const UsingIndex = DesiredOptionIndex % Rim->Meshes.Num();
+	
+	USkeletalMesh* NewRim = Rim->Meshes[UsingIndex].LoadSynchronous();
+	
+	PreviewVehicle->FrontLeftRim->SetSkeletalMesh(NewRim);
+	PreviewVehicle->FrontRightRim->SetSkeletalMesh(NewRim);
+	PreviewVehicle->RearLeftRim->SetSkeletalMesh(NewRim);
+	PreviewVehicle->RearRightRim->SetSkeletalMesh(NewRim);
+
+	CurrentIndices.Add(FString("Rim"), UsingIndex);
+}
+
+void FVehicleCustomiser::SetTyre(int DesiredOptionIndex)
+{
+	FVehicleSlotOptions* Tyre = CurrentOptions->FindRow<FVehicleSlotOptions>(FName("Tyre"), "");
+	if (Tyre->Meshes.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No Options were found for 'Tyre'!"));
+		return;
+	}
+	
+	int const UsingIndex = DesiredOptionIndex % Tyre->Meshes.Num();
+	
+	USkeletalMesh* NewTyre = Tyre->Meshes[UsingIndex].LoadSynchronous();
+	
+	PreviewVehicle->FrontLeftTyre->SetSkeletalMesh(NewTyre);
+	PreviewVehicle->FrontRightTyre->SetSkeletalMesh(NewTyre);
+	PreviewVehicle->RearLeftTyre->SetSkeletalMesh(NewTyre);
+	PreviewVehicle->RearRightTyre->SetSkeletalMesh(NewTyre);
+
+	CurrentIndices.Add(FString("Tyre"), UsingIndex);
+}
+
+FText FVehicleCustomiser::GetOptionSlotCurrentIndex(FString OptionSlotName)
+{
+	// TODO: "Style X" unless Vehicle type
+	
+	FString ret = "Style ";
+	ret.AppendInt(*CurrentIndices.Find(OptionSlotName));
+	return FText::FromString(ret);
 }
 
 UDataTable* FVehicleCustomiser::LoadDataTableAsset(FString const &Path)
