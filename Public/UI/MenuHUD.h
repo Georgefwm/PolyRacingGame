@@ -15,10 +15,11 @@ class POLYRACINGGAME_API AMenuHUD : public AHUD
 	GENERATED_BODY()
 	
 public:
+	// Widget class refs
+	// Not initialised by default
 	TSharedPtr<class SMainMenuWidget> MainMenuWidget;
 	TSharedPtr<class SGarageMenuWidget> GarageWidget;
 	TSharedPtr<class SVehicleCustomisationMenuWidget> CustomiseWidget;
-
 	
 	TSharedPtr<class SWeakWidget> MenuWidgetContainer;
 
@@ -27,5 +28,4 @@ public:
 public:
 	void ShowMenu();
 	void RemoveMenu();
-	void ChangeActiveMenuWidget(TSubclassOf<SCompoundWidget> MenuWidget);
 };

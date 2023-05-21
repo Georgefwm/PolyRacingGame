@@ -41,12 +41,3 @@ void AMenuHUD::RemoveMenu()
 		}
 	}
 }
-
-void AMenuHUD::ChangeActiveMenuWidget(TSubclassOf<SCompoundWidget> DesiredWidget)
-{
-	
-
-	
-	
-	
-}
