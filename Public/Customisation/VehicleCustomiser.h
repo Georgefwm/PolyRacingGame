@@ -28,6 +28,8 @@ public:
 
 	void SetRim(USkeletalMesh* Mesh);
 	void SetTyre(USkeletalMesh* Mesh);
+
+	TArray<FVehicleConfiguration> SavedConfigurations[5];
 	
     AVehiclePreview* PreviewVehicle;
 
