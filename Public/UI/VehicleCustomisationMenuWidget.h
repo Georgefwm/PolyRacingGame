@@ -4,6 +4,7 @@
 
 #include "SlateBasics.h"
 #include "SlateExtras.h"
+#include "Customisation/VehicleCustomiser.h"
 
 
 /**
@@ -26,6 +27,8 @@ public:
 
 	TWeakObjectPtr<class AMenuHUD> OwningHUD;
 	const struct FGlobalStyle* Style;
+
+	TSharedPtr<FVehicleCustomiser> VehicleCustomiser;
 
 	virtual bool SupportsKeyboardFocus() const override { return true; }
 };
