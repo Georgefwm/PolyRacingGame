@@ -26,24 +26,56 @@ struct FGlobalStyle : public FSlateWidgetStyle
 	static const FGlobalStyle& GetDefault();
 
 	// Style that defines the text for our menu title. 
-	UPROPERTY(EditAnywhere, Category = TitleText)
+	UPROPERTY(EditAnywhere, Category = MenuTitle)
 	FTextBlockStyle MenuTitleStyle;
 
 	// Margin for menu title text
-	UPROPERTY(EditAnywhere, Category = TitleText)
+	UPROPERTY(EditAnywhere, Category = MenuTitle)
 	FMargin TitleTextMargin;
 
 	// Style that define the appearance of all menu buttons. 
-	UPROPERTY(EditAnywhere, Category = Buttons)
+	UPROPERTY(EditAnywhere, Category = MenuButton)
 	FButtonStyle MenuButtonStyle;
 
 	// Style that defines the text on all of our menu buttons. 
-	UPROPERTY(EditAnywhere, Category = Buttons)
+	UPROPERTY(EditAnywhere, Category = MenuButton)
 	FTextBlockStyle MenuButtonTextStyle;
+
+	// Margin Separating each button
+	UPROPERTY(EditAnywhere, Category = MenuButton)
+	FMargin MenuButtonSpacingMargin;
 	
 	// Margin for whole menu 'list'
 	UPROPERTY(EditAnywhere, Category = General)
 	FMargin MenuBoxMargin;
+
+	// Text style for selection option slot name. 
+	UPROPERTY(EditAnywhere, Category = OptionSelect)
+	FTextBlockStyle OptionSelectTitleStyle;
+
+	// Margin for option title text
+	UPROPERTY(EditAnywhere, Category = OptionSelect)
+	FMargin OptionSelectTitleMargin;
+
+	// Text style for selection option slot name. 
+	UPROPERTY(EditAnywhere, Category = OptionSelect)
+	FTextBlockStyle OptionSelectTextStyle;
+
+	// Style that define the appearance of all menu buttons. 
+	UPROPERTY(EditAnywhere, Category = OptionSelect)
+	FButtonStyle OptionSelectButtonStyle;
+	
+	// Sub-menu back button style
+	UPROPERTY(EditAnywhere, Category = BackButton)
+	FButtonStyle BackButtonStyle;
+
+	// Back button text style
+	UPROPERTY(EditAnywhere, Category = BackButton)
+	FTextBlockStyle BackButtonTextStyle;
+	
+	// Margin for back button
+	UPROPERTY(EditAnywhere, Category = BackButton)
+	FMargin BackButtonMargin;
 };
 
 // Provides a widget style container to allow us to edit properties in-editor
