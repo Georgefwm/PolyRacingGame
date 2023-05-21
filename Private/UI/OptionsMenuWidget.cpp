@@ -4,6 +4,7 @@
 #include "UI/OptionsMenuWidget.h"
 
 #include "UI/GlobalMenuStyle.h"
+#include "UI/MainMenuWidget.h"
 #include "UI/MenuHUD.h"
 #include "UI/UiStyles.h"
 
@@ -15,11 +16,10 @@ void SOptionsMenuWidget::Construct(const FArguments& InArgs)
 
 	OwningHUD = InArgs._OwningHUD;
 	Style = &FUiStyles::Get().GetWidgetStyle<FGlobalStyle>("PolyRacingMenuStyle");
-	
-	const FMargin ButtonPadding			= FMargin(0.f, 10.f);
 
 	/** Text */
-	const FText TitleText		= LOCTEXT("menu title", "Options");
+	const FText TitleText	= LOCTEXT("menu title", "Options");
+	const FText BackText	= LOCTEXT("Back text", "Back");
 
 	
 	ChildSlot
@@ -57,27 +57,38 @@ void SOptionsMenuWidget::Construct(const FArguments& InArgs)
 				SNew(SVerticalBox)
 				// Play Button
 				+ SVerticalBox::Slot()
-				.Padding(ButtonPadding)
+				.Padding(Style->MenuButtonSpacingMargin)
 				[
 					SNew(SButton)
 					.ButtonStyle(&Style->MenuButtonStyle)
 					.TextStyle(&Style->MenuButtonTextStyle)
 				]
-
 				
+			]
+
+			
+			// Back Button
+			+ SOverlay::Slot()
+			.HAlign(HAlign_Left)
+			.VAlign(VAlign_Bottom)
+			.Padding(Style->BackButtonMargin)
+			[
+				SNew(SButton)
+				.ButtonStyle(&Style->BackButtonStyle)
+				.TextStyle(&Style->BackButtonTextStyle)
+				.Text(BackText)
+				.OnClicked(this, &SOptionsMenuWidget::OnBackClicked)
 			]
 		];
 }
 
 FReply SOptionsMenuWidget::OnBackClicked() const
 {
-	if (!OwningHUD.IsValid()) return FReply::Handled();
-
-	if (APlayerController* Controller = OwningHUD->PlayerOwner)
-	{
-		Controller->ConsoleCommand("quit");
-	}
-
+	if (!OwningHUD->MainMenuWidget)
+		OwningHUD->MainMenuWidget = SNew(SMainMenuWidget).OwningHUD(OwningHUD);
+	
+	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->MainMenuWidget.ToSharedRef());
+	
 	return FReply::Handled();
 }
 

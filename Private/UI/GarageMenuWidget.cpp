@@ -4,8 +4,10 @@
 #include "UI/GarageMenuWidget.h"
 
 #include "UI/GlobalMenuStyle.h"
+#include "UI/MainMenuWidget.h"
 #include "UI/MenuHUD.h"
 #include "UI/UiStyles.h"
+#include "UI/VehicleCustomisationMenuWidget.h"
 
 #define LOCTEXT_NAMESPACE "garagemenu"
 
@@ -15,11 +17,11 @@ void SGarageMenuWidget::Construct(const FArguments& InArgs)
 
 	OwningHUD = InArgs._OwningHUD;
 	Style = &FUiStyles::Get().GetWidgetStyle<FGlobalStyle>("PolyRacingMenuStyle");
-	
-	const FMargin ButtonPadding			= FMargin(0.f, 10.f);
 
 	/** Text */
 	const FText TitleText		= LOCTEXT("menu title", "Garage");
+	const FText CustomiseText	= LOCTEXT("Custom title", "Customise");
+	const FText BackText		= LOCTEXT("Back text", "Back");
 
 	
 	ChildSlot
@@ -48,36 +50,60 @@ void SGarageMenuWidget::Construct(const FArguments& InArgs)
 				.Text(TitleText)
 				.LineHeightPercentage(2.f)
 			]
-			
+
+
+			// TEMPORARY - for testing child menus
+			// TODO: Implement this menu + vehicle slot functionality
 			+ SOverlay::Slot()
 			.HAlign(HAlign_Left)
 			.VAlign(VAlign_Center)
 			.Padding(Style->MenuBoxMargin)
 			[
 				SNew(SVerticalBox)
-				// Play Button
 				+ SVerticalBox::Slot()
-				.Padding(ButtonPadding)
+				.Padding(Style->MenuButtonSpacingMargin)
 				[
 					SNew(SButton)
 					.ButtonStyle(&Style->MenuButtonStyle)
 					.TextStyle(&Style->MenuButtonTextStyle)
+					.Text(CustomiseText)
+					.OnClicked(this, &SGarageMenuWidget::OnCustomiseClicked)
 				]
+			]
 
-				
+			
+			// Back Button
+			+ SOverlay::Slot()
+			.HAlign(HAlign_Left)
+			.VAlign(VAlign_Bottom)
+			.Padding(Style->BackButtonMargin)
+			[
+				SNew(SButton)
+				.ButtonStyle(&Style->BackButtonStyle)
+				.TextStyle(&Style->BackButtonTextStyle)
+				.Text(BackText)
+				.OnClicked(this, &SGarageMenuWidget::OnBackClicked)
 			]
 		];
 }
 
+FReply SGarageMenuWidget::OnCustomiseClicked() const
+{
+	if (!OwningHUD->CustomiseWidget)
+		OwningHUD->CustomiseWidget = SNew(SVehicleCustomisationMenuWidget).OwningHUD(OwningHUD);
+	
+	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->CustomiseWidget.ToSharedRef());
+	
+	return FReply::Handled();
+}
+
 FReply SGarageMenuWidget::OnBackClicked() const
 {
-	if (!OwningHUD.IsValid()) return FReply::Handled();
-
-	if (APlayerController* Controller = OwningHUD->PlayerOwner)
-	{
-		Controller->ConsoleCommand("quit");
-	}
-
+	if (!OwningHUD->MainMenuWidget)
+		OwningHUD->MainMenuWidget = SNew(SMainMenuWidget).OwningHUD(OwningHUD);
+	
+	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->MainMenuWidget.ToSharedRef());
+	
 	return FReply::Handled();
 }
 

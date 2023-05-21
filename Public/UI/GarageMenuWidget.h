@@ -5,6 +5,7 @@
 #include "SlateBasics.h"
 #include "SlateExtras.h"
 
+
 /**
  * 
  */
@@ -20,7 +21,10 @@ public:
 
 	void Construct(const FArguments& InArgs);
 
+	FReply OnCustomiseClicked() const;
+
 	FReply OnBackClicked() const;
+	TSubclassOf<class SCompoundWidget> BackWidget;
 
 	TWeakObjectPtr<class AMenuHUD> OwningHUD;
 	const struct FGlobalStyle* Style;
