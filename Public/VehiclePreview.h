@@ -43,7 +43,7 @@ public:
 	UPROPERTY()
 	USkeletalMeshComponent* UndercarriageMesh;
 
-	// Spoiler requires a position offset
+	// Require a position offset
 	UPROPERTY()
 	USkeletalMeshComponent* SpoilerMesh;
 
