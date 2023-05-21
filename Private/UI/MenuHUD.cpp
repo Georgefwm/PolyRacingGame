@@ -5,7 +5,6 @@
 #include "UI/MainMenuWidget.h"
 #include "Widgets/SWeakWidget.h"
 #include "Engine/Engine.h"
-#include "UI/GarageMenuWidget.h"
 
 void AMenuHUD::BeginPlay()
 {
@@ -18,8 +17,8 @@ void AMenuHUD::ShowMenu()
 {
 	if (GEngine && GEngine->GameViewport)
 	{
-		MenuWidget = SNew(SMainMenuWidget).OwningHUD(this);
-		GEngine->GameViewport->AddViewportWidgetContent(SAssignNew(MenuWidgetContainer, SWeakWidget).PossiblyNullContent(MenuWidget.ToSharedRef()));
+		MainMenuWidget = SNew(SMainMenuWidget).OwningHUD(this);
+		GEngine->GameViewport->AddViewportWidgetContent(SAssignNew(MenuWidgetContainer, SWeakWidget).PossiblyNullContent(MainMenuWidget.ToSharedRef()));
 
 		if (PlayerOwner)
 		{

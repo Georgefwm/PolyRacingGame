@@ -15,8 +15,9 @@ class POLYRACINGGAME_API AMenuHUD : public AHUD
 	GENERATED_BODY()
 	
 public:
-	TSharedPtr<class SMainMenuWidget> MenuWidget;
+	TSharedPtr<class SMainMenuWidget> MainMenuWidget;
 	TSharedPtr<class SGarageMenuWidget> GarageWidget;
+	TSharedPtr<class SVehicleCustomisationMenuWidget> CustomiseWidget;
 
 	
 	TSharedPtr<class SWeakWidget> MenuWidgetContainer;
