@@ -48,57 +48,68 @@ void SVehicleCustomisationMenuWidget::Construct(const FArguments& InArgs)
 			.VAlign(VAlign_Center)
 			.Padding(Style->MenuBoxMargin)
 			[
-				// Option Select starts
+				
 			
 				SNew(SVerticalBox)
 				+ SVerticalBox::Slot()
 				.Padding(Style->MenuButtonSpacingMargin)
 				[
+					// Option Select starts
+				
 					SNew(SOverlay)
 					+ SOverlay::Slot()
 					[
-						SNew(STextBlock)
-						.TextStyle(&Style->OptionSelectTitleStyle)
-						.Text(TestTitleText)
-					]
-					
-					+ SOverlay::Slot()
-					.Padding(Style->OptionSelectTitleMargin)
-					[
-						SNew(SHorizontalBox)
+						SNew(SVerticalBox)
+						+ SVerticalBox::Slot()
+						.Padding(Style->OptionSelectTitleMargin)
+						[
+							SNew(STextBlock)
+							.TextStyle(&Style->OptionSelectTitleStyle)
+							.Text(TestTitleText)
+							.Justification(ETextJustify::Center)
+							.MinDesiredWidth(400.f)
+						]
 						
-						+ SHorizontalBox::Slot()
+						+ SVerticalBox::Slot()
 						[
-							SNew(SButton)
-							.ButtonStyle(&Style->OptionSelectButtonStyle)
-							.TextStyle(&Style->OptionSelectTextStyle)
-							.Text(LeftText)
-							//.OnClicked(this, &SVehicleCustomisationMenuWidget::OnBackClicked)
-						]
+							SNew(SHorizontalBox)
+							+ SHorizontalBox::Slot()
+							.FillWidth(0.25f)
+							[
+								SNew(SButton)
+								.ButtonStyle(&Style->OptionSelectButtonStyle)
+								.TextStyle(&Style->OptionSelectTextStyle)
+								.Text(LeftText)
+								.HAlign(HAlign_Center)
+								.VAlign(VAlign_Center)
+								//.OnClicked(this, &SVehicleCustomisationMenuWidget::OnBackClicked)
+							]
 
-						+ SHorizontalBox::Slot()
-						[
-							SNew(SButton)
-							.ButtonStyle(&Style->OptionSelectButtonStyle)
-							.TextStyle(&Style->OptionSelectTextStyle)
-							.Text(MiddleText)
-							//.OnClicked(this, &SVehicleCustomisationMenuWidget::OnBackClicked)
-						]
+							+ SHorizontalBox::Slot()
+							.HAlign(HAlign_Fill)
+							.FillWidth(1.f)
+							[
+								SNew(STextBlock)
+								.TextStyle(&Style->OptionSelectTextStyle)
+								.Text(MiddleText)
+								.Justification(ETextJustify::Center)
+							]
 
-						+ SHorizontalBox::Slot()
-						[
-							SNew(SButton)
-							.ButtonStyle(&Style->OptionSelectButtonStyle)
-							.TextStyle(&Style->OptionSelectTextStyle)
-							.Text(RightText)
-							//.OnClicked(this, &SVehicleCustomisationMenuWidget::OnBackClicked)
+							+ SHorizontalBox::Slot()
+							.FillWidth(0.25f)
+							[
+								SNew(SButton)
+								.ButtonStyle(&Style->OptionSelectButtonStyle)
+								.TextStyle(&Style->OptionSelectTextStyle)
+								.Text(RightText)
+								.HAlign(HAlign_Center)
+								.VAlign(VAlign_Center)
+								//.OnClicked(this, &SVehicleCustomisationMenuWidget::OnBackClicked)
+							]
 						]
 					]
 				]
-				// Option Select ends
 			]
-			
-
 			
 			// Back Button
 			+ SOverlay::Slot()
