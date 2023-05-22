@@ -127,7 +127,8 @@ void FVehicleCustomiser::SetVehicleType(int DesiredOptionIndex)
 	if (!VehicleTypes)
 		return;
 	
-	int const UsingIndex = DesiredOptionIndex % VehicleTypeNames.Num();
+	int UsingIndex = DesiredOptionIndex % VehicleTypeNames.Num();
+	if (UsingIndex < 0) UsingIndex = VehicleTypeNames.Num()-1;
 	
 	FVehicleConfiguration NewConfig = FVehicleConfiguration();
 	NewConfig.VehicleType = VehicleTypeNames[UsingIndex];
@@ -147,7 +148,8 @@ void FVehicleCustomiser::SetBonnet(int DesiredOptionIndex)
 		return;
 	}
 	
-	int const UsingIndex = DesiredOptionIndex % Bonnet->Meshes.Num();
+	int UsingIndex = DesiredOptionIndex % Bonnet->Meshes.Num();
+	if (UsingIndex < 0) UsingIndex = Bonnet->Meshes.Num()-1;
 	
 	PreviewVehicle->BonnetMesh->SetSkeletalMesh(Bonnet->Meshes[UsingIndex].LoadSynchronous());
 	PreviewVehicle->BonnetMesh->SetRelativeLocation(Bonnet->Offsets[UsingIndex], false);
@@ -164,7 +166,8 @@ void FVehicleCustomiser::SetBumperFront(int DesiredOptionIndex)
 		return;
 	}
 	
-	int const UsingIndex = DesiredOptionIndex % BumperFront->Meshes.Num();
+	int UsingIndex = DesiredOptionIndex % BumperFront->Meshes.Num();
+	if (UsingIndex < 0) UsingIndex = BumperFront->Meshes.Num()-1;
 	
 	PreviewVehicle->BumperFrontMesh->SetSkeletalMesh(BumperFront->Meshes[UsingIndex].LoadSynchronous());
 	PreviewVehicle->BumperFrontMesh->SetRelativeLocation(BumperFront->Offsets[UsingIndex], false);
@@ -181,7 +184,8 @@ void FVehicleCustomiser::SetBumperRear(int DesiredOptionIndex)
 		return;
 	}
 	
-	int const UsingIndex = DesiredOptionIndex % BumperRear->Meshes.Num();
+	int UsingIndex = DesiredOptionIndex % BumperRear->Meshes.Num();
+	if (UsingIndex < 0) UsingIndex = BumperRear->Meshes.Num()-1;
 	
 	PreviewVehicle->BumperRearMesh->SetSkeletalMesh(BumperRear->Meshes[UsingIndex].LoadSynchronous());
 	PreviewVehicle->BumperRearMesh->SetRelativeLocation(BumperRear->Offsets[UsingIndex], false);
@@ -198,7 +202,8 @@ void FVehicleCustomiser::SetSideSkirt(int DesiredOptionIndex)
 		return;
 	}
 	
-	int const UsingIndex = DesiredOptionIndex % SideSkirt->Meshes.Num();
+	int UsingIndex = DesiredOptionIndex % SideSkirt->Meshes.Num();
+	if (UsingIndex < 0) UsingIndex = SideSkirt->Meshes.Num()-1;
 	
 	PreviewVehicle->SideSkirtMesh->SetSkeletalMesh(SideSkirt->Meshes[UsingIndex].LoadSynchronous());
 	PreviewVehicle->SideSkirtMesh->SetRelativeLocation(SideSkirt->Offsets[UsingIndex], false);
@@ -215,7 +220,8 @@ void FVehicleCustomiser::SetRim(int DesiredOptionIndex)
 		return;
 	}
 	
-	int const UsingIndex = DesiredOptionIndex % Rim->Meshes.Num();
+	int UsingIndex = DesiredOptionIndex % Rim->Meshes.Num();
+	if (UsingIndex < 0) UsingIndex = Rim->Meshes.Num()-1;
 	
 	USkeletalMesh* NewRim = Rim->Meshes[UsingIndex].LoadSynchronous();
 	
@@ -236,7 +242,8 @@ void FVehicleCustomiser::SetTyre(int DesiredOptionIndex)
 		return;
 	}
 	
-	int const UsingIndex = DesiredOptionIndex % Tyre->Meshes.Num();
+	int UsingIndex = DesiredOptionIndex % Tyre->Meshes.Num();
+	if (UsingIndex < 0) UsingIndex = Tyre->Meshes.Num()-1;
 	
 	USkeletalMesh* NewTyre = Tyre->Meshes[UsingIndex].LoadSynchronous();
 	
