@@ -138,6 +138,10 @@ void FVehicleCustomiser::SetVehicleType(int DesiredOptionIndex)
 	SetupVehicle(NewConfig);
 }
 
+// TODO: Optimise mesh changing system i.e loading & building
+// Skeletal meshes are being loaded and built synchronously which causes hitch on option change
+// Maybe parallelize bulk loading/unloading of all current/previous vehicle options on vehicle type change while
+// keeping default options loaded
 
 void FVehicleCustomiser::SetBonnet(int DesiredOptionIndex)
 {
@@ -223,7 +227,7 @@ void FVehicleCustomiser::SetRim(int DesiredOptionIndex)
 	int UsingIndex = DesiredOptionIndex % Rim->Meshes.Num();
 	if (UsingIndex < 0) UsingIndex = Rim->Meshes.Num()-1;
 	
-	USkeletalMesh* NewRim = Rim->Meshes[UsingIndex].LoadSynchronous();
+	USkeletalMesh* NewRim = Rim->Meshes[UsingIndex].LoadSynchronous().Bui;
 	
 	PreviewVehicle->FrontLeftRim->SetSkeletalMesh(NewRim);
 	PreviewVehicle->FrontRightRim->SetSkeletalMesh(NewRim);
