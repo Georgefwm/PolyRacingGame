@@ -48,13 +48,13 @@ struct FVehicleType : public FTableRowBase
 	float WheelSizeModifier = 1.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float FrontAxelOffset;
+	float FrontAxelOffset = 1.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float RearAxelOffset;
+	float RearAxelOffset = 1.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float AxelLength;
+	float AxelLength = 1.f;
 };
 
 
