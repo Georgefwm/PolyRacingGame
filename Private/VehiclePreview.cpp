@@ -79,14 +79,18 @@ void AVehiclePreview::Tick(float DeltaTime)
 
 void AVehiclePreview::SetWheelOffsets(FVehicleType* VehicleType)
 {
+	FVector const WheelScalar = FVector(VehicleType->WheelSizeModifier, VehicleType->WheelSizeModifier, VehicleType->WheelSizeModifier);
+	
 	FrontLeftRim->SetRelativeLocation(FVector(VehicleType->FrontAxelOffset, -VehicleType->AxelLength, 40.f));
-	FrontLeftRim->SetRelativeScale3D(FVector(1.f, -1.f, 1.f));
+	FrontLeftRim->SetRelativeScale3D(WheelScalar);
 	
 	FrontRightRim->SetRelativeLocation(FVector(VehicleType->FrontAxelOffset, VehicleType->AxelLength, 40.f));
+	FrontRightRim->SetRelativeScale3D(WheelScalar);
 
 	RearLeftRim->SetRelativeLocation(FVector(VehicleType->RearAxelOffset, -VehicleType->AxelLength, 40.f));
-	RearLeftRim->SetRelativeScale3D(FVector(1.f, -1.f, 1.f));
+	RearLeftRim->SetRelativeScale3D(WheelScalar);
 	
 	RearRightRim->SetRelativeLocation(FVector(VehicleType->RearAxelOffset, VehicleType->AxelLength, 40.f));
+	RearRightRim->SetRelativeScale3D(WheelScalar);
 }
 
