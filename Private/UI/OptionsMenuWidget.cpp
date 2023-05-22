@@ -23,63 +23,55 @@ void SOptionsMenuWidget::Construct(const FArguments& InArgs)
 
 	
 	ChildSlot
+	[
+		SNew(SOverlay)
+		+ SOverlay::Slot()
+		.HAlign(HAlign_Left)
+		.VAlign(VAlign_Center)
+		.Padding(Style->TitleTextMargin)
 		[
-			SNew(SOverlay)
-
-			// Useful when working on the UI layout
-			//
-			// + SOverlay::Slot()
-			// .HAlign(HAlign_Fill)
-			// .VAlign(VAlign_Fill)
-			// [
-			// 	// Black Background
-			// 	SNew(SImage)
-			// 	.ColorAndOpacity(FColor::Black)
-			// ]
-
-			+ SOverlay::Slot()
-			.HAlign(HAlign_Left)
-			.VAlign(VAlign_Center)
-			.Padding(Style->TitleTextMargin)
-			[
-				// TitleText
-				SNew(STextBlock)
-				.TextStyle(&Style->MenuTitleStyle)
-				.Text(TitleText)
-				.LineHeightPercentage(2.f)
-			]
-			
-			+ SOverlay::Slot()
-			.HAlign(HAlign_Left)
-			.VAlign(VAlign_Center)
-			.Padding(Style->MenuBoxMargin)
-			[
-				SNew(SVerticalBox)
-				// Play Button
-				+ SVerticalBox::Slot()
-				.Padding(Style->MenuButtonSpacingMargin)
-				[
-					SNew(SButton)
-					.ButtonStyle(&Style->MenuButtonStyle)
-					.TextStyle(&Style->MenuButtonTextStyle)
-				]
-				
-			]
-
-			
-			// Back Button
-			+ SOverlay::Slot()
-			.HAlign(HAlign_Left)
-			.VAlign(VAlign_Bottom)
-			.Padding(Style->BackButtonMargin)
+			// TitleText
+			SNew(STextBlock)
+			.TextStyle(&Style->MenuTitleStyle)
+			.Text(TitleText)
+			.LineHeightPercentage(2.f)
+		]
+		
+		+ SOverlay::Slot()
+		.HAlign(HAlign_Left)
+		.VAlign(VAlign_Center)
+		.Padding(Style->MenuBoxMargin)
+		[
+			SNew(SVerticalBox)
+			// Play Button
+			+ SVerticalBox::Slot()
+			.Padding(Style->MenuButtonSpacingMargin)
 			[
 				SNew(SButton)
-				.ButtonStyle(&Style->BackButtonStyle)
-				.TextStyle(&Style->BackButtonTextStyle)
+				.ButtonStyle(&Style->MenuButtonStyle)
+				.TextStyle(&Style->MenuButtonTextStyle)
+			]
+			
+		]
+
+		
+		// Back Button
+		+ SOverlay::Slot()
+		.HAlign(HAlign_Left)
+		.VAlign(VAlign_Bottom)
+		.Padding(Style->MenuActionButtonContainerMargin)
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			[
+				SNew(SButton)
+				.ButtonStyle(&Style->MenuActionButtonStyle)
+				.TextStyle(&Style->MenuActionButtonTextStyle)
 				.Text(BackText)
 				.OnClicked(this, &SOptionsMenuWidget::OnBackClicked)
 			]
-		];
+		]
+	];
 }
 
 FReply SOptionsMenuWidget::OnBackClicked() const

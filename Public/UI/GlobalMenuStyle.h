@@ -65,17 +65,18 @@ struct FGlobalStyle : public FSlateWidgetStyle
 	UPROPERTY(EditAnywhere, Category = OptionSelect)
 	FButtonStyle OptionSelectButtonStyle;
 	
-	// Sub-menu back button style
-	UPROPERTY(EditAnywhere, Category = BackButton)
-	FButtonStyle BackButtonStyle;
 
-	// Back button text style
-	UPROPERTY(EditAnywhere, Category = BackButton)
-	FTextBlockStyle BackButtonTextStyle;
+	UPROPERTY(EditAnywhere, Category = MenuActionButton)
+	FButtonStyle MenuActionButtonStyle;
 	
-	// Margin for back button
-	UPROPERTY(EditAnywhere, Category = BackButton)
-	FMargin BackButtonMargin;
+	UPROPERTY(EditAnywhere, Category = MenuActionButton)
+	FTextBlockStyle MenuActionButtonTextStyle;
+	
+	UPROPERTY(EditAnywhere, Category = MenuActionButton)
+	FMargin MenuActionButtonSpacingMargin;
+
+	UPROPERTY(EditAnywhere, Category = MenuActionButton)
+	FMargin MenuActionButtonContainerMargin;
 };
 
 // Provides a widget style container to allow us to edit properties in-editor

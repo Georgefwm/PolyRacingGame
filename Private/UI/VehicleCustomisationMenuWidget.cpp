@@ -95,13 +95,17 @@ void SVehicleCustomisationMenuWidget::Construct(const FArguments& InArgs)
 		+ SOverlay::Slot()
 		.HAlign(HAlign_Left)
 		.VAlign(VAlign_Bottom)
-		.Padding(Style->BackButtonMargin)
+		.Padding(Style->MenuActionButtonContainerMargin)
 		[
-			SNew(SButton)
-			.ButtonStyle(&Style->BackButtonStyle)
-			.TextStyle(&Style->BackButtonTextStyle)
-			.Text(BackText)
-			.OnClicked(this, &SVehicleCustomisationMenuWidget::OnBackClicked)
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			[
+				SNew(SButton)
+				.ButtonStyle(&Style->MenuActionButtonStyle)
+				.TextStyle(&Style->MenuActionButtonTextStyle)
+				.Text(BackText)
+				.OnClicked(this, &SVehicleCustomisationMenuWidget::OnBackClicked)
+			]
 		]
 	];
 }

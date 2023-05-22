@@ -25,66 +25,58 @@ void SGarageMenuWidget::Construct(const FArguments& InArgs)
 
 	
 	ChildSlot
+	[
+		SNew(SOverlay)
+		+ SOverlay::Slot()
+		.HAlign(HAlign_Left)
+		.VAlign(VAlign_Center)
+		.Padding(Style->TitleTextMargin)
 		[
-			SNew(SOverlay)
-
-			// Useful when working on the UI layout
-			//
-			// + SOverlay::Slot()
-			// .HAlign(HAlign_Fill)
-			// .VAlign(VAlign_Fill)
-			// [
-			// 	// Black Background
-			// 	SNew(SImage)
-			// 	.ColorAndOpacity(FColor::Black)
-			// ]
-
-			+ SOverlay::Slot()
-			.HAlign(HAlign_Left)
-			.VAlign(VAlign_Center)
-			.Padding(Style->TitleTextMargin)
-			[
-				// TitleText
-				SNew(STextBlock)
-				.TextStyle(&Style->MenuTitleStyle)
-				.Text(TitleText)
-				.LineHeightPercentage(2.f)
-			]
+			// TitleText
+			SNew(STextBlock)
+			.TextStyle(&Style->MenuTitleStyle)
+			.Text(TitleText)
+			.LineHeightPercentage(2.f)
+		]
 
 
-			// TEMPORARY - for testing child menus
-			// TODO: Implement this menu + vehicle slot functionality
-			+ SOverlay::Slot()
-			.HAlign(HAlign_Left)
-			.VAlign(VAlign_Center)
-			.Padding(Style->MenuBoxMargin)
-			[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
-				.Padding(Style->MenuButtonSpacingMargin)
-				[
-					SNew(SButton)
-					.ButtonStyle(&Style->MenuButtonStyle)
-					.TextStyle(&Style->MenuButtonTextStyle)
-					.Text(CustomiseText)
-					.OnClicked(this, &SGarageMenuWidget::OnCustomiseClicked)
-				]
-			]
-
-			
-			// Back Button
-			+ SOverlay::Slot()
-			.HAlign(HAlign_Left)
-			.VAlign(VAlign_Bottom)
-			.Padding(Style->BackButtonMargin)
+		// TEMPORARY - for testing child menus
+		// TODO: Implement this menu + vehicle slot functionality
+		+ SOverlay::Slot()
+		.HAlign(HAlign_Left)
+		.VAlign(VAlign_Center)
+		.Padding(Style->MenuBoxMargin)
+		[
+			SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
+			.Padding(Style->MenuButtonSpacingMargin)
 			[
 				SNew(SButton)
-				.ButtonStyle(&Style->BackButtonStyle)
-				.TextStyle(&Style->BackButtonTextStyle)
+				.ButtonStyle(&Style->MenuButtonStyle)
+				.TextStyle(&Style->MenuButtonTextStyle)
+				.Text(CustomiseText)
+				.OnClicked(this, &SGarageMenuWidget::OnCustomiseClicked)
+			]
+		]
+
+		
+		// Back Button
+		+ SOverlay::Slot()
+		.HAlign(HAlign_Left)
+		.VAlign(VAlign_Bottom)
+		.Padding(Style->MenuActionButtonContainerMargin)
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			[
+				SNew(SButton)
+				.ButtonStyle(&Style->MenuActionButtonStyle)
+				.TextStyle(&Style->MenuActionButtonTextStyle)
 				.Text(BackText)
 				.OnClicked(this, &SGarageMenuWidget::OnBackClicked)
 			]
-		];
+		]
+	];
 }
 
 FReply SGarageMenuWidget::OnCustomiseClicked() const
