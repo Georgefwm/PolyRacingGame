@@ -36,20 +36,28 @@ public:
 	void SetRim(int DesiredOptionIndex);
 	void SetTyre(int DesiredOptionIndex);
 
+	// Returns current index of specified option slot by name
 	FText GetOptionSlotCurrentIndex(FString OptionSlotName);
 
-	TArray<FVehicleConfiguration> SavedConfigurations[5];
-
+	static FString VehicleIndexToName(int VehicleIndex);
+	static int VehicleNameToIndex(FString &VehicleName);
+	
 	FVehicleType* CurrentVehicleType;
 	UDataTable* CurrentOptions;
 	TMap<FString, int> CurrentIndices;
 	
     AVehiclePreview* PreviewVehicle;
 
+	// Config shown on menu and used by default in races
+	int ActiveConfigurationSlotIndex = 0;
+	
+	TArray<FVehicleConfiguration> SavedConfigurations[5];
+	void LoadConfigurations();
+	void SaveConfiguration(int ConfigurationSlotIndex);
+
 	// Holds base vehicle types
 	UDataTable* VehicleTypes;
 	TArray<FString> VehicleTypeNames;
-
 	TMap<FString, UDataTable*> VehicleOptions;
 
 	static UDataTable* LoadDataTableAsset(FString const &Path);

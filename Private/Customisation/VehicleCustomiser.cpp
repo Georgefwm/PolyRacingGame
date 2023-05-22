@@ -1,7 +1,6 @@
 ﻿#include "Customisation/VehicleCustomiser.h"
 
 #include "DataTables.h"
-#include "HairStrandsInterface.h"
 #include "Engine/DataTable.h"
 
 
@@ -75,19 +74,9 @@ void FVehicleCustomiser::SetupVehicle(FVehicleConfiguration DesiredConfig)
 
 	// Set what type of car is being used and available customisation options
 	CurrentVehicleType = VehicleTypes->FindRow<FVehicleType>(FName(DesiredConfig.VehicleType), "");
+	CurrentIndices.Add(TEXT("VehicleType"), VehicleNameToIndex(DesiredConfig.VehicleType));
+	
 	CurrentOptions = VehicleOptions.FindRef(CurrentVehicleType->VehicleName);
-
-	// TODO: try to find better solution
-	// Iterates through loop every time this function is called even though it only needs to do it when the "VehicleType"
-	// value in TMap is not set by SetVehicleType()
-	for (int VehicleTypeIndex = 0; VehicleTypeIndex < VehicleTypeNames.Num(); VehicleTypeIndex++)
-	{
-		if(DesiredConfig.VehicleType == VehicleTypeNames[VehicleTypeIndex])
-		{
-			CurrentIndices.Add(FString("VehicleType"), VehicleTypeIndex);
-			break;
-		}
-	}
 	
 	if (!CurrentOptions)
 	{
@@ -227,7 +216,7 @@ void FVehicleCustomiser::SetRim(int DesiredOptionIndex)
 	int UsingIndex = DesiredOptionIndex % Rim->Meshes.Num();
 	if (UsingIndex < 0) UsingIndex = Rim->Meshes.Num()-1;
 	
-	USkeletalMesh* NewRim = Rim->Meshes[UsingIndex].LoadSynchronous().Bui;
+	USkeletalMesh* NewRim = Rim->Meshes[UsingIndex].LoadSynchronous();
 	
 	PreviewVehicle->FrontLeftRim->SetSkeletalMesh(NewRim);
 	PreviewVehicle->FrontRightRim->SetSkeletalMesh(NewRim);
@@ -268,6 +257,55 @@ FText FVehicleCustomiser::GetOptionSlotCurrentIndex(FString OptionSlotName)
 	IndexText.AppendInt(*CurrentIndices.Find(OptionSlotName));
 	
 	return FText::FromString(IndexText);
+}
+
+FString FVehicleCustomiser::VehicleIndexToName(int VehicleIndex)
+{
+	if (VehicleIndex == 0)	return TEXT("Exotic");
+	if (VehicleIndex == 1)	return TEXT("Sedan");
+	if (VehicleIndex == 2)	return TEXT("Hatch");
+	if (VehicleIndex == 3)	return TEXT("Muscle");
+	if (VehicleIndex == 4)	return TEXT("Sport");
+	
+	UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Unrecognised vehicle index!"));
+	return TEXT("");
+}
+
+int FVehicleCustomiser::VehicleNameToIndex(FString &VehicleName)
+{
+	if (VehicleName == TEXT("Exotic"))	return 0;
+	if (VehicleName == TEXT("Sedan"))	return 1;
+	if (VehicleName == TEXT("Hatch"))	return 2;
+	if (VehicleName == TEXT("Muscle"))	return 3;
+	if (VehicleName == TEXT("Sport"))	return 4;
+
+	UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Unrecognised vehicle name!"));
+	return 0;
+}
+
+void FVehicleCustomiser::LoadConfigurations()
+{
+}
+
+void FVehicleCustomiser::SaveConfiguration(int ConfigurationSlotIndex)
+{
+	if (ConfigurationSlotIndex < 0 || ConfigurationSlotIndex >= 5)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Save - Invalid configuration slot index"));
+		return;
+	}
+	
+	FVehicleConfiguration ConfigurationToSave = FVehicleConfiguration();
+	
+	ConfigurationToSave.VehicleType = VehicleIndexToName(*CurrentIndices.Find("VehicleType"));
+	ConfigurationToSave.Bonnet		= *CurrentIndices.Find("Bonnet");
+	ConfigurationToSave.BumperFront = *CurrentIndices.Find("BumperFront");
+	ConfigurationToSave.BumperRear	= *CurrentIndices.Find("BumperRear");
+	ConfigurationToSave.SideSkirt	= *CurrentIndices.Find("SideSkirt");
+	ConfigurationToSave.Rim			= *CurrentIndices.Find("Rim");
+	ConfigurationToSave.Tyre		= *CurrentIndices.Find("Tyre");
+
+	SavedConfigurations->Insert(ConfigurationToSave, ConfigurationSlotIndex);
 }
 
 UDataTable* FVehicleCustomiser::LoadDataTableAsset(FString const &Path)
