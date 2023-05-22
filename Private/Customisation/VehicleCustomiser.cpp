@@ -75,6 +75,11 @@ void FVehicleCustomiser::SetupVehicle(FVehicleConfiguration DesiredConfig)
 
 	// Set what type of car is being used and available customisation options
 	CurrentVehicleType = VehicleTypes->FindRow<FVehicleType>(FName(DesiredConfig.VehicleType), "");
+	CurrentOptions = VehicleOptions.FindRef(CurrentVehicleType->VehicleName);
+
+	// TODO: try to find better solution
+	// Iterates through loop every time this function is called even though it only needs to do it when the "VehicleType"
+	// value in TMap is not set by SetVehicleType()
 	for (int VehicleTypeIndex = 0; VehicleTypeIndex < VehicleTypeNames.Num(); VehicleTypeIndex++)
 	{
 		if(DesiredConfig.VehicleType == VehicleTypeNames[VehicleTypeIndex])
@@ -84,8 +89,6 @@ void FVehicleCustomiser::SetupVehicle(FVehicleConfiguration DesiredConfig)
 		}
 	}
 	
-	CurrentOptions = VehicleOptions.FindRef(CurrentVehicleType->VehicleName);
-	
 	if (!CurrentOptions)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No vehicle Options found!"));
@@ -93,9 +96,7 @@ void FVehicleCustomiser::SetupVehicle(FVehicleConfiguration DesiredConfig)
 	}
 
 	// Mesh and offset setting
-
 	PreviewVehicle->BodyMesh->SetSkeletalMesh(CurrentVehicleType->Mesh.LoadSynchronous());
-	
 	PreviewVehicle->SetWheelOffsets(CurrentVehicleType);
 	
 	SetBonnet(		DesiredConfig.Bonnet		);
@@ -110,12 +111,7 @@ void FVehicleCustomiser::SetupVehicle(FVehicleConfiguration DesiredConfig)
 // See SOptionSelectionWidget
 void FVehicleCustomiser::SetComponentFromSlotName(FString &OptionSlotName, int IndexDelta)
 {
-	if (OptionSlotName == TEXT("VehicleType"))
-	{
-		SetVehicleType(	IndexDelta + *CurrentIndices.Find(OptionSlotName));
-		return;
-	}
-	
+	if (OptionSlotName == TEXT("VehicleType"))	{ SetVehicleType(	IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
 	if (OptionSlotName == TEXT("Bonnet"))		{ SetBonnet(		IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
 	if (OptionSlotName == TEXT("BumperFront"))	{ SetBumperFront(	IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
 	if (OptionSlotName == TEXT("BumperRear"))	{ SetBumperRear(	IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
@@ -129,19 +125,15 @@ void FVehicleCustomiser::SetComponentFromSlotName(FString &OptionSlotName, int I
 void FVehicleCustomiser::SetVehicleType(int DesiredOptionIndex)
 {
 	if (!VehicleTypes)
-	{
-		UE_LOG(LogTemp, Error, TEXT("VehicleCustomiser: VehicleType not set"));
 		return;
-	}
-	;
 	
 	int const UsingIndex = DesiredOptionIndex % VehicleTypeNames.Num();
-
-
+	
 	FVehicleConfiguration NewConfig = FVehicleConfiguration();
 	NewConfig.VehicleType = VehicleTypeNames[UsingIndex];
 
 	CurrentIndices.Add(FString("VehicleType"), UsingIndex);
+	
 	SetupVehicle(NewConfig);
 }
 
