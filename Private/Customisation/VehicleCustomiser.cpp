@@ -26,17 +26,38 @@ TSharedRef<FVehicleCustomiser> FVehicleCustomiser::Create()
 	// Import vehicle customisation data table
 	FString const VehicleTypesPath = TEXT("/Script/Engine.DataTable'/Game/VehicleCustomisation/VehicleTypes.VehicleTypes'");
 	NewCustomiser->VehicleTypes = LoadDataTableAsset(VehicleTypesPath);
+	if (!NewCustomiser->VehicleTypes) UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No vehicle type data table found!"));
 
-	if (!NewCustomiser->VehicleTypes)
-		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No vehicle type data table found!"));
-
+	for (FName VehicleName : NewCustomiser->VehicleTypes->GetRowNames())
+	{
+		NewCustomiser->VehicleTypeNames.Add(VehicleName.ToString());
+	}
+	
 	// Import exotic options data table
 	FString const ExoticOptionsPath = TEXT("/Script/Engine.DataTable'/Game/VehicleCustomisation/ExoticOptions.ExoticOptions'");
-	UDataTable* Test = LoadDataTableAsset(ExoticOptionsPath);
-	NewCustomiser->VehicleOptions.Emplace(FString("Exotic"), Test);
+	UDataTable* ExoticOptionsDataTable = LoadDataTableAsset(ExoticOptionsPath);
+	NewCustomiser->VehicleOptions.Emplace(FString("Exotic"), ExoticOptionsDataTable);
+	if (!ExoticOptionsDataTable) UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Invalid DataTable Path: %s"), *ExoticOptionsPath);
 
-	if (!Test)
-		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No exotic options data table found!"));
+	FString const SedanOptionsPath = TEXT("/Script/Engine.DataTable'/Game/VehicleCustomisation/SedanOptions.SedanOptions'");
+	UDataTable* SedanOptionsDataTable = LoadDataTableAsset(SedanOptionsPath);
+	NewCustomiser->VehicleOptions.Emplace(FString("Sedan"), SedanOptionsDataTable);
+	if (!SedanOptionsDataTable) UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Invalid DataTable Path: %s"), *SedanOptionsPath);
+
+	FString const HatchOptionsPath = TEXT("/Script/Engine.DataTable'/Game/VehicleCustomisation/HatchOptions.HatchOptions'");
+	UDataTable* HatchOptionsDataTable = LoadDataTableAsset(HatchOptionsPath);
+	NewCustomiser->VehicleOptions.Emplace(FString("Hatch"), HatchOptionsDataTable);
+	if (!HatchOptionsDataTable) UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Invalid DataTable Path: %s"), *HatchOptionsPath);
+
+	FString const MuscleOptionsPath = TEXT("/Script/Engine.DataTable'/Game/VehicleCustomisation/MuscleOptions.MuscleOptions'");
+	UDataTable* MuscleOptionsDataTable = LoadDataTableAsset(MuscleOptionsPath);
+	NewCustomiser->VehicleOptions.Emplace(FString("Muscle"), MuscleOptionsDataTable);
+	if (!MuscleOptionsDataTable) UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Invalid DataTable Path: %s"), *MuscleOptionsPath);
+
+	FString const SportOptionsPath = TEXT("/Script/Engine.DataTable'/Game/VehicleCustomisation/SportOptions.SportOptions'");
+	UDataTable* SportOptionsDataTable = LoadDataTableAsset(SportOptionsPath);
+	NewCustomiser->VehicleOptions.Emplace(FString("Sport"), SportOptionsDataTable);
+	if (!SportOptionsDataTable) UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Invalid DataTable Path: %s"), *SportOptionsPath);
 	
 	return NewCustomiser;
 }
@@ -54,6 +75,15 @@ void FVehicleCustomiser::SetupVehicle(FVehicleConfiguration DesiredConfig)
 
 	// Set what type of car is being used and available customisation options
 	CurrentVehicleType = VehicleTypes->FindRow<FVehicleType>(FName(DesiredConfig.VehicleType), "");
+	for (int VehicleTypeIndex = 0; VehicleTypeIndex < VehicleTypeNames.Num(); VehicleTypeIndex++)
+	{
+		if(DesiredConfig.VehicleType == VehicleTypeNames[VehicleTypeIndex])
+		{
+			CurrentIndices.Add(FString("VehicleType"), VehicleTypeIndex);
+			break;
+		}
+	}
+	
 	CurrentOptions = VehicleOptions.FindRef(CurrentVehicleType->VehicleName);
 	
 	if (!CurrentOptions)
@@ -80,15 +110,41 @@ void FVehicleCustomiser::SetupVehicle(FVehicleConfiguration DesiredConfig)
 // See SOptionSelectionWidget
 void FVehicleCustomiser::SetComponentFromSlotName(FString &OptionSlotName, int IndexDelta)
 {
-	if (OptionSlotName == TEXT("Bonnet"))		return SetBonnet(		IndexDelta + *CurrentIndices.Find(OptionSlotName));
-	if (OptionSlotName == TEXT("BumperFront"))	return SetBumperFront(	IndexDelta + *CurrentIndices.Find(OptionSlotName));
-	if (OptionSlotName == TEXT("BumperRear"))	return SetBumperRear(	IndexDelta + *CurrentIndices.Find(OptionSlotName));
-	if (OptionSlotName == TEXT("SideSkirt"))	return SetSideSkirt(	IndexDelta + *CurrentIndices.Find(OptionSlotName));
-	if (OptionSlotName == TEXT("Rim"))			return SetRim(			IndexDelta + *CurrentIndices.Find(OptionSlotName));
-	if (OptionSlotName == TEXT("Tyre"))			return SetTyre(			IndexDelta + *CurrentIndices.Find(OptionSlotName));
+	if (OptionSlotName == TEXT("VehicleType"))
+	{
+		SetVehicleType(	IndexDelta + *CurrentIndices.Find(OptionSlotName));
+		return;
+	}
+	
+	if (OptionSlotName == TEXT("Bonnet"))		{ SetBonnet(		IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
+	if (OptionSlotName == TEXT("BumperFront"))	{ SetBumperFront(	IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
+	if (OptionSlotName == TEXT("BumperRear"))	{ SetBumperRear(	IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
+	if (OptionSlotName == TEXT("SideSkirt"))	{ SetSideSkirt(		IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
+	if (OptionSlotName == TEXT("Rim"))			{ SetRim(			IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
+	if (OptionSlotName == TEXT("Tyre"))			{ SetTyre(			IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
 	
 	UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: OptionSlot name not found!"));
 }
+
+void FVehicleCustomiser::SetVehicleType(int DesiredOptionIndex)
+{
+	if (!VehicleTypes)
+	{
+		UE_LOG(LogTemp, Error, TEXT("VehicleCustomiser: VehicleType not set"));
+		return;
+	}
+	;
+	
+	int const UsingIndex = DesiredOptionIndex % VehicleTypeNames.Num();
+
+
+	FVehicleConfiguration NewConfig = FVehicleConfiguration();
+	NewConfig.VehicleType = VehicleTypeNames[UsingIndex];
+
+	CurrentIndices.Add(FString("VehicleType"), UsingIndex);
+	SetupVehicle(NewConfig);
+}
+
 
 void FVehicleCustomiser::SetBonnet(int DesiredOptionIndex)
 {
@@ -202,11 +258,13 @@ void FVehicleCustomiser::SetTyre(int DesiredOptionIndex)
 
 FText FVehicleCustomiser::GetOptionSlotCurrentIndex(FString OptionSlotName)
 {
-	// TODO: "Style X" unless Vehicle type
+	if (OptionSlotName == "VehicleType")
+		return FText::FromString(CurrentVehicleType->VehicleName);
 	
-	FString ret = "Style ";
-	ret.AppendInt(*CurrentIndices.Find(OptionSlotName));
-	return FText::FromString(ret);
+	FString IndexText = "Style ";
+	IndexText.AppendInt(*CurrentIndices.Find(OptionSlotName));
+	
+	return FText::FromString(IndexText);
 }
 
 UDataTable* FVehicleCustomiser::LoadDataTableAsset(FString const &Path)

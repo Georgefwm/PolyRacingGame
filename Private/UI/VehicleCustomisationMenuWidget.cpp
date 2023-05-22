@@ -26,7 +26,6 @@ void SVehicleCustomisationMenuWidget::Construct(const FArguments& InArgs)
 
 	const FText TestTitleText	= LOCTEXT("TestTitleText", "PartName");
 	const FText LeftText		= LOCTEXT("LeftText", "<");
-	const FText MiddleText		= LOCTEXT("MiddleText", "TEST");
 	const FText RightText		= LOCTEXT("RightText", ">");
 
 	
@@ -51,6 +50,14 @@ void SVehicleCustomisationMenuWidget::Construct(const FArguments& InArgs)
 		.Padding(Style->MenuBoxMargin)
 		[
 			SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
+			.Padding(Style->MenuButtonSpacingMargin)
+			[
+				SNew(SOptionSelectionWidget)
+				.Customiser(VehicleCustomiser)
+				.OptionSlotName(TEXT("VehicleType"))				
+			]
+			
 			+ SVerticalBox::Slot()
 			.Padding(Style->MenuButtonSpacingMargin)
 			[

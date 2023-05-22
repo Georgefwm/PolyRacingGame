@@ -26,8 +26,9 @@ public:
 	void SetupVehicle();
 	void SetupVehicle(FVehicleConfiguration);
 	
-	void SetComponentFromSlotName(FString &OptionSlotName, int DesiredIndex);
+	void SetComponentFromSlotName(FString &OptionSlotName, int IndexDelta);
 
+	void SetVehicleType(int DesiredOptionIndex);
 	void SetBonnet(int DesiredOptionIndex);
 	void SetBumperFront(int DesiredOptionIndex);
 	void SetBumperRear(int DesiredOptionIndex);
@@ -47,6 +48,7 @@ public:
 
 	// Holds base vehicle types
 	UDataTable* VehicleTypes;
+	TArray<FString> VehicleTypeNames;
 
 	TMap<FString, UDataTable*> VehicleOptions;
 
