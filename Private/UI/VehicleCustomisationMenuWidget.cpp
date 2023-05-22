@@ -89,6 +89,14 @@ void SVehicleCustomisationMenuWidget::Construct(const FArguments& InArgs)
 				.Customiser(VehicleCustomiser)
 				.OptionSlotName(TEXT("SideSkirt"))				
 			]
+
+			+ SVerticalBox::Slot()
+			.Padding(Style->MenuButtonSpacingMargin)
+			[
+				SNew(SOptionSelectionWidget)
+				.Customiser(VehicleCustomiser)
+				.OptionSlotName(TEXT("Rim"))				
+			]
 		]
 		
 		// Back Button
