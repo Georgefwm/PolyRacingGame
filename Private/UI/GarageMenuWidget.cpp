@@ -3,6 +3,7 @@
 
 #include "UI/GarageMenuWidget.h"
 
+#include "Components/SizeBox.h"
 #include "UI/GlobalMenuStyle.h"
 #include "UI/MainMenuWidget.h"
 #include "UI/MenuHUD.h"
@@ -116,36 +117,55 @@ void SGarageMenuWidget::Construct(const FArguments& InArgs)
 		.VAlign(VAlign_Bottom)
 		.Padding(Style->MenuActionButtonContainerMargin)
 		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			.Padding(Style->MenuActionButtonSpacingMargin)
+			SNew(SBox)
+			.WidthOverride(1000.f)
 			[
-				SNew(SButton)
-				.ButtonStyle(&Style->MenuActionButtonStyle)
-				.TextStyle(&Style->MenuActionButtonTextStyle)
-				.Text(BackText)
-				.OnClicked(this, &SGarageMenuWidget::OnBackClicked)
-			]
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
+				.Padding(Style->MenuActionButtonSpacingMargin)
+				.AutoWidth()
+				[
+					SNew(SBox)
+					.HAlign(HAlign_Left)
+					[
+						SNew(SButton)
+						.ButtonStyle(&Style->MenuActionButtonStyle)
+						.TextStyle(&Style->MenuActionButtonTextStyle)
+						.Text(BackText)
+						.OnClicked(this, &SGarageMenuWidget::OnBackClicked)
+					]
+				]
 
-			+ SHorizontalBox::Slot()
-			.Padding(Style->MenuActionButtonSpacingMargin)
-			[
-				SNew(SButton)
-				.ButtonStyle(&Style->MenuActionButtonStyle)
-				.TextStyle(&Style->MenuActionButtonTextStyle)
-				.Text(EditText)
-				.OnClicked(this, &SGarageMenuWidget::OnEditClicked)
-			]
-			
-			+ SHorizontalBox::Slot()
-			.Padding(Style->MenuActionButtonSpacingMargin)
-			[
-				SNew(SButton)
-				.ButtonStyle(&Style->MenuActionButtonStyle)
-				.TextStyle(&Style->MenuActionButtonTextStyle)
-				.Text(SetActiveText)
-				.OnClicked(this, &SGarageMenuWidget::OnSetActiveClicked)
-			]
+				+ SHorizontalBox::Slot()
+				.Padding(Style->MenuActionButtonSpacingMargin)
+				.AutoWidth()
+				[
+					SNew(SBox)
+					.HAlign(HAlign_Left)
+					[
+						SNew(SButton)
+						.ButtonStyle(&Style->MenuActionButtonStyle)
+						.TextStyle(&Style->MenuActionButtonTextStyle)
+						.Text(EditText)
+						.OnClicked(this, &SGarageMenuWidget::OnEditClicked)
+					]
+				]
+	
+				+ SHorizontalBox::Slot()
+				.Padding(Style->MenuActionButtonSpacingMargin)
+				.AutoWidth()
+				[
+					SNew(SBox)
+					.HAlign(HAlign_Left)
+					[
+						SNew(SButton)
+						.ButtonStyle(&Style->MenuActionButtonStyle)
+						.TextStyle(&Style->MenuActionButtonTextStyle)
+						.Text(SetActiveText)
+						.OnClicked(this, &SGarageMenuWidget::OnSetActiveClicked)
+					]
+				]
+			]			
 		]
 	];
 }

@@ -106,25 +106,39 @@ void SVehicleCustomisationMenuWidget::Construct(const FArguments& InArgs)
 		.VAlign(VAlign_Bottom)
 		.Padding(Style->MenuActionButtonContainerMargin)
 		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			.Padding(Style->MenuActionButtonSpacingMargin)
+			SNew(SBox)
+			.WidthOverride(1000.f)
 			[
-				SNew(SButton)
-				.ButtonStyle(&Style->MenuActionButtonStyle)
-				.TextStyle(&Style->MenuActionButtonTextStyle)
-				.Text(BackText)
-				.OnClicked(this, &SVehicleCustomisationMenuWidget::OnBackClicked)
-			]
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
+				.Padding(Style->MenuActionButtonSpacingMargin)
+				.AutoWidth()
+				[
+					SNew(SBox)
+					.HAlign(HAlign_Left)
+					[
+						SNew(SButton)
+						.ButtonStyle(&Style->MenuActionButtonStyle)
+						.TextStyle(&Style->MenuActionButtonTextStyle)
+						.Text(BackText)
+						.OnClicked(this, &SVehicleCustomisationMenuWidget::OnBackClicked)
+					]
+				]
 
-			+ SHorizontalBox::Slot()
-			.Padding(Style->MenuActionButtonSpacingMargin)
-			[
-				SNew(SButton)
-				.ButtonStyle(&Style->MenuActionButtonStyle)
-				.TextStyle(&Style->MenuActionButtonTextStyle)
-				.Text(SaveText)
-				.OnClicked(this, &SVehicleCustomisationMenuWidget::OnSaveClicked)
+				+ SHorizontalBox::Slot()
+				.Padding(Style->MenuActionButtonSpacingMargin)
+				.AutoWidth()
+				[
+					SNew(SBox)
+					.HAlign(HAlign_Left)
+					[
+						SNew(SButton)
+						.ButtonStyle(&Style->MenuActionButtonStyle)
+						.TextStyle(&Style->MenuActionButtonTextStyle)
+						.Text(SaveText)
+						.OnClicked(this, &SVehicleCustomisationMenuWidget::OnSaveClicked)
+					]
+				]
 			]
 		]
 	];
