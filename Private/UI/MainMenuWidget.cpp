@@ -18,28 +18,17 @@ void SMainMenuWidget::Construct(const FArguments& InArgs)
 	Style = &FUiStyles::Get().GetWidgetStyle<FGlobalStyle>("PolyRacingMenuStyle");
 
 	/** Text */
-	const FText TitleText		= LOCTEXT("Game title", "Poly Racing");
-	const FText PlayText		= LOCTEXT("PlayButtonText", "Play");
-	const FText GarageText		= LOCTEXT("GarageButtonText", "Garage");
-	const FText SettingsText	= LOCTEXT("SettingsButtonText", "Settings");
-	const FText QuitText		= LOCTEXT("QuitButtonText", "Quit");
+	const FText TitleText			= LOCTEXT("GameTitle", "Poly Racing");
+	const FText SinglePlayerText	= LOCTEXT("SinglePlayerText", "Single Player");
+	const FText MultiPlayerText		= LOCTEXT("MultiPlayerText", "Multiplayer");
+	const FText GarageText			= LOCTEXT("GarageButtonText", "Garage");
+	const FText SettingsText		= LOCTEXT("SettingsButtonText", "Settings");
+	const FText QuitText			= LOCTEXT("QuitButtonText", "Quit");
 
 	
 	ChildSlot
 		[
 			SNew(SOverlay)
-
-			// Useful when working on the UI layout
-			//
-			// + SOverlay::Slot()
-			// .HAlign(HAlign_Fill)
-			// .VAlign(VAlign_Fill)
-			// [
-			// 	// Black Background
-			// 	SNew(SImage)
-			// 	.ColorAndOpacity(FColor::Black)
-			// ]
-
 			+ SOverlay::Slot()
 			.HAlign(HAlign_Left)
 			.VAlign(VAlign_Center)
@@ -58,18 +47,26 @@ void SMainMenuWidget::Construct(const FArguments& InArgs)
 			.Padding(Style->MenuBoxMargin)
 			[
 				SNew(SVerticalBox)
-				// Play Button
 				+ SVerticalBox::Slot()
 				.Padding(Style->MenuButtonSpacingMargin)
 				[
 					SNew(SButton)
 					.ButtonStyle(&Style->MenuButtonStyle)
 					.TextStyle(&Style->MenuButtonTextStyle)
-					.Text(PlayText)
-					.OnClicked(this, &SMainMenuWidget::OnPlayClicked)
+					.Text(SinglePlayerText)
+					.OnClicked(this, &SMainMenuWidget::OnSinglePlayerClicked)
 				]
 
-				// Play Button
+				+ SVerticalBox::Slot()
+				.Padding(Style->MenuButtonSpacingMargin)
+				[
+					SNew(SButton)
+					.ButtonStyle(&Style->MenuButtonStyle)
+					.TextStyle(&Style->MenuButtonTextStyle)
+					.Text(MultiPlayerText)
+					.OnClicked(this, &SMainMenuWidget::OnMultiPlayerClicked)
+				]
+				
 				+ SVerticalBox::Slot()
 				.Padding(Style->MenuButtonSpacingMargin)
 				[
@@ -105,8 +102,15 @@ void SMainMenuWidget::Construct(const FArguments& InArgs)
 		];
 }
 
-FReply SMainMenuWidget::OnPlayClicked() const
+FReply SMainMenuWidget::OnSinglePlayerClicked() const
 {
+	return FReply::Handled();
+}
+
+FReply SMainMenuWidget::OnMultiPlayerClicked() const
+{
+	UE_LOG(LogTemp, Warning, TEXT("Multiplayer not implemented... yet"));
+	
 	return FReply::Handled();
 }
 
