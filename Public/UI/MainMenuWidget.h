@@ -20,7 +20,8 @@ public:
 
 	void Construct(const FArguments& InArgs);
 
-	FReply OnPlayClicked() const;
+	FReply OnSinglePlayerClicked() const;
+	FReply OnMultiPlayerClicked() const;
 	FReply OnGarageClicked() const;
 	FReply OnSettingsClicked() const;
 	FReply OnQuitClicked() const;
