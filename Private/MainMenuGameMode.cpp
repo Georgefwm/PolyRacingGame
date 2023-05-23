@@ -3,12 +3,9 @@
 
 #include "MainMenuGameMode.h"
 
-#include "DataTables.h"
-#include "EngineUtils.h"
 #include "UI/MenuHUD.h"
 #include "MenuPlayerController.h"
 #include "Customisation/VehicleCustomiser.h"
-#include "Engine/DataTable.h"
 
 AMainMenuGameMode::AMainMenuGameMode()
 {
