@@ -9,6 +9,8 @@
 
 AMainMenuGameMode::AMainMenuGameMode()
 {
+	PrimaryActorTick.bCanEverTick = false;
+	
 	PlayerControllerClass = AMenuPlayerController::StaticClass();
 	HUDClass = AMenuHUD::StaticClass();
 }
