@@ -63,6 +63,7 @@ void SOptionsMenuWidget::Construct(const FArguments& InArgs)
 		[
 			SNew(SHorizontalBox)
 			+ SHorizontalBox::Slot()
+			.Padding(Style->MenuActionButtonSpacingMargin)
 			[
 				SNew(SButton)
 				.ButtonStyle(&Style->MenuActionButtonStyle)
