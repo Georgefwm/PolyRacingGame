@@ -58,8 +58,6 @@ void SSinglePlayerMenuWidget::Construct(const FArguments& InArgs)
 				.Text(Slot1Text)
 				.OnClicked(this, &SSinglePlayerMenuWidget::SetSelectedSlot, 0)
 			]
-
-			
 		]
 
 		
@@ -101,10 +99,10 @@ FReply SSinglePlayerMenuWidget::SetSelectedSlot(int DesiredSlot)
 
 FReply SSinglePlayerMenuWidget::OnEditClicked() const
 {
-	if (!OwningHUD->CustomiseWidget)
-		OwningHUD->CustomiseWidget = SNew(SVehicleCustomisationMenuWidget).OwningHUD(OwningHUD);
+	if (!OwningHUD->MainMenuWidget)
+		OwningHUD->MainMenuWidget = SNew(SMainMenuWidget).OwningHUD(OwningHUD);
 	
-	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->CustomiseWidget.ToSharedRef());
+	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->MainMenuWidget.ToSharedRef());
 	
 	return FReply::Handled();
 }
