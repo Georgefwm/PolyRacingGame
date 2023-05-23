@@ -4,6 +4,7 @@
 
 #include "SlateBasics.h"
 #include "SlateExtras.h"
+#include "Customisation/VehicleCustomiser.h"
 
 
 /**
@@ -21,10 +22,11 @@ public:
 
 	void Construct(const FArguments& InArgs);
 
-	FReply OnCustomiseClicked() const;
+	TSharedPtr<FVehicleCustomiser> VehicleCustomiser;
 
+	FReply SetSelectedSlot(int DesiredSlot);
+	FReply OnEditClicked() const;
 	FReply OnBackClicked() const;
-	TSubclassOf<class SCompoundWidget> BackWidget;
 
 	TWeakObjectPtr<class AMenuHUD> OwningHUD;
 	const struct FGlobalStyle* Style;

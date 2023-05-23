@@ -23,6 +23,7 @@ void SVehicleCustomisationMenuWidget::Construct(const FArguments& InArgs)
 	/** Text */
 	const FText TitleText	= LOCTEXT("menu title", "Customiser");
 	const FText BackText	= LOCTEXT("Back text", "Back");
+	const FText SaveText	= LOCTEXT("save text", "Save");
 
 	const FText TestTitleText	= LOCTEXT("TestTitleText", "PartName");
 	const FText LeftText		= LOCTEXT("LeftText", "<");
@@ -107,6 +108,7 @@ void SVehicleCustomisationMenuWidget::Construct(const FArguments& InArgs)
 		[
 			SNew(SHorizontalBox)
 			+ SHorizontalBox::Slot()
+			.Padding(Style->MenuActionButtonSpacingMargin)
 			[
 				SNew(SButton)
 				.ButtonStyle(&Style->MenuActionButtonStyle)
@@ -114,11 +116,27 @@ void SVehicleCustomisationMenuWidget::Construct(const FArguments& InArgs)
 				.Text(BackText)
 				.OnClicked(this, &SVehicleCustomisationMenuWidget::OnBackClicked)
 			]
+
+			+ SHorizontalBox::Slot()
+			.Padding(Style->MenuActionButtonSpacingMargin)
+			[
+				SNew(SButton)
+				.ButtonStyle(&Style->MenuActionButtonStyle)
+				.TextStyle(&Style->MenuActionButtonTextStyle)
+				.Text(SaveText)
+				.OnClicked(this, &SVehicleCustomisationMenuWidget::OnSaveClicked)
+			]
 		]
 	];
 }
 
-FReply SVehicleCustomisationMenuWidget::OnBackClicked() const
+FReply SVehicleCustomisationMenuWidget::OnSaveClicked()
+{
+	VehicleCustomiser->SaveConfiguration(VehicleCustomiser->CurrentConfigurationIndex);
+	return FReply::Handled();
+}
+
+FReply SVehicleCustomisationMenuWidget::OnBackClicked()
 {
 	if (!OwningHUD->GarageWidget)
 		OwningHUD->GarageWidget = SNew(SGarageMenuWidget).OwningHUD(OwningHUD);

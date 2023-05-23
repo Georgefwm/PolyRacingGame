@@ -22,8 +22,8 @@ public:
 
 	void Construct(const FArguments& InArgs);
 
-	FReply OnBackClicked() const;
-	TSubclassOf<class SCompoundWidget> BackWidget;
+	FReply OnBackClicked();
+	FReply OnSaveClicked();
 
 	TWeakObjectPtr<class AMenuHUD> OwningHUD;
 	const struct FGlobalStyle* Style;
