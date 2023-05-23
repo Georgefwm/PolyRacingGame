@@ -31,6 +31,7 @@ void SGarageMenuWidget::Construct(const FArguments& InArgs)
 	
 	const FText BackText		= LOCTEXT("Back text", "Back");
 	const FText EditText		= LOCTEXT("Edit text", "Edit");
+	const FText SetActiveText	= LOCTEXT("Set Active text", "Set Active");
 
 	
 	ChildSlot
@@ -135,6 +136,16 @@ void SGarageMenuWidget::Construct(const FArguments& InArgs)
 				.Text(EditText)
 				.OnClicked(this, &SGarageMenuWidget::OnEditClicked)
 			]
+			
+			+ SHorizontalBox::Slot()
+			.Padding(Style->MenuActionButtonSpacingMargin)
+			[
+				SNew(SButton)
+				.ButtonStyle(&Style->MenuActionButtonStyle)
+				.TextStyle(&Style->MenuActionButtonTextStyle)
+				.Text(SetActiveText)
+				.OnClicked(this, &SGarageMenuWidget::OnSetActiveClicked)
+			]
 		]
 	];
 }
@@ -156,10 +167,20 @@ FReply SGarageMenuWidget::OnEditClicked() const
 	return FReply::Handled();
 }
 
+FReply SGarageMenuWidget::OnSetActiveClicked() const
+{
+	VehicleCustomiser->ActiveConfigurationSlotIndex = VehicleCustomiser->CurrentConfigurationIndex;
+
+	return FReply::Handled();
+}
+
 FReply SGarageMenuWidget::OnBackClicked() const
 {
 	if (!OwningHUD->MainMenuWidget)
 		OwningHUD->MainMenuWidget = SNew(SMainMenuWidget).OwningHUD(OwningHUD);
+
+	// Change the preview to the active selection on exiting menu
+	VehicleCustomiser->LoadConfiguration(VehicleCustomiser->ActiveConfigurationSlotIndex);
 	
 	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->MainMenuWidget.ToSharedRef());
 	
