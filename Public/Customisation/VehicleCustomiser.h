@@ -41,7 +41,8 @@ public:
 
 	static FString VehicleIndexToName(int VehicleIndex);
 	static int VehicleNameToIndex(FString &VehicleName);
-	
+
+	int CurrentConfigurationIndex = 0;
 	FVehicleType* CurrentVehicleType;
 	UDataTable* CurrentOptions;
 	TMap<FString, int> CurrentIndices;
@@ -52,7 +53,7 @@ public:
 	int ActiveConfigurationSlotIndex = 0;
 	
 	TArray<FVehicleConfiguration> SavedConfigurations[5];
-	void LoadConfigurations();
+	void LoadConfiguration(int ConfigurationSlotIndex);
 	void SaveConfiguration(int ConfigurationSlotIndex);
 
 	// Holds base vehicle types

@@ -57,6 +57,14 @@ TSharedRef<FVehicleCustomiser> FVehicleCustomiser::Create()
 	UDataTable* SportOptionsDataTable = LoadDataTableAsset(SportOptionsPath);
 	NewCustomiser->VehicleOptions.Emplace(FString("Sport"), SportOptionsDataTable);
 	if (!SportOptionsDataTable) UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Invalid DataTable Path: %s"), *SportOptionsPath);
+
+	// Set default configurations
+	for (int i = 0; i < 5; i++)
+	{
+		FVehicleConfiguration ExoticDefault = FVehicleConfiguration();
+		ExoticDefault.VehicleType = FVehicleCustomiser::VehicleIndexToName(i);
+		NewCustomiser->SavedConfigurations->Insert(ExoticDefault, i);
+	}
 	
 	return NewCustomiser;
 }
@@ -64,7 +72,7 @@ TSharedRef<FVehicleCustomiser> FVehicleCustomiser::Create()
 // Sets up the preview vehicle with default configuration
 void FVehicleCustomiser::SetupVehicle()
 {
-	SetupVehicle(FVehicleConfiguration());
+	SetupVehicle(SavedConfigurations->GetData()[0]);
 }
 
 void FVehicleCustomiser::SetupVehicle(FVehicleConfiguration DesiredConfig)
@@ -283,13 +291,21 @@ int FVehicleCustomiser::VehicleNameToIndex(FString &VehicleName)
 	return 0;
 }
 
-void FVehicleCustomiser::LoadConfigurations()
+void FVehicleCustomiser::LoadConfiguration(int ConfigurationSlotIndex)
 {
+	if (!SavedConfigurations->IsValidIndex(ConfigurationSlotIndex))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Save - Invalid configuration slot index"));
+		return;
+	}
+	
+	CurrentConfigurationIndex = ConfigurationSlotIndex;
+	SetupVehicle(SavedConfigurations->GetData()[CurrentConfigurationIndex]);
 }
 
 void FVehicleCustomiser::SaveConfiguration(int ConfigurationSlotIndex)
 {
-	if (ConfigurationSlotIndex < 0 || ConfigurationSlotIndex >= 5)
+	if (!SavedConfigurations->IsValidIndex(ConfigurationSlotIndex))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Save - Invalid configuration slot index"));
 		return;
@@ -305,7 +321,8 @@ void FVehicleCustomiser::SaveConfiguration(int ConfigurationSlotIndex)
 	ConfigurationToSave.Rim			= *CurrentIndices.Find("Rim");
 	ConfigurationToSave.Tyre		= *CurrentIndices.Find("Tyre");
 
-	SavedConfigurations->Insert(ConfigurationToSave, ConfigurationSlotIndex);
+	// SavedConfigurations->Insert(ConfigurationToSave, ConfigurationSlotIndex);
+	SavedConfigurations->GetData()[ConfigurationSlotIndex] = ConfigurationToSave;
 }
 
 UDataTable* FVehicleCustomiser::LoadDataTableAsset(FString const &Path)
