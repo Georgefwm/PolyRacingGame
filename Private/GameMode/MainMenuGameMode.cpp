@@ -4,7 +4,7 @@
 #include "GameMode/MainMenuGameMode.h"
 
 #include "UI/MenuHUD.h"
-#include "MenuPlayerController.h"
+#include "Controller/MenuPlayerController.h"
 #include "Customisation/VehicleCustomiser.h"
 
 AMainMenuGameMode::AMainMenuGameMode()
