@@ -137,7 +137,7 @@ void UVehicleCustomiser::SetPrimaryColor(int DesiredOptionIndex)
 	if (UsingIndex < 0) UsingIndex = ColorOptions->MaterialInstances.Num()-1;
 	
 	Vehicle->VehicleCustomisationComponent->SetPrimaryColor(ColorOptions->MaterialInstances[UsingIndex].LoadSynchronous());
-	CurrentIndices.Add(TEXT("PrimaryColor"), DesiredOptionIndex);
+	CurrentIndices.Add(TEXT("PrimaryColor"), UsingIndex);
 }
 
 void UVehicleCustomiser::SetAccentColor(int DesiredOptionIndex)
@@ -146,7 +146,7 @@ void UVehicleCustomiser::SetAccentColor(int DesiredOptionIndex)
 	if (UsingIndex < 0) UsingIndex = ColorOptions->MaterialInstances.Num()-1;
 	
 	Vehicle->VehicleCustomisationComponent->SetAccentColor(ColorOptions->MaterialInstances[UsingIndex].LoadSynchronous());
-	CurrentIndices.Add(TEXT("AccentColor"), DesiredOptionIndex);
+	CurrentIndices.Add(TEXT("AccentColor"), UsingIndex);
 }
  
 FText UVehicleCustomiser::GetOptionSlotCurrentIndex(FString OptionSlotName)
