@@ -117,8 +117,6 @@ void UVehicleCustomiser::SetVehicleType(int DesiredOptionIndex)
 
 void UVehicleCustomiser::SetPreset(int DesiredOptionIndex)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Preset count: %i"), CurrentVehicleTypeRow.Presets.Num())
-	
 	int UsingIndex = DesiredOptionIndex % CurrentVehicleTypeRow.Presets.Num();
 	if (UsingIndex < 0) UsingIndex = CurrentVehicleTypeRow.Presets.Num()-1;
 	
@@ -186,9 +184,6 @@ int UVehicleCustomiser::VehicleNameToIndex(FString &VehicleName)
 
 void UVehicleCustomiser::LoadConfiguration(int ConfigurationSlotIndex)
 {
-	if (ActiveConfigurationSlotIndex == CurrentConfigurationIndex)
-		return;
-	
 	if (!SavedConfigurations)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: SavedConfigurations is not initialised"));
@@ -207,6 +202,12 @@ void UVehicleCustomiser::LoadConfiguration(int ConfigurationSlotIndex)
 
 void UVehicleCustomiser::SaveConfiguration(int ConfigurationSlotIndex)
 {
+	if (!SavedConfigurations)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: SavedConfigurations is not initialised"));
+		return;
+	}
+	
 	if (!SavedConfigurations->IsValidIndex(ConfigurationSlotIndex))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Save - Invalid configuration slot index"));
@@ -218,7 +219,7 @@ void UVehicleCustomiser::SaveConfiguration(int ConfigurationSlotIndex)
 	ConfigurationToSave.VehicleType		= VehicleIndexToName(*CurrentIndices.Find("VehicleType"));
 	ConfigurationToSave.Preset			= *CurrentIndices.Find("Preset");
 	ConfigurationToSave.PrimaryColor	= *CurrentIndices.Find("PrimaryColor");
-	ConfigurationToSave.AccentColor		= *CurrentIndices.Find("BumperRear");
+	ConfigurationToSave.AccentColor		= *CurrentIndices.Find("AccentColor");
 	
 	SavedConfigurations->GetData()[ConfigurationSlotIndex] = ConfigurationToSave;
 }
