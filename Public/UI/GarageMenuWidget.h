@@ -22,15 +22,12 @@ public:
 
 	void Construct(const FArguments& InArgs);
 
-	TSharedPtr<FVehicleCustomiser> VehicleCustomiser;
-
 	FReply SetSelectedSlot(int DesiredSlot);
 	
 	FReply OnBackClicked() const;
 	FReply OnEditClicked() const;
 	FReply OnSetActiveClicked() const;
 	
-
 	TWeakObjectPtr<class AMenuHUD> OwningHUD;
 	const struct FGlobalStyle* Style;
 

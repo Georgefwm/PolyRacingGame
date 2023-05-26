@@ -56,7 +56,6 @@ void SSinglePlayerMenuWidget::Construct(const FArguments& InArgs)
 				.ButtonStyle(&Style->MenuButtonStyle)
 				.TextStyle(&Style->MenuButtonTextStyle)
 				.Text(Slot1Text)
-				.OnClicked(this, &SSinglePlayerMenuWidget::SetSelectedSlot, 0)
 			]
 		]
 
@@ -90,30 +89,10 @@ void SSinglePlayerMenuWidget::Construct(const FArguments& InArgs)
 	];
 }
 
-FReply SSinglePlayerMenuWidget::SetSelectedSlot(int DesiredSlot)
-{
-	VehicleCustomiser->LoadConfiguration(DesiredSlot);
-	
-	return FReply::Handled();
-}
-
-FReply SSinglePlayerMenuWidget::OnEditClicked() const
-{
-	if (!OwningHUD->MainMenuWidget)
-		OwningHUD->MainMenuWidget = SNew(SMainMenuWidget).OwningHUD(OwningHUD);
-	
-	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->MainMenuWidget.ToSharedRef());
-	
-	return FReply::Handled();
-}
-
 FReply SSinglePlayerMenuWidget::OnBackClicked() const
 {
 	if (!OwningHUD->MainMenuWidget)
 		OwningHUD->MainMenuWidget = SNew(SMainMenuWidget).OwningHUD(OwningHUD);
-
-	// Change the preview to the active selection on exiting menu
-	VehicleCustomiser->LoadConfiguration(VehicleCustomiser->ActiveConfigurationSlotIndex);
 	
 	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->MainMenuWidget.ToSharedRef());
 	

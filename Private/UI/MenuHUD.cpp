@@ -10,6 +10,8 @@ void AMenuHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
+	VehicleCustomiser = GetGameInstance()->GetSubsystem<UVehicleCustomiser>();
+	
 	ShowMenu();
 }
 

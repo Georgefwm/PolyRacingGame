@@ -9,8 +9,7 @@ UVehicleCustomisationComponent::UVehicleCustomisationComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-	
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 
@@ -19,18 +18,16 @@ void UVehicleCustomisationComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	EditingMesh = GetOwner()->FindComponentByClass<USkeletalMeshComponent>();
 }
 
-void UVehicleCustomisationComponent::AttachMesh(FName SocketName, TSoftObjectPtr<USkeletalMesh> SkeletalMesh)
+void UVehicleCustomisationComponent::SetPrimaryColor(UMaterialInstance* DesiredMaterialInstance)
 {
-	
-	//m_cUClassWeapon = StaticLoadClass(UObject::StaticClass(), nullptr, TEXT("/Game/Blueprints/CharacterController/BP_Pistol.BP_Pistol_C"));
-	FActorSpawnParameters SpawnParams = FActorSpawnParameters();
+	EditingMesh->SetMaterial(1, DesiredMaterialInstance);
+}
 
-	
-	
-	//SkeletalMesh.Tr->AttachRootComponentTo(EditingMesh, SocketName, EAttachLocation::SnapToTarget, true);
+void UVehicleCustomisationComponent::SetAccentColor(UMaterialInstance* DesiredMaterialInstance)
+{
+	EditingMesh->SetMaterial(0, DesiredMaterialInstance);
 }
 
 

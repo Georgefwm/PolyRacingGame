@@ -18,8 +18,6 @@ void SGarageMenuWidget::Construct(const FArguments& InArgs)
 
 	OwningHUD = InArgs._OwningHUD;
 	Style = &FUiStyles::Get().GetWidgetStyle<FGlobalStyle>("PolyRacingMenuStyle");
-	
-	VehicleCustomiser = FVehicleCustomiser::Get();
 
 	/** Text */
 	const FText TitleText		= LOCTEXT("menu title", "Garage");
@@ -172,7 +170,7 @@ void SGarageMenuWidget::Construct(const FArguments& InArgs)
 
 FReply SGarageMenuWidget::SetSelectedSlot(int DesiredSlot)
 {
-	VehicleCustomiser->LoadConfiguration(DesiredSlot);
+	OwningHUD->VehicleCustomiser->LoadConfiguration(DesiredSlot);
 	
 	return FReply::Handled();
 }
@@ -189,7 +187,7 @@ FReply SGarageMenuWidget::OnEditClicked() const
 
 FReply SGarageMenuWidget::OnSetActiveClicked() const
 {
-	VehicleCustomiser->ActiveConfigurationSlotIndex = VehicleCustomiser->CurrentConfigurationIndex;
+	OwningHUD->VehicleCustomiser->ActiveConfigurationSlotIndex = OwningHUD->VehicleCustomiser->CurrentConfigurationIndex;
 
 	return FReply::Handled();
 }
@@ -200,7 +198,7 @@ FReply SGarageMenuWidget::OnBackClicked() const
 		OwningHUD->MainMenuWidget = SNew(SMainMenuWidget).OwningHUD(OwningHUD);
 
 	// Change the preview to the active selection on exiting menu
-	VehicleCustomiser->LoadConfiguration(VehicleCustomiser->ActiveConfigurationSlotIndex);
+	OwningHUD->VehicleCustomiser->LoadConfiguration(OwningHUD->VehicleCustomiser->ActiveConfigurationSlotIndex);
 	
 	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->MainMenuWidget.ToSharedRef());
 	

@@ -28,7 +28,5 @@ public:
 	TWeakObjectPtr<class AMenuHUD> OwningHUD;
 	const struct FGlobalStyle* Style;
 
-	TSharedPtr<FVehicleCustomiser> VehicleCustomiser;
-
 	virtual bool SupportsKeyboardFocus() const override { return true; }
 };

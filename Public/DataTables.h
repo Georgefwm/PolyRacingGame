@@ -8,6 +8,8 @@
 #include "DataTables.generated.h"
 
 
+class APolyRacingWheeledVehiclePawn;
+
 USTRUCT(BlueprintType)
 struct FVehicleSlotOptions : public FTableRowBase
 {
@@ -20,14 +22,27 @@ struct FVehicleSlotOptions : public FTableRowBase
 	TArray<FVector> Offsets;
 };
 
-
 USTRUCT(BlueprintType)
-struct FColorOptions : public FTableRowBase
+struct FPresetVehicleType : public FTableRowBase
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSoftObjectPtr<UMaterial> ColorScheme;
+	FString VehicleName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSubclassOf<APolyRacingWheeledVehiclePawn>> Presets;
+};
+
+
+UCLASS()
+class UColorOptions : public UDataAsset
+{
+	GENERATED_BODY()
+public:
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSoftObjectPtr<UMaterialInstance>> MaterialInstances;
 };
 
 
@@ -57,6 +72,23 @@ struct FVehicleType : public FTableRowBase
 	float AxelLength = 1.f;
 };
 
+USTRUCT(BlueprintType)
+struct FPresetVehicleConfiguration : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString VehicleType = TEXT("Exotic");
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Preset = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int PrimaryColor = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int AccentColor = 3;
+};
 
 USTRUCT(BlueprintType)
 struct FVehicleConfiguration : public FTableRowBase

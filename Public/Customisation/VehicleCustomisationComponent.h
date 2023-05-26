@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataTables.h"
 #include "Components/ActorComponent.h"
 #include "VehicleCustomisationComponent.generated.h"
 
@@ -25,5 +26,6 @@ protected:
 
 public:
 
-	void AttachMesh(FName SocketName, TSoftObjectPtr<USkeletalMesh> SkeletalMesh);
+	void SetPrimaryColor(UMaterialInstance* DesiredMaterialInstance);
+	void SetAccentColor(UMaterialInstance* DesiredMaterialInstance);
 };

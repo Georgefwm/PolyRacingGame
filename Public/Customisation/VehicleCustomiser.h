@@ -1,65 +1,70 @@
 ﻿#pragma once
+
 #include "DataTables.h"
-#include "VehiclePreview.h"
 #include "Engine/DataTable.h"
+#include "VehicleCustomiser.Generated.h"
 
-class POLYRACINGGAME_API FVehicleCustomiser
+UCLASS()
+class POLYRACINGGAME_API UVehicleCustomiser : public UGameInstanceSubsystem
 {
-public:
-	// Registers a new TSharedPtr instance
-	static void Initialize();
-
-	// Attempts to clean up the singleton instance TSharedPtr
-	static void Shutdown();
-
-	// Returns the stored singleton instance
-	static TSharedPtr<FVehicleCustomiser> Get();
-
-private:
-	// Creates the singleton instance
-	static TSharedRef<FVehicleCustomiser> Create(); 
+	GENERATED_BODY()
 	
-	// Stores the singleton instance
-	static TSharedPtr<FVehicleCustomiser> Instance;
-
 public:
+
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Deinitialize() override;
+	
 	void SetupVehicle();
-	void SetupVehicle(FVehicleConfiguration);
+	void SetupVehicle(FPresetVehicleConfiguration);
 	
 	void SetComponentFromSlotName(FString &OptionSlotName, int IndexDelta);
 
 	void SetVehicleType(int DesiredOptionIndex);
-	void SetBonnet(int DesiredOptionIndex);
-	void SetBumperFront(int DesiredOptionIndex);
-	void SetBumperRear(int DesiredOptionIndex);
-	void SetSideSkirt(int DesiredOptionIndex);
-	void SetRim(int DesiredOptionIndex);
-	void SetTyre(int DesiredOptionIndex);
-
+	void SetPreset(int DesiredOptionIndex);
+	void SetPrimaryColor(int DesiredOptionIndex);
+	void SetAccentColor(int DesiredOptionIndex);
+	
 	// Returns current index of specified option slot by name
 	FText GetOptionSlotCurrentIndex(FString OptionSlotName);
 
 	static FString VehicleIndexToName(int VehicleIndex);
+	
 	static int VehicleNameToIndex(FString &VehicleName);
 
+	UPROPERTY()
 	int CurrentConfigurationIndex = 0;
-	FVehicleType* CurrentVehicleType;
+
+	UPROPERTY()
+	FPresetVehicleType CurrentVehicleTypeRow;
+
+	UPROPERTY()
 	UDataTable* CurrentOptions;
+
+	UPROPERTY()
 	TMap<FString, int> CurrentIndices;
-	
-    AVehiclePreview* PreviewVehicle;
+
+	UPROPERTY()
+	APolyRacingWheeledVehiclePawn* Vehicle;
 
 	// Config shown on menu and used by default in races
+	UPROPERTY()
 	int ActiveConfigurationSlotIndex = 0;
 	
-	TArray<FVehicleConfiguration> SavedConfigurations[5];
+	TArray<FPresetVehicleConfiguration> SavedConfigurations[5];
+	
 	void LoadConfiguration(int ConfigurationSlotIndex);
+	
 	void SaveConfiguration(int ConfigurationSlotIndex);
 
-	// Holds base vehicle types
-	UDataTable* VehicleTypes;
+	// Holds base customisation options
+	UPROPERTY()
+	UDataTable* VehicleOptions;
+
+	UPROPERTY()
 	TArray<FString> VehicleTypeNames;
-	TMap<FString, UDataTable*> VehicleOptions;
+
+	UPROPERTY()
+	UColorOptions* ColorOptions;
 
 	static UDataTable* LoadDataTableAsset(FString const &Path);
 };

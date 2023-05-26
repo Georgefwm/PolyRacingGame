@@ -1,273 +1,166 @@
 ﻿#include "Customisation/VehicleCustomiser.h"
 
 #include "DataTables.h"
+#include "CoreMinimal.h"
+#include "PolyRacingWheeledVehiclePawn.h"
 #include "Engine/DataTable.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
-TSharedPtr<FVehicleCustomiser> FVehicleCustomiser::Instance = nullptr;
-
-void FVehicleCustomiser::Initialize()
+void UVehicleCustomiser::Initialize(FSubsystemCollectionBase& Collection)
 {
-	if (!Instance.IsValid())
-		Instance = Create();
-}
+	Super::Initialize(Collection);
 
-void FVehicleCustomiser::Shutdown()
-{
-	ensure(Instance.IsUnique()); 
-	Instance.Reset();
-}
+	// Vehicles
+	FString const VehicleTypesPath = TEXT("/Script/Engine.DataTable'/Game/VehicleCustomisation/VehiclePresets.VehiclePresets'");
+	VehicleOptions = LoadDataTableAsset(VehicleTypesPath);
+	if (!VehicleOptions) UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No vehicle data table found!"));
 
-TSharedRef<FVehicleCustomiser> FVehicleCustomiser::Create()
-{
-	TSharedRef<FVehicleCustomiser> NewCustomiser = MakeShareable(new FVehicleCustomiser());
+	for (FName VehicleName : VehicleOptions->GetRowNames())
+		VehicleTypeNames.Add(VehicleName.ToString());
 
-	// Import vehicle customisation data table
-	FString const VehicleTypesPath = TEXT("/Script/Engine.DataTable'/Game/VehicleCustomisation/VehicleTypes.VehicleTypes'");
-	NewCustomiser->VehicleTypes = LoadDataTableAsset(VehicleTypesPath);
-	if (!NewCustomiser->VehicleTypes) UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No vehicle type data table found!"));
-
-	for (FName VehicleName : NewCustomiser->VehicleTypes->GetRowNames())
+	// Colors
+	FSoftObjectPath ColorOptionsPath = FSoftObjectPath(TEXT("/Script/PolyRacingGame.ColorOptions'/Game/VehicleCustomisation/DA_ColorOptions.DA_ColorOptions'"));
+	ColorOptions = Cast<UColorOptions>(ColorOptionsPath.ResolveObject());
+	if (!ColorOptions)
 	{
-		NewCustomiser->VehicleTypeNames.Add(VehicleName.ToString());
+		ColorOptions = CastChecked<UColorOptions>(ColorOptionsPath.TryLoad());
 	}
-	
-	// Import exotic options data table
-	FString const ExoticOptionsPath = TEXT("/Script/Engine.DataTable'/Game/VehicleCustomisation/ExoticOptions.ExoticOptions'");
-	UDataTable* ExoticOptionsDataTable = LoadDataTableAsset(ExoticOptionsPath);
-	NewCustomiser->VehicleOptions.Emplace(FString("Exotic"), ExoticOptionsDataTable);
-	if (!ExoticOptionsDataTable) UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Invalid DataTable Path: %s"), *ExoticOptionsPath);
-
-	FString const SedanOptionsPath = TEXT("/Script/Engine.DataTable'/Game/VehicleCustomisation/SedanOptions.SedanOptions'");
-	UDataTable* SedanOptionsDataTable = LoadDataTableAsset(SedanOptionsPath);
-	NewCustomiser->VehicleOptions.Emplace(FString("Sedan"), SedanOptionsDataTable);
-	if (!SedanOptionsDataTable) UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Invalid DataTable Path: %s"), *SedanOptionsPath);
-
-	FString const HatchOptionsPath = TEXT("/Script/Engine.DataTable'/Game/VehicleCustomisation/HatchOptions.HatchOptions'");
-	UDataTable* HatchOptionsDataTable = LoadDataTableAsset(HatchOptionsPath);
-	NewCustomiser->VehicleOptions.Emplace(FString("Hatch"), HatchOptionsDataTable);
-	if (!HatchOptionsDataTable) UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Invalid DataTable Path: %s"), *HatchOptionsPath);
-
-	FString const MuscleOptionsPath = TEXT("/Script/Engine.DataTable'/Game/VehicleCustomisation/MuscleOptions.MuscleOptions'");
-	UDataTable* MuscleOptionsDataTable = LoadDataTableAsset(MuscleOptionsPath);
-	NewCustomiser->VehicleOptions.Emplace(FString("Muscle"), MuscleOptionsDataTable);
-	if (!MuscleOptionsDataTable) UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Invalid DataTable Path: %s"), *MuscleOptionsPath);
-
-	FString const SportOptionsPath = TEXT("/Script/Engine.DataTable'/Game/VehicleCustomisation/SportOptions.SportOptions'");
-	UDataTable* SportOptionsDataTable = LoadDataTableAsset(SportOptionsPath);
-	NewCustomiser->VehicleOptions.Emplace(FString("Sport"), SportOptionsDataTable);
-	if (!SportOptionsDataTable) UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Invalid DataTable Path: %s"), *SportOptionsPath);
+	if (!ColorOptions) UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No color data found!"));
 
 	// Set default configurations
-	for (int i = 0; i < 5; i++)
+	for (int Index = 0; Index < 5; Index++)
 	{
-		FVehicleConfiguration ExoticDefault = FVehicleConfiguration();
-		ExoticDefault.VehicleType = FVehicleCustomiser::VehicleIndexToName(i);
-		NewCustomiser->SavedConfigurations->Insert(ExoticDefault, i);
+		FPresetVehicleConfiguration Default = FPresetVehicleConfiguration();
+		//Default.VehicleType = UVehicleCustomiser::VehicleIndexToName(i);
+		Default.VehicleType = "Exotic";
+		SavedConfigurations->Add(Default);
 	}
-	
-	return NewCustomiser;
+}
+
+void UVehicleCustomiser::Deinitialize()
+{
+	Super::Deinitialize();
 }
 
 // Sets up the preview vehicle with default configuration
-void FVehicleCustomiser::SetupVehicle()
+void UVehicleCustomiser::SetupVehicle()
 {
+	ActiveConfigurationSlotIndex = 0;
 	SetupVehicle(SavedConfigurations->GetData()[0]);
 }
 
-void FVehicleCustomiser::SetupVehicle(FVehicleConfiguration DesiredConfig)
+void UVehicleCustomiser::SetupVehicle(FPresetVehicleConfiguration DesiredConfig)
 {
-	if (!VehicleTypes || VehicleOptions.IsEmpty())
+	if (!VehicleOptions)
 		return;
 
-	// Set what type of car is being used and available customisation options
-	CurrentVehicleType = VehicleTypes->FindRow<FVehicleType>(FName(DesiredConfig.VehicleType), "");
-	CurrentIndices.Add(TEXT("VehicleType"), VehicleNameToIndex(DesiredConfig.VehicleType));
-	
-	CurrentOptions = VehicleOptions.FindRef(CurrentVehicleType->VehicleName);
-	
-	if (!CurrentOptions)
+	if (Vehicle->IsValidLowLevel())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No vehicle Options found!"));
-		return;
+		Vehicle->Destroy();
+		//GEngine->GetWorld()->CleanupActors();
 	}
 
-	// Mesh and offset setting
-	PreviewVehicle->BodyMesh->SetSkeletalMesh(CurrentVehicleType->Mesh.LoadSynchronous());
-	PreviewVehicle->SetWheelOffsets(CurrentVehicleType);
+	// Set what type of car is being used and available customisation options
+	CurrentVehicleTypeRow = *VehicleOptions->FindRow<FPresetVehicleType>(FName(DesiredConfig.VehicleType), "");
 	
-	SetBonnet(		DesiredConfig.Bonnet		);
-	SetBumperFront(	DesiredConfig.BumperFront	);
-	SetBumperRear(	DesiredConfig.BumperRear	);
-	SetSideSkirt(	DesiredConfig.SideSkirt		);
-	SetRim(			DesiredConfig.Rim			);
-	SetTyre(		DesiredConfig.Tyre			);
+	CurrentIndices.Add(TEXT("VehicleType"), VehicleNameToIndex(DesiredConfig.VehicleType));
+
+	FVector Location = FVector(-2020.f, -1700.f, 10.f);
+	FRotator Rotation = FRotator(0.f, 90.f, 0.f);
+	
+	FActorSpawnParameters SpawnParameters = FActorSpawnParameters();
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	
+	Vehicle = GetWorld()->SpawnActor<APolyRacingWheeledVehiclePawn>(
+		CurrentVehicleTypeRow.Presets.GetData()[DesiredConfig.Preset]->GetDefaultObject()->GetClass(),
+		Location,
+		Rotation,
+		SpawnParameters);
+
+	CurrentIndices.Add(TEXT("Preset"), DesiredConfig.Preset);
+	
+	SetPrimaryColor(DesiredConfig.PrimaryColor);
+	SetAccentColor(DesiredConfig.AccentColor);
+
+	CurrentIndices.Add(TEXT("PrimaryColor"), DesiredConfig.PrimaryColor);
+	CurrentIndices.Add(TEXT("AccentColor"), DesiredConfig.AccentColor);
 }
 
 // Is there a better way to do this? seems very verbose
 // See SOptionSelectionWidget
-void FVehicleCustomiser::SetComponentFromSlotName(FString &OptionSlotName, int IndexDelta)
+void UVehicleCustomiser::SetComponentFromSlotName(FString &OptionSlotName, int IndexDelta)
 {
 	if (OptionSlotName == TEXT("VehicleType"))	{ SetVehicleType(	IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
-	if (OptionSlotName == TEXT("Bonnet"))		{ SetBonnet(		IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
-	if (OptionSlotName == TEXT("BumperFront"))	{ SetBumperFront(	IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
-	if (OptionSlotName == TEXT("BumperRear"))	{ SetBumperRear(	IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
-	if (OptionSlotName == TEXT("SideSkirt"))	{ SetSideSkirt(		IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
-	if (OptionSlotName == TEXT("Rim"))			{ SetRim(			IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
-	if (OptionSlotName == TEXT("Tyre"))			{ SetTyre(			IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
-	
+	if (OptionSlotName == TEXT("Preset"))		{ SetPreset(		IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
+	if (OptionSlotName == TEXT("PrimaryColor"))	{ SetPrimaryColor(	IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
+	if (OptionSlotName == TEXT("AccentColor"))	{ SetAccentColor(	IndexDelta + *CurrentIndices.Find(OptionSlotName)); return; }
+
 	UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: OptionSlot name not found!"));
 }
 
-void FVehicleCustomiser::SetVehicleType(int DesiredOptionIndex)
+// Change Car Type, Fully resets options
+void UVehicleCustomiser::SetVehicleType(int DesiredOptionIndex)
 {
-	if (!VehicleTypes)
-		return;
-	
-	int UsingIndex = DesiredOptionIndex % VehicleTypeNames.Num();
-	if (UsingIndex < 0) UsingIndex = VehicleTypeNames.Num()-1;
-	
-	FVehicleConfiguration NewConfig = FVehicleConfiguration();
-	NewConfig.VehicleType = VehicleTypeNames[UsingIndex];
+	int UsingIndex = DesiredOptionIndex % VehicleOptions->GetRowNames().Num();
+	if (UsingIndex < 0) UsingIndex = VehicleOptions->GetRowNames().Num()-1;
 
-	CurrentIndices.Add(FString("VehicleType"), UsingIndex);
+	FPresetVehicleConfiguration NewConfiguration = FPresetVehicleConfiguration();
+	NewConfiguration.VehicleType = VehicleIndexToName(UsingIndex);
+
+	// TODO: Choose random Colors
+	NewConfiguration.PrimaryColor	= *CurrentIndices.Find(TEXT("PrimaryColor"));
+	NewConfiguration.AccentColor	= *CurrentIndices.Find(TEXT("AccentColor"));
 	
-	SetupVehicle(NewConfig);
+	SetupVehicle(NewConfiguration);
 }
 
-// TODO: Optimise mesh changing system i.e loading & building
-// Skeletal meshes are being loaded and built synchronously which causes hitch on option change
-// Maybe parallelize bulk loading/unloading of all current/previous vehicle options on vehicle type change while
-// keeping default options loaded
-
-void FVehicleCustomiser::SetBonnet(int DesiredOptionIndex)
+void UVehicleCustomiser::SetPreset(int DesiredOptionIndex)
 {
-	FVehicleSlotOptions* Bonnet = CurrentOptions->FindRow<FVehicleSlotOptions>(FName("Bonnet"), "");
-	if (Bonnet->Meshes.IsEmpty())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No Options were found for 'Bonnet'!"));
-		return;
-	}
+	UE_LOG(LogTemp, Warning, TEXT("Preset count: %i"), CurrentVehicleTypeRow.Presets.Num())
 	
-	int UsingIndex = DesiredOptionIndex % Bonnet->Meshes.Num();
-	if (UsingIndex < 0) UsingIndex = Bonnet->Meshes.Num()-1;
+	int UsingIndex = DesiredOptionIndex % CurrentVehicleTypeRow.Presets.Num();
+	if (UsingIndex < 0) UsingIndex = CurrentVehicleTypeRow.Presets.Num()-1;
 	
-	PreviewVehicle->BonnetMesh->SetSkeletalMesh(Bonnet->Meshes[UsingIndex].LoadSynchronous());
-	PreviewVehicle->BonnetMesh->SetRelativeLocation(Bonnet->Offsets[UsingIndex], false);
-
-	CurrentIndices.Add(FString("Bonnet"), UsingIndex);
+	FPresetVehicleConfiguration NewConfiguration = FPresetVehicleConfiguration();
+	NewConfiguration.VehicleType	= VehicleIndexToName(*CurrentIndices.Find(TEXT("VehicleType")));
+	NewConfiguration.Preset			= UsingIndex;
+	NewConfiguration.PrimaryColor	= *CurrentIndices.Find(TEXT("PrimaryColor"));
+	NewConfiguration.AccentColor	= *CurrentIndices.Find(TEXT("AccentColor"));
+	
+	SetupVehicle(NewConfiguration);
 }
 
-void FVehicleCustomiser::SetBumperFront(int DesiredOptionIndex)
+void UVehicleCustomiser::SetPrimaryColor(int DesiredOptionIndex)
 {
-	FVehicleSlotOptions* BumperFront = CurrentOptions->FindRow<FVehicleSlotOptions>(FName("BumperFront"), "");
-	if (BumperFront->Meshes.IsEmpty())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No Options were found for 'BumperFront'!"));
-		return;
-	}
+	int UsingIndex = DesiredOptionIndex % ColorOptions->MaterialInstances.Num();
+	if (UsingIndex < 0) UsingIndex = ColorOptions->MaterialInstances.Num()-1;
 	
-	int UsingIndex = DesiredOptionIndex % BumperFront->Meshes.Num();
-	if (UsingIndex < 0) UsingIndex = BumperFront->Meshes.Num()-1;
-	
-	PreviewVehicle->BumperFrontMesh->SetSkeletalMesh(BumperFront->Meshes[UsingIndex].LoadSynchronous());
-	PreviewVehicle->BumperFrontMesh->SetRelativeLocation(BumperFront->Offsets[UsingIndex], false);
-
-	CurrentIndices.Add(FString("BumperFront"), UsingIndex);
+	Vehicle->VehicleCustomisationComponent->SetPrimaryColor(ColorOptions->MaterialInstances[UsingIndex].LoadSynchronous());
+	CurrentIndices.Add(TEXT("PrimaryColor"), DesiredOptionIndex);
 }
 
-void FVehicleCustomiser::SetBumperRear(int DesiredOptionIndex)
+void UVehicleCustomiser::SetAccentColor(int DesiredOptionIndex)
 {
-	FVehicleSlotOptions* BumperRear = CurrentOptions->FindRow<FVehicleSlotOptions>(FName("BumperRear"), "");
-	if (BumperRear->Meshes.IsEmpty())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No Options were found for 'BumperRear'!"));
-		return;
-	}
+	int UsingIndex = DesiredOptionIndex % ColorOptions->MaterialInstances.Num();
+	if (UsingIndex < 0) UsingIndex = ColorOptions->MaterialInstances.Num()-1;
 	
-	int UsingIndex = DesiredOptionIndex % BumperRear->Meshes.Num();
-	if (UsingIndex < 0) UsingIndex = BumperRear->Meshes.Num()-1;
-	
-	PreviewVehicle->BumperRearMesh->SetSkeletalMesh(BumperRear->Meshes[UsingIndex].LoadSynchronous());
-	PreviewVehicle->BumperRearMesh->SetRelativeLocation(BumperRear->Offsets[UsingIndex], false);
-
-	CurrentIndices.Add(FString("BumperRear"), UsingIndex);
+	Vehicle->VehicleCustomisationComponent->SetAccentColor(ColorOptions->MaterialInstances[UsingIndex].LoadSynchronous());
+	CurrentIndices.Add(TEXT("AccentColor"), DesiredOptionIndex);
 }
 
-void FVehicleCustomiser::SetSideSkirt(int DesiredOptionIndex)
+FText UVehicleCustomiser::GetOptionSlotCurrentIndex(FString OptionSlotName)
 {
-	FVehicleSlotOptions* SideSkirt = CurrentOptions->FindRow<FVehicleSlotOptions>(FName("SideSkirt"), "");
-	if (SideSkirt->Meshes.IsEmpty())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No Options were found for 'SideSkirt'!"));
-		return;
-	}
+	if (OptionSlotName == TEXT("VehicleType"))
+		return FText::FromString(CurrentVehicleTypeRow.VehicleName);
 	
-	int UsingIndex = DesiredOptionIndex % SideSkirt->Meshes.Num();
-	if (UsingIndex < 0) UsingIndex = SideSkirt->Meshes.Num()-1;
-	
-	PreviewVehicle->SideSkirtMesh->SetSkeletalMesh(SideSkirt->Meshes[UsingIndex].LoadSynchronous());
-	PreviewVehicle->SideSkirtMesh->SetRelativeLocation(SideSkirt->Offsets[UsingIndex], false);
-
-	CurrentIndices.Add(FString("SideSkirt"), UsingIndex);
-}
-
-void FVehicleCustomiser::SetRim(int DesiredOptionIndex)
-{
-	FVehicleSlotOptions* Rim = CurrentOptions->FindRow<FVehicleSlotOptions>(FName("Rim"), "");
-	if (Rim->Meshes.IsEmpty())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No Options were found for 'Rim'!"));
-		return;
-	}
-	
-	int UsingIndex = DesiredOptionIndex % Rim->Meshes.Num();
-	if (UsingIndex < 0) UsingIndex = Rim->Meshes.Num()-1;
-	
-	USkeletalMesh* NewRim = Rim->Meshes[UsingIndex].LoadSynchronous();
-	
-	PreviewVehicle->FrontLeftRim->SetSkeletalMesh(NewRim);
-	PreviewVehicle->FrontRightRim->SetSkeletalMesh(NewRim);
-	PreviewVehicle->RearLeftRim->SetSkeletalMesh(NewRim);
-	PreviewVehicle->RearRightRim->SetSkeletalMesh(NewRim);
-
-	CurrentIndices.Add(FString("Rim"), UsingIndex);
-}
-
-void FVehicleCustomiser::SetTyre(int DesiredOptionIndex)
-{
-	FVehicleSlotOptions* Tyre = CurrentOptions->FindRow<FVehicleSlotOptions>(FName("Tyre"), "");
-	if (Tyre->Meshes.IsEmpty())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: No Options were found for 'Tyre'!"));
-		return;
-	}
-	
-	int UsingIndex = DesiredOptionIndex % Tyre->Meshes.Num();
-	if (UsingIndex < 0) UsingIndex = Tyre->Meshes.Num()-1;
-	
-	USkeletalMesh* NewTyre = Tyre->Meshes[UsingIndex].LoadSynchronous();
-	
-	PreviewVehicle->FrontLeftTyre->SetSkeletalMesh(NewTyre);
-	PreviewVehicle->FrontRightTyre->SetSkeletalMesh(NewTyre);
-	PreviewVehicle->RearLeftTyre->SetSkeletalMesh(NewTyre);
-	PreviewVehicle->RearRightTyre->SetSkeletalMesh(NewTyre);
-
-	CurrentIndices.Add(FString("Tyre"), UsingIndex);
-}
-
-FText FVehicleCustomiser::GetOptionSlotCurrentIndex(FString OptionSlotName)
-{
-	if (OptionSlotName == "VehicleType")
-		return FText::FromString(CurrentVehicleType->VehicleName);
-	
-	FString IndexText = "Style ";
+	FString IndexText = TEXT("Style ");
 	IndexText.AppendInt(*CurrentIndices.Find(OptionSlotName));
 	
 	return FText::FromString(IndexText);
 }
 
-FString FVehicleCustomiser::VehicleIndexToName(int VehicleIndex)
+FString UVehicleCustomiser::VehicleIndexToName(int VehicleIndex)
 {
 	if (VehicleIndex == 0)	return TEXT("Exotic");
 	if (VehicleIndex == 1)	return TEXT("Sedan");
@@ -279,7 +172,7 @@ FString FVehicleCustomiser::VehicleIndexToName(int VehicleIndex)
 	return TEXT("");
 }
 
-int FVehicleCustomiser::VehicleNameToIndex(FString &VehicleName)
+int UVehicleCustomiser::VehicleNameToIndex(FString &VehicleName)
 {
 	if (VehicleName == TEXT("Exotic"))	return 0;
 	if (VehicleName == TEXT("Sedan"))	return 1;
@@ -291,8 +184,17 @@ int FVehicleCustomiser::VehicleNameToIndex(FString &VehicleName)
 	return 0;
 }
 
-void FVehicleCustomiser::LoadConfiguration(int ConfigurationSlotIndex)
+void UVehicleCustomiser::LoadConfiguration(int ConfigurationSlotIndex)
 {
+	if (ActiveConfigurationSlotIndex == CurrentConfigurationIndex)
+		return;
+	
+	if (!SavedConfigurations)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: SavedConfigurations is not initialised"));
+		return;
+	}
+	
 	if (!SavedConfigurations->IsValidIndex(ConfigurationSlotIndex))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: Save - Invalid configuration slot index"));
@@ -303,7 +205,7 @@ void FVehicleCustomiser::LoadConfiguration(int ConfigurationSlotIndex)
 	SetupVehicle(SavedConfigurations->GetData()[CurrentConfigurationIndex]);
 }
 
-void FVehicleCustomiser::SaveConfiguration(int ConfigurationSlotIndex)
+void UVehicleCustomiser::SaveConfiguration(int ConfigurationSlotIndex)
 {
 	if (!SavedConfigurations->IsValidIndex(ConfigurationSlotIndex))
 	{
@@ -311,21 +213,17 @@ void FVehicleCustomiser::SaveConfiguration(int ConfigurationSlotIndex)
 		return;
 	}
 	
-	FVehicleConfiguration ConfigurationToSave = FVehicleConfiguration();
+	FPresetVehicleConfiguration ConfigurationToSave = FPresetVehicleConfiguration();
 	
-	ConfigurationToSave.VehicleType = VehicleIndexToName(*CurrentIndices.Find("VehicleType"));
-	ConfigurationToSave.Bonnet		= *CurrentIndices.Find("Bonnet");
-	ConfigurationToSave.BumperFront = *CurrentIndices.Find("BumperFront");
-	ConfigurationToSave.BumperRear	= *CurrentIndices.Find("BumperRear");
-	ConfigurationToSave.SideSkirt	= *CurrentIndices.Find("SideSkirt");
-	ConfigurationToSave.Rim			= *CurrentIndices.Find("Rim");
-	ConfigurationToSave.Tyre		= *CurrentIndices.Find("Tyre");
-
-	// SavedConfigurations->Insert(ConfigurationToSave, ConfigurationSlotIndex);
+	ConfigurationToSave.VehicleType		= VehicleIndexToName(*CurrentIndices.Find("VehicleType"));
+	ConfigurationToSave.Preset			= *CurrentIndices.Find("Preset");
+	ConfigurationToSave.PrimaryColor	= *CurrentIndices.Find("PrimaryColor");
+	ConfigurationToSave.AccentColor		= *CurrentIndices.Find("BumperRear");
+	
 	SavedConfigurations->GetData()[ConfigurationSlotIndex] = ConfigurationToSave;
 }
 
-UDataTable* FVehicleCustomiser::LoadDataTableAsset(FString const &Path)
+UDataTable* UVehicleCustomiser::LoadDataTableAsset(FString const &Path)
 {
 	// First check if the table is loaded already
 	if (UDataTable* LoadingDataTable = Cast<UDataTable>(FSoftObjectPath(*Path).ResolveObject()))
@@ -333,9 +231,4 @@ UDataTable* FVehicleCustomiser::LoadDataTableAsset(FString const &Path)
 
 	// return last attempt
 	return Cast<UDataTable>(FSoftObjectPath(*Path).TryLoad());
-}
-
-TSharedPtr<FVehicleCustomiser> FVehicleCustomiser::Get()
-{
-	return Instance;
 }

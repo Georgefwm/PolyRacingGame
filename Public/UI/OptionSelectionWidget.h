@@ -16,7 +16,7 @@ public:
 
 	SLATE_BEGIN_ARGS(SOptionSelectionWidget) {}
 
-	SLATE_ARGUMENT(TSharedPtr<FVehicleCustomiser>, Customiser)
+	SLATE_ARGUMENT(UVehicleCustomiser*, Customiser)
 	SLATE_ARGUMENT(FString, OptionSlotName)
 	
 	SLATE_END_ARGS()
@@ -25,7 +25,7 @@ public:
 	
 	const struct FGlobalStyle* Style;
 
-	TSharedPtr<FVehicleCustomiser> Customiser;
+	UVehicleCustomiser* Customiser;
 
 	FString OptionSlotNameString;
 	FText OptionSlotName;

@@ -18,8 +18,6 @@ void SVehicleCustomisationMenuWidget::Construct(const FArguments& InArgs)
 	OwningHUD = InArgs._OwningHUD;
 	Style = &FUiStyles::Get().GetWidgetStyle<FGlobalStyle>("PolyRacingMenuStyle");
 
-	VehicleCustomiser = FVehicleCustomiser::Get();
-
 	/** Text */
 	const FText TitleText	= LOCTEXT("menu title", "Customiser");
 	const FText BackText	= LOCTEXT("Back text", "Back");
@@ -55,7 +53,7 @@ void SVehicleCustomisationMenuWidget::Construct(const FArguments& InArgs)
 			.Padding(Style->MenuButtonSpacingMargin)
 			[
 				SNew(SOptionSelectionWidget)
-				.Customiser(VehicleCustomiser)
+				.Customiser(OwningHUD->VehicleCustomiser)
 				.OptionSlotName(TEXT("VehicleType"))				
 			]
 			
@@ -63,40 +61,24 @@ void SVehicleCustomisationMenuWidget::Construct(const FArguments& InArgs)
 			.Padding(Style->MenuButtonSpacingMargin)
 			[
 				SNew(SOptionSelectionWidget)
-				.Customiser(VehicleCustomiser)
-				.OptionSlotName(TEXT("Bonnet"))				
+				.Customiser(OwningHUD->VehicleCustomiser)
+				.OptionSlotName(TEXT("Preset"))				
 			]
 
 			+ SVerticalBox::Slot()
 			.Padding(Style->MenuButtonSpacingMargin)
 			[
 				SNew(SOptionSelectionWidget)
-				.Customiser(VehicleCustomiser)
-				.OptionSlotName(TEXT("BumperFront"))				
+				.Customiser(OwningHUD->VehicleCustomiser)
+				.OptionSlotName(TEXT("PrimaryColor"))				
 			]
 
 			+ SVerticalBox::Slot()
 			.Padding(Style->MenuButtonSpacingMargin)
 			[
 				SNew(SOptionSelectionWidget)
-				.Customiser(VehicleCustomiser)
-				.OptionSlotName(TEXT("BumperRear"))				
-			]
-			
-			+ SVerticalBox::Slot()
-			.Padding(Style->MenuButtonSpacingMargin)
-			[
-				SNew(SOptionSelectionWidget)
-				.Customiser(VehicleCustomiser)
-				.OptionSlotName(TEXT("SideSkirt"))				
-			]
-
-			+ SVerticalBox::Slot()
-			.Padding(Style->MenuButtonSpacingMargin)
-			[
-				SNew(SOptionSelectionWidget)
-				.Customiser(VehicleCustomiser)
-				.OptionSlotName(TEXT("Rim"))				
+				.Customiser(OwningHUD->VehicleCustomiser)
+				.OptionSlotName(TEXT("AccentColor"))				
 			]
 		]
 		
@@ -146,7 +128,7 @@ void SVehicleCustomisationMenuWidget::Construct(const FArguments& InArgs)
 
 FReply SVehicleCustomisationMenuWidget::OnSaveClicked()
 {
-	VehicleCustomiser->SaveConfiguration(VehicleCustomiser->CurrentConfigurationIndex);
+	OwningHUD->VehicleCustomiser->SaveConfiguration(OwningHUD->VehicleCustomiser->CurrentConfigurationIndex);
 	return FReply::Handled();
 }
 

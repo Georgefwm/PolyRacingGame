@@ -18,14 +18,8 @@ AMainMenuGameMode::AMainMenuGameMode()
 void AMainMenuGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Setup the menu background vehicle
-	FVehicleCustomiser::Initialize();
-	TSharedPtr<FVehicleCustomiser> VehicleCustomiser = FVehicleCustomiser::Get();
 	
-	VehicleCustomiser->PreviewVehicle = GetWorld()->SpawnActor<AVehiclePreview>(AVehiclePreview::StaticClass(),
-		FVector(-2020.f, -1700.f, 15.f),
-		FRotator(0.f, 90.f, 0.f));
-
+	// Setup the menu background vehicle
+	UVehicleCustomiser* VehicleCustomiser = GetGameInstance()->GetSubsystem<UVehicleCustomiser>();
 	VehicleCustomiser->SetupVehicle();
 }

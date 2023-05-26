@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
 #include "WheeledVehiclePawn.h"
+#include "Customisation/VehicleCustomisationComponent.h"
 #include "PolyRacingWheeledVehiclePawn.generated.h"
 
 class UInputMappingContext;
@@ -18,6 +19,9 @@ class POLYRACINGGAME_API APolyRacingWheeledVehiclePawn : public AWheeledVehicleP
 public:
 	// Sets default values for this pawn's properties
 	APolyRacingWheeledVehiclePawn(const FObjectInitializer& ObjectInitializer);
+
+	UPROPERTY()
+	UVehicleCustomisationComponent* VehicleCustomisationComponent;
 
 protected:
 	// Called when the game starts or when spawned

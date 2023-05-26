@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "Customisation/VehicleCustomiser.h"
 #include "MenuHUD.generated.h"
+
 
 /**
  * 
@@ -22,6 +24,9 @@ public:
 	TSharedPtr<class SVehicleCustomisationMenuWidget> CustomiseWidget;
 	
 	TSharedPtr<class SWeakWidget> MenuWidgetContainer;
+
+	UPROPERTY()
+	UVehicleCustomiser* VehicleCustomiser;
 
 	virtual void BeginPlay() override;
 

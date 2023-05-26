@@ -15,8 +15,6 @@ APolyRacingWheeledVehiclePawn::APolyRacingWheeledVehiclePawn(const FObjectInitia
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	GetMesh()->SetSimulatePhysics(true);
-
-	// Get the player controller
 	
 	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 	{
@@ -24,6 +22,9 @@ APolyRacingWheeledVehiclePawn::APolyRacingWheeledVehiclePawn(const FObjectInitia
 		InputSubsystem->ClearAllMappings();
 		InputSubsystem->AddMappingContext(InputMappingContext, 0);
 	}
+
+	VehicleCustomisationComponent = CreateDefaultSubobject<UVehicleCustomisationComponent>("Customisation Component");
+	VehicleCustomisationComponent->EditingMesh = GetMesh();
 }
 
 // Called when the game starts or when spawned
