@@ -184,11 +184,8 @@ int UVehicleCustomiser::VehicleNameToIndex(FString &VehicleName)
 
 void UVehicleCustomiser::LoadConfiguration(int ConfigurationSlotIndex)
 {
-	if (!SavedConfigurations)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("VehicleCustomiser: SavedConfigurations is not initialised"));
+	if (ConfigurationSlotIndex == CurrentConfigurationIndex)
 		return;
-	}
 	
 	if (!SavedConfigurations->IsValidIndex(ConfigurationSlotIndex))
 	{
