@@ -148,7 +148,7 @@ void UVehicleCustomiser::SetAccentColor(int DesiredOptionIndex)
 	Vehicle->VehicleCustomisationComponent->SetAccentColor(ColorOptions->MaterialInstances[UsingIndex].LoadSynchronous());
 	CurrentIndices.Add(TEXT("AccentColor"), DesiredOptionIndex);
 }
-
+ 
 FText UVehicleCustomiser::GetOptionSlotCurrentIndex(FString OptionSlotName)
 {
 	if (OptionSlotName == TEXT("VehicleType"))
