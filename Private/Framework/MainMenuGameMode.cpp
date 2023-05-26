@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GameMode/MainMenuGameMode.h"
+#include "Framework/MainMenuGameMode.h"
 
 #include "UI/MenuHUD.h"
 #include "Controller/MenuPlayerController.h"
