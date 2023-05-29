@@ -21,7 +21,9 @@ public:
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
-	
+
+	FReply OnRaceClicked() const;
+	FReply OnFreeRoamClicked() const;
 	FReply OnBackClicked() const;
 
 	TWeakObjectPtr<class AMenuHUD> OwningHUD;

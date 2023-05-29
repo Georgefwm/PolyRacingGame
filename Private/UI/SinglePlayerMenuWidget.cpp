@@ -4,6 +4,7 @@
 #include "UI/SinglePlayerMenuWidget.h"
 
 #include "Components/SizeBox.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/GlobalMenuStyle.h"
 #include "UI/MainMenuWidget.h"
 #include "UI/MenuHUD.h"
@@ -105,6 +106,18 @@ void SSinglePlayerMenuWidget::Construct(const FArguments& InArgs)
 			]			
 		]
 	];
+}
+
+FReply SSinglePlayerMenuWidget::OnRaceClicked() const
+{
+
+	return FReply::Handled();
+}
+
+FReply SSinglePlayerMenuWidget::OnFreeRoamClicked() const
+{
+	//UWorld::ServerTravel()
+	return FReply::Handled();
 }
 
 FReply SSinglePlayerMenuWidget::OnBackClicked() const
