@@ -17,9 +17,9 @@ class POLYRACINGGAME_API AMenuHUD : public AHUD
 	GENERATED_BODY()
 	
 public:
-	// Widget class refs
-	// Not initialised by default
+	// Not initialised by default, on first usage
 	TSharedPtr<class SMainMenuWidget> MainMenuWidget;
+	TSharedPtr<class SSinglePlayerMenuWidget> SinglePlayerMenuWidget;
 	TSharedPtr<class SGarageMenuWidget> GarageWidget;
 	TSharedPtr<class SVehicleCustomisationMenuWidget> CustomiseWidget;
 	

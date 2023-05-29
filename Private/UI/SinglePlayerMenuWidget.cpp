@@ -21,8 +21,10 @@ void SSinglePlayerMenuWidget::Construct(const FArguments& InArgs)
 	
 
 	/** Text */
-	const FText TitleText		= LOCTEXT("menu title", "Garage");
-	const FText Slot1Text		= LOCTEXT("Slot1Text", "Vehicle Slot 1");
+	const FText TitleText		= LOCTEXT("menu title", "Single Player");
+	
+	const FText RaceModeText	= LOCTEXT("RaceModeText", "Race");
+	const FText FreeModeText	= LOCTEXT("FreeModeText", "Free Roam");
 	
 	const FText BackText		= LOCTEXT("Back text", "Back");
 
@@ -55,7 +57,23 @@ void SSinglePlayerMenuWidget::Construct(const FArguments& InArgs)
 				SNew(SButton)
 				.ButtonStyle(&Style->MenuButtonStyle)
 				.TextStyle(&Style->MenuButtonTextStyle)
-				.Text(Slot1Text)
+				.Text(RaceModeText)
+			]
+		]
+
+		+ SOverlay::Slot()
+		.HAlign(HAlign_Left)
+		.VAlign(VAlign_Center)
+		.Padding(Style->MenuBoxMargin)
+		[
+			SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
+			.Padding(Style->MenuButtonSpacingMargin)
+			[
+				SNew(SButton)
+				.ButtonStyle(&Style->MenuButtonStyle)
+				.TextStyle(&Style->MenuButtonTextStyle)
+				.Text(FreeModeText)
 			]
 		]
 

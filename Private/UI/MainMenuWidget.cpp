@@ -3,6 +3,7 @@
 
 #include "UI/MainMenuWidget.h"
 
+#include "UI/SinglePlayerMenuWidget.h"
 #include "UI/GarageMenuWidget.h"
 #include "UI/GlobalMenuStyle.h"
 #include "UI/MenuHUD.h"
@@ -104,6 +105,11 @@ void SMainMenuWidget::Construct(const FArguments& InArgs)
 
 FReply SMainMenuWidget::OnSinglePlayerClicked() const
 {
+	if (!OwningHUD->SinglePlayerMenuWidget)
+		OwningHUD->SinglePlayerMenuWidget = SNew(SSinglePlayerMenuWidget).OwningHUD(OwningHUD);
+	
+	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->SinglePlayerMenuWidget.ToSharedRef());
+	
 	return FReply::Handled();
 }
 
