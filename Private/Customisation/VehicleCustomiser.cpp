@@ -86,18 +86,14 @@ void UVehicleCustomiser::SetupVehicle(FPresetVehicleConfiguration DesiredConfig)
 	CurrentIndices.Add(TEXT("AccentColor"), DesiredConfig.AccentColor);
 }
 
-APolyRacingWheeledVehiclePawn* UVehicleCustomiser::SpawnVehicle(UWorld* World, FVector Location, FRotator Rotation, FActorSpawnParameters SpawnParameters)
+APolyRacingWheeledVehiclePawn* UVehicleCustomiser::SpawnVehicle(UWorld* World, FVector &Location, FRotator &Rotation, FActorSpawnParameters &SpawnParameters)
 {
-	SavedConfigurations->GetData()[ActiveConfigurationSlotIndex].Preset;
-	//UVehicleCustomiser* NewVehicle = World->SpawnActor(, Location, Rotation, SpawnParameters);
-
 	if (!VehicleOptions)
 		return nullptr;
 
 	if (Vehicle)
 	{
 		Vehicle->Destroy();
-		//GEngine->GetWorld()->CleanupActors();
 	}
 
 	// Set what type of car is being used and available customisation options
