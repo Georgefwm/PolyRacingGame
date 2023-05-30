@@ -33,33 +33,21 @@ void AFreeRoamGameMode::HandleStartingNewPlayer_Implementation(APlayerController
 	NewPlayer->bShowMouseCursor = false;
 	NewPlayer->SetInputMode(FInputModeGameOnly());
 	
-	TArray<AActor*> StartPositions;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), StartPositions);
-	
-	if(StartPositions.IsEmpty())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Gamemode: No start locations found"))
-	}
-	
-	//FTransform const StartTransform = StartPositions[0]->GetActorTransform();
-
-	FActorSpawnParameters SpawnParameters;
-	SpawnParameters.Owner = NewPlayer;
-	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	 
-	// FVector const Location = StartTransform.GetLocation();
-	// FRotator const Rotation = StartTransform.GetRotation().Rotator();
-	
-	FVector const Location = FVector(7540.f,-10765.f,193.f);
-	FRotator const Rotation = FRotator(0.f,180.f,0.f);
-
 	UVehicleCustomiser* VehicleCustomiser = GetGameInstance()->GetSubsystem<UVehicleCustomiser>();
 	
-	APolyRacingWheeledVehiclePawn* NewVehicle = VehicleCustomiser->SpawnVehicle(GetWorld(), Location, Rotation, SpawnParameters);
-	
-	NewPlayer->Possess(NewVehicle);
+	// Setup the vehicle
+	TArray<AActor*> StartPositions;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), StartPositions);
+	if (!StartPositions.IsEmpty())
+	{
+		FVector Location = StartPositions[0]->GetTransform().GetLocation();
+		FRotator Rotation = StartPositions[0]->GetTransform().GetRotation().Rotator();
 
-	
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.Owner = NewPlayer;
+		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+		APolyRacingWheeledVehiclePawn* NewVehicle = VehicleCustomiser->SpawnVehicle(GetWorld(), Location, Rotation, SpawnParameters);
+		NewPlayer->Possess(NewVehicle);
+	}
 }
-
-
