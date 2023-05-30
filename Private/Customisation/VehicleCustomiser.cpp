@@ -32,8 +32,7 @@ void UVehicleCustomiser::Initialize(FSubsystemCollectionBase& Collection)
 	for (int Index = 0; Index < 5; Index++)
 	{
 		FPresetVehicleConfiguration Default = FPresetVehicleConfiguration();
-		//Default.VehicleType = UVehicleCustomiser::VehicleIndexToName(i);
-		Default.VehicleType = "Exotic";
+		Default.VehicleType = UVehicleCustomiser::VehicleIndexToName(Index);
 		SavedConfigurations->Add(Default);
 	}
 }
@@ -55,7 +54,7 @@ void UVehicleCustomiser::SetupVehicle(FPresetVehicleConfiguration DesiredConfig)
 	if (!VehicleOptions)
 		return;
 
-	if (Vehicle->IsValidLowLevel())
+	if (Vehicle)
 	{
 		Vehicle->Destroy();
 		//GEngine->GetWorld()->CleanupActors();
@@ -85,6 +84,35 @@ void UVehicleCustomiser::SetupVehicle(FPresetVehicleConfiguration DesiredConfig)
 
 	CurrentIndices.Add(TEXT("PrimaryColor"), DesiredConfig.PrimaryColor);
 	CurrentIndices.Add(TEXT("AccentColor"), DesiredConfig.AccentColor);
+}
+
+APolyRacingWheeledVehiclePawn* UVehicleCustomiser::SpawnVehicle(UWorld* World, FVector Location, FRotator Rotation, FActorSpawnParameters SpawnParameters)
+{
+	SavedConfigurations->GetData()[ActiveConfigurationSlotIndex].Preset;
+	//UVehicleCustomiser* NewVehicle = World->SpawnActor(, Location, Rotation, SpawnParameters);
+
+	if (!VehicleOptions)
+		return nullptr;
+
+	if (Vehicle)
+	{
+		Vehicle->Destroy();
+		//GEngine->GetWorld()->CleanupActors();
+	}
+
+	// Set what type of car is being used and available customisation options
+	CurrentVehicleTypeRow = *VehicleOptions->FindRow<FPresetVehicleType>(FName(SavedConfigurations->GetData()[ActiveConfigurationSlotIndex].VehicleType), "");
+
+	Vehicle = GetWorld()->SpawnActor<APolyRacingWheeledVehiclePawn>(
+		CurrentVehicleTypeRow.Presets.GetData()[SavedConfigurations->GetData()[ActiveConfigurationSlotIndex].Preset]->GetDefaultObject()->GetClass(),
+		Location,
+		Rotation,
+		SpawnParameters);
+	
+	SetPrimaryColor(SavedConfigurations->GetData()[ActiveConfigurationSlotIndex].PrimaryColor);
+	SetAccentColor(SavedConfigurations->GetData()[ActiveConfigurationSlotIndex].AccentColor);
+
+	return Vehicle;
 }
 
 // Is there a better way to do this? seems very verbose

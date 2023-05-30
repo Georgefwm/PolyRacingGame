@@ -16,6 +16,8 @@ public:
 	
 	void SetupVehicle();
 	void SetupVehicle(FPresetVehicleConfiguration);
+
+	APolyRacingWheeledVehiclePawn* SpawnVehicle(UWorld* World, FVector Location, FRotator Rotation, FActorSpawnParameters SpawnParameters);
 	
 	void SetComponentFromSlotName(FString &OptionSlotName, int IndexDelta);
 
