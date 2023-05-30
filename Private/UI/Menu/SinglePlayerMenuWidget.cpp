@@ -1,17 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UI/SinglePlayerMenuWidget.h"
+#include "UI/Menu/SinglePlayerMenuWidget.h"
 
-#include "Components/SizeBox.h"
-#include "Framework/FreeRoamGameMode.h"
 #include "Framework/PolyRacingSessionSubsystem.h"
 #include "Kismet/GameplayStatics.h"
-#include "UI/GlobalMenuStyle.h"
-#include "UI/MainMenuWidget.h"
+#include "UI/Style/GlobalMenuStyle.h"
+#include "UI/Menu/MainMenuWidget.h"
 #include "UI/MenuHUD.h"
-#include "UI/UiStyles.h"
-#include "UI/VehicleCustomisationMenuWidget.h"
+#include "UI/Style/UiStyles.h"
 
 #define LOCTEXT_NAMESPACE "singleplayermenu"
 

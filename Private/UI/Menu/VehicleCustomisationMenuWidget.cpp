@@ -1,15 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UI/VehicleCustomisationMenuWidget.h"
+#include "UI/Menu/VehicleCustomisationMenuWidget.h"
 
-#include "UI/GarageMenuWidget.h"
-#include "UI/GlobalMenuStyle.h"
+#include "UI/Menu/GarageMenuWidget.h"
+#include "UI/Style/GlobalMenuStyle.h"
 #include "UI/MenuHUD.h"
-#include "UI/OptionSelectionWidget.h"
-#include "UI/UiStyles.h"
+#include "UI/Element/OptionSelectionWidget.h"
+#include "UI/Style/UiStyles.h"
 
-#define LOCTEXT_NAMESPACE "garagemenu"
+#define LOCTEXT_NAMESPACE "vehiclecustomisationmenu"
 
 void SVehicleCustomisationMenuWidget::Construct(const FArguments& InArgs)
 {

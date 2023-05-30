@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UI/MainMenuWidget.h"
+#include "UI/Menu/MainMenuWidget.h"
 
-#include "UI/SinglePlayerMenuWidget.h"
-#include "UI/GarageMenuWidget.h"
-#include "UI/GlobalMenuStyle.h"
+#include "UI/Menu/SinglePlayerMenuWidget.h"
+#include "UI/Menu/GarageMenuWidget.h"
+#include "UI/Style/GlobalMenuStyle.h"
 #include "UI/MenuHUD.h"
-#include "UI/UiStyles.h"
+#include "UI/Style/UiStyles.h"
 
 #define LOCTEXT_NAMESPACE "mainmenu"
 

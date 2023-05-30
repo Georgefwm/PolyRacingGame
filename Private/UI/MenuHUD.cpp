@@ -2,7 +2,7 @@
 
 
 #include "UI/MenuHUD.h"
-#include "UI/MainMenuWidget.h"
+#include "UI/Menu/MainMenuWidget.h"
 #include "Widgets/SWeakWidget.h"
 #include "Engine/Engine.h"
 

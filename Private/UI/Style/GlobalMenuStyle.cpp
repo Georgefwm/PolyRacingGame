@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UI/GlobalMenuStyle.h" 
+#include "UI/Style/GlobalMenuStyle.h" 
 
 void FGlobalStyle::GetResources(TArray<const FSlateBrush*> & OutBrushes) const
 {

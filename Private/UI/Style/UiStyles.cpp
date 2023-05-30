@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UI/UiStyles.h"
+#include "UI/Style/UiStyles.h"
 #include "Slate/SlateGameResources.h"
 
 TSharedPtr<FSlateStyleSet> FUiStyles::UiStyleInstance = NULL;

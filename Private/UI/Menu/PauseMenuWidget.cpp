@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UI/PauseMenuWidget.h"
+#include "UI/Menu/PauseMenuWidget.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "UI/GlobalMenuStyle.h"
+#include "UI/Style/GlobalMenuStyle.h"
 #include "UI/MenuHUD.h"
-#include "UI/UiStyles.h"
+#include "UI/Style/UiStyles.h"
 
 #define LOCTEXT_NAMESPACE "pausemenu"
 

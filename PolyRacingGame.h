@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Ui/UiStyles.h"
+#include "Ui/Style/UiStyles.h"
 #include "Styling/SlateStyleRegistry.h"
 
 class FPolyRacingGame : public FDefaultGameModuleImpl

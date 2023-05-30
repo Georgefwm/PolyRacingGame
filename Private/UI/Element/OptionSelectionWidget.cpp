@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UI/OptionSelectionWidget.h"
+#include "UI/Element/OptionSelectionWidget.h"
 
-#include "UI/GlobalMenuStyle.h"
-#include "UI/UiStyles.h"
+#include "UI/Style/GlobalMenuStyle.h"
+#include "UI/Style/UiStyles.h"
 
-#define LOCTEXT_NAMESPACE "garagemenu"
+#define LOCTEXT_NAMESPACE "optionslelect"
 
 void SOptionSelectionWidget::Construct(const FArguments& InArgs)
 {
