@@ -99,15 +99,22 @@ APolyRacingWheeledVehiclePawn* UVehicleCustomiser::SpawnVehicle(UWorld* World, F
 	// Set what type of car is being used and available customisation options
 	CurrentVehicleTypeRow = *VehicleOptions->FindRow<FPresetVehicleType>(FName(SavedConfigurations->GetData()[ActiveConfigurationSlotIndex].VehicleType), "");
 
+	CurrentIndices.Add(TEXT("VehicleType"), VehicleNameToIndex(SavedConfigurations->GetData()[ActiveConfigurationSlotIndex].VehicleType));
+	
 	Vehicle = GetWorld()->SpawnActor<APolyRacingWheeledVehiclePawn>(
 		CurrentVehicleTypeRow.Presets.GetData()[SavedConfigurations->GetData()[ActiveConfigurationSlotIndex].Preset]->GetDefaultObject()->GetClass(),
 		Location,
 		Rotation,
 		SpawnParameters);
+
+	CurrentIndices.Add(TEXT("Preset"), SavedConfigurations->GetData()[ActiveConfigurationSlotIndex].Preset);
 	
 	SetPrimaryColor(SavedConfigurations->GetData()[ActiveConfigurationSlotIndex].PrimaryColor);
 	SetAccentColor(SavedConfigurations->GetData()[ActiveConfigurationSlotIndex].AccentColor);
 
+	CurrentIndices.Add(TEXT("PrimaryColor"), SavedConfigurations->GetData()[ActiveConfigurationSlotIndex].PrimaryColor);
+	CurrentIndices.Add(TEXT("AccentColor"), SavedConfigurations->GetData()[ActiveConfigurationSlotIndex].AccentColor);
+	
 	return Vehicle;
 }
 
