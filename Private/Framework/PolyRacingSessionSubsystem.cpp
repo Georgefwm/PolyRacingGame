@@ -5,7 +5,13 @@
 
 
 UPolyRacingSessionSubsystem::UPolyRacingSessionSubsystem()
-	: CreateSessionCompleteDelegate(FOnCreateSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnCreateSessionCompleted))
+	: CreateSessionCompleteDelegate(	FOnCreateSessionCompleteDelegate::CreateUObject(	this, &ThisClass::OnCreateSessionCompleted))
+	, UpdateSessionCompleteDelegate(	FOnUpdateSessionCompleteDelegate::CreateUObject(	this, &ThisClass::OnUpdateSessionCompleted))
+	, StartSessionCompleteDelegate(		FOnStartSessionCompleteDelegate::CreateUObject(		this, &ThisClass::OnStartSessionCompleted))
+	, EndSessionCompleteDelegate(		FOnEndSessionCompleteDelegate::CreateUObject(		this, &ThisClass::OnEndSessionCompleted))
+	, DestroySessionCompleteDelegate(	FOnDestroySessionCompleteDelegate::CreateUObject(	this, &ThisClass::OnDestroySessionCompleted))
+	, FindSessionsCompleteDelegate(		FOnFindSessionsCompleteDelegate::CreateUObject(		this, &ThisClass::OnFindSessionsCompleted))
+	, JoinSessionCompleteDelegate(		FOnJoinSessionCompleteDelegate::CreateUObject(		this, &ThisClass::OnJoinSessionCompleted))
 {
 }
 
@@ -165,8 +171,7 @@ void UPolyRacingSessionSubsystem::JoinGameSession(const FOnlineSessionSearchResu
 		return;
 	}
 
-	JoinSessionCompleteDelegateHandle =
-		SessionInterface->AddOnJoinSessionCompleteDelegate_Handle(JoinSessionCompleteDelegate);
+	JoinSessionCompleteDelegateHandle = SessionInterface->AddOnJoinSessionCompleteDelegate_Handle(JoinSessionCompleteDelegate);
 
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 	if (!SessionInterface->JoinSession(*LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, SessionResult))
