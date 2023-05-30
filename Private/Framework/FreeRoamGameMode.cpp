@@ -30,6 +30,9 @@ void AFreeRoamGameMode::HandleStartingNewPlayer_Implementation(APlayerController
 		NewPlayer->GetPawn()->Destroy();
 	}
 
+	NewPlayer->bShowMouseCursor = false;
+	NewPlayer->SetInputMode(FInputModeGameOnly());
+	
 	TArray<AActor*> StartPositions;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), StartPositions);
 	
