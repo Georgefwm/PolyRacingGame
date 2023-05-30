@@ -3,3 +3,15 @@
 
 #include "Controller/PolyRacingPlayerController.h"
 
+APolyRacingPlayerController::APolyRacingPlayerController()
+	: Super()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+void APolyRacingPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	
+}

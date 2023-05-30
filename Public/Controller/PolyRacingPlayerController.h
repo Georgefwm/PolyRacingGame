@@ -13,5 +13,8 @@ UCLASS()
 class POLYRACINGGAME_API APolyRacingPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+	APolyRacingPlayerController();
 	
+	virtual void BeginPlay() override;
 };
