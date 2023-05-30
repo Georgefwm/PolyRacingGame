@@ -11,6 +11,4 @@ ATimeTrialGameMode::ATimeTrialGameMode()
 void ATimeTrialGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	
 }

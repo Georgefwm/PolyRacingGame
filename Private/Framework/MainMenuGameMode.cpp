@@ -8,9 +8,7 @@
 #include "UI/MenuHUD.h"
 #include "Controller/MenuPlayerController.h"
 #include "Customisation/VehicleCustomiser.h"
-#include "EntitySystem/MovieSceneEntitySystemRunner.h"
 #include "GameFramework/PlayerStart.h"
-#include "GameFramework/SpectatorPawn.h"
 #include "Kismet/GameplayStatics.h"
 
 AMainMenuGameMode::AMainMenuGameMode()
