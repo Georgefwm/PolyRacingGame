@@ -111,11 +111,11 @@ FReply SSinglePlayerMenuWidget::OnRaceClicked() const
 
 FReply SSinglePlayerMenuWidget::OnFreeRoamClicked() const
 {
-	// UPolyRacingSessionSubsystem* SessionSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UPolyRacingSessionSubsystem>();
-	// SessionSubsystem->CreateSession(0, true);
-	// SessionSubsystem->StartSession();
-	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_FreeRoamGamemode.BP_FreeRoamGamemode_C"));
+	UPolyRacingSessionSubsystem* SessionSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UPolyRacingSessionSubsystem>();
+	SessionSubsystem->CreateSession(1, true);
+	SessionSubsystem->StartSession();
 	
+	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_FreeRoamGamemode.BP_FreeRoamGamemode_C"));
 	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/Docks", true, LevelOptions);
 
 	
