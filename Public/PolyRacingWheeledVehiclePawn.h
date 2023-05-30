@@ -46,6 +46,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input Actions")
 	UInputAction* HandbrakeAction;
 	
+	void SetupInputMappingContext();
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 

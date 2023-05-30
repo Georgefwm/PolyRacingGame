@@ -16,12 +16,7 @@ APolyRacingWheeledVehiclePawn::APolyRacingWheeledVehiclePawn(const FObjectInitia
 	PrimaryActorTick.bCanEverTick = true;
 	GetMesh()->SetSimulatePhysics(true);
 	
-	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
-	{
-		UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-		InputSubsystem->ClearAllMappings();
-		InputSubsystem->AddMappingContext(InputMappingContext, 0);
-	}
+	SetupInputMappingContext();
 
 	VehicleCustomisationComponent = CreateDefaultSubobject<UVehicleCustomisationComponent>("Customisation Component");
 	VehicleCustomisationComponent->EditingMesh = GetMesh();
@@ -32,18 +27,23 @@ void APolyRacingWheeledVehiclePawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
-	{
-		UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-		InputSubsystem->ClearAllMappings();
-		InputSubsystem->AddMappingContext(InputMappingContext, 0);
-	}
+	SetupInputMappingContext();
 }
 
 // Called every frame
 void APolyRacingWheeledVehiclePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void APolyRacingWheeledVehiclePawn::SetupInputMappingContext()
+{
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+		InputSubsystem->ClearAllMappings();
+		InputSubsystem->AddMappingContext(InputMappingContext, 0);
+	}
 }
 
 // Called to bind functionality to input
