@@ -36,7 +36,10 @@ void UPolyRacingSessionSubsystem::CreateSession(int32 NumPublicConnections, bool
 	LastSessionSettings->bIsLANMatch = IsLANMatch;
 	LastSessionSettings->bShouldAdvertise = true;
 
-	LastSessionSettings->Set(SETTING_MAPNAME, FString("%LEVEL_NAME%"), EOnlineDataAdvertisementType::ViaOnlineService);
+	if (IsLANMatch)
+		LastSessionSettings->Set(SETTING_MAPNAME, FString("%LEVEL_NAME%"), EOnlineDataAdvertisementType::DontAdvertise);
+	else
+		LastSessionSettings->Set(SETTING_MAPNAME, FString("%LEVEL_NAME%"), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
 	CreateSessionCompleteDelegateHandle = SessionInterface->AddOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegate);
 
