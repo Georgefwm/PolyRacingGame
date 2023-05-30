@@ -4,6 +4,7 @@
 #include "UI/SinglePlayerMenuWidget.h"
 
 #include "Components/SizeBox.h"
+#include "Framework/PolyRacingSessionSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/GlobalMenuStyle.h"
 #include "UI/MainMenuWidget.h"
@@ -11,7 +12,7 @@
 #include "UI/UiStyles.h"
 #include "UI/VehicleCustomisationMenuWidget.h"
 
-#define LOCTEXT_NAMESPACE "garagemenu"
+#define LOCTEXT_NAMESPACE "singleplayermenu"
 
 void SSinglePlayerMenuWidget::Construct(const FArguments& InArgs)
 {
@@ -44,7 +45,6 @@ void SSinglePlayerMenuWidget::Construct(const FArguments& InArgs)
 			.Text(TitleText)
 			.LineHeightPercentage(2.f)
 		]
-
 		
 		+ SOverlay::Slot()
 		.HAlign(HAlign_Left)
@@ -59,15 +59,9 @@ void SSinglePlayerMenuWidget::Construct(const FArguments& InArgs)
 				.ButtonStyle(&Style->MenuButtonStyle)
 				.TextStyle(&Style->MenuButtonTextStyle)
 				.Text(RaceModeText)
+				.OnClicked(this, &SSinglePlayerMenuWidget::OnRaceClicked)
 			]
-		]
 
-		+ SOverlay::Slot()
-		.HAlign(HAlign_Left)
-		.VAlign(VAlign_Center)
-		.Padding(Style->MenuBoxMargin)
-		[
-			SNew(SVerticalBox)
 			+ SVerticalBox::Slot()
 			.Padding(Style->MenuButtonSpacingMargin)
 			[
@@ -75,9 +69,9 @@ void SSinglePlayerMenuWidget::Construct(const FArguments& InArgs)
 				.ButtonStyle(&Style->MenuButtonStyle)
 				.TextStyle(&Style->MenuButtonTextStyle)
 				.Text(FreeModeText)
+				.OnClicked(this, &SSinglePlayerMenuWidget::OnFreeRoamClicked)
 			]
 		]
-
 		
 		// Back Button
 		+ SOverlay::Slot()
@@ -116,7 +110,13 @@ FReply SSinglePlayerMenuWidget::OnRaceClicked() const
 
 FReply SSinglePlayerMenuWidget::OnFreeRoamClicked() const
 {
-	//UWorld::ServerTravel()
+	// UPolyRacingSessionSubsystem* SessionSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UPolyRacingSessionSubsystem>();
+	// SessionSubsystem->CreateSession(0, true);
+	// SessionSubsystem->StartSession();
+	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/PolygonStreetRacer/Maps/Demo_01", true, "listen");
+	
+
+	
 	return FReply::Handled();
 }
 
