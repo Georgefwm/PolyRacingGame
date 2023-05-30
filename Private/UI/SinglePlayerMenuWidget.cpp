@@ -4,6 +4,7 @@
 #include "UI/SinglePlayerMenuWidget.h"
 
 #include "Components/SizeBox.h"
+#include "Framework/FreeRoamGameMode.h"
 #include "Framework/PolyRacingSessionSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/GlobalMenuStyle.h"
@@ -113,9 +114,11 @@ FReply SSinglePlayerMenuWidget::OnFreeRoamClicked() const
 	// UPolyRacingSessionSubsystem* SessionSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UPolyRacingSessionSubsystem>();
 	// SessionSubsystem->CreateSession(0, true);
 	// SessionSubsystem->StartSession();
-	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/PolygonStreetRacer/Maps/Demo_01", true, "listen");
+	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_FreeRoamGamemode.BP_FreeRoamGamemode_C"));
 	
+	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/Docks", true, LevelOptions);
 
+	
 	
 	return FReply::Handled();
 }
