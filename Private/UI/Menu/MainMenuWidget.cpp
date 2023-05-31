@@ -7,6 +7,7 @@
 #include "UI/Menu/GarageMenuWidget.h"
 #include "UI/Style/GlobalMenuStyle.h"
 #include "UI/MenuHUD.h"
+#include "UI/Menu/MultiplayerMenuWidget.h"
 #include "UI/Style/UiStyles.h"
 
 #define LOCTEXT_NAMESPACE "mainmenu"
@@ -115,7 +116,10 @@ FReply SMainMenuWidget::OnSinglePlayerClicked() const
 
 FReply SMainMenuWidget::OnMultiPlayerClicked() const
 {
-	UE_LOG(LogTemp, Warning, TEXT("Multiplayer not implemented... yet"));
+	if (!OwningHUD->MultiplayerMenuWidget)
+		OwningHUD->MultiplayerMenuWidget = SNew(SMultiplayerMenuWidget).OwningHUD(OwningHUD);
+	
+	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->MultiplayerMenuWidget.ToSharedRef());
 	
 	return FReply::Handled();
 }

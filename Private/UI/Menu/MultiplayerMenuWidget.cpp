@@ -21,7 +21,7 @@ void SMultiplayerMenuWidget::Construct(const FArguments& InArgs)
 	
 
 	/** Text */
-	const FText TitleText		= LOCTEXT("menu title", "Single Player");
+	const FText TitleText		= LOCTEXT("menu title", "Multiplayer");
 	
 	const FText RaceModeText	= LOCTEXT("RaceModeText", "Race");
 	const FText FreeModeText	= LOCTEXT("FreeModeText", "Free Roam");

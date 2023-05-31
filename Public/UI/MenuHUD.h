@@ -20,6 +20,7 @@ public:
 	// Not initialised by default, on first usage
 	TSharedPtr<class SMainMenuWidget> MainMenuWidget;
 	TSharedPtr<class SSinglePlayerMenuWidget> SinglePlayerMenuWidget;
+	TSharedPtr<class SMultiplayerMenuWidget> MultiplayerMenuWidget;
 	TSharedPtr<class SGarageMenuWidget> GarageWidget;
 	TSharedPtr<class SVehicleCustomisationMenuWidget> CustomiseWidget;
 	
