@@ -21,10 +21,12 @@ void UPolyRacingGameInstance::EndLoadingScreen(UWorld* InLoadedWorld)
 	//
 	// 	GetMoviePlayer()->SetupLoadingScreen(LoadingScreen);
 	// }
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("MAP LOAD END"));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("MAP LOAD END"));
+	UE_LOG(LogTemp, Warning, TEXT("MAP END LOADING"))
 }
 
 void UPolyRacingGameInstance::BeginLoadingScreen(const FString& MapName)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("MAP LOAD START"));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("MAP LOAD START"));
+	UE_LOG(LogTemp, Warning, TEXT("MAP START LOADING"))
 }
