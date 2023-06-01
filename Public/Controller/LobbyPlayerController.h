@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Camera/CameraActor.h"
 #include "GameFramework/PlayerController.h"
 #include "LobbyPlayerController.generated.h"
 
@@ -22,19 +23,46 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	void SendChatMessage(const FText &ChatMessage);
 
+	UFUNCTION(Server, Unreliable, WithValidation)
+	void Server_SendChatMessage(const FText & ChatMessage);
+	void Server_SendChatMessage_Implementation(const FText & ChatMessage);
+	bool Server_SendChatMessage_Validate(const FText & ChatMessage);
+
+	
+	void ReceiveChatMessage(const FText &ChatMessage);
+	
+	UFUNCTION(Client, Unreliable)
+	void Client_ReceiveChatMessage(const FText &ChatMessage);
+	void Client_ReceiveChatMessage_Implementation(const FText &ChatMessage);
+
+
+	void KickPlayer(int32 PlayerIndex);
+	
 	UFUNCTION(Client, Reliable)
-	void ClientShowWidget();
+	void Client_GotKicked();
+	void Client_GotKicked_Implementation();
 
-	UFUNCTION(BlueprintCallable, Category = "Networked Sign")
-	void ChangeSignText(FText NewText, ANetworkSign* Sign);
 
+	void UpdatePlayerList(const TArray<struct FLobbyPlayerInfo>& PlayerInfoArray);
+	
+	UFUNCTION(Client, Reliable)
+	void Client_UpdatePlayerList(const TArray<FLobbyPlayerInfo>& PlayerInfoArray);
+	void Client_UpdatePlayerList_Implementation(const TArray<FLobbyPlayerInfo>& PlayerInfoArray);
+
+	
+	void RequestServerPlayerListUpdate();
+	
 	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerChangeText(const FText & NewText, ANetworkSign* Sign);
-
-	/** Contains the actual implementation of the ServerChangeText function */
-	void ServerChangeText_Implementation(const FText & NewText, ANetworkSign* Sign);
-
-	/** Validates the client. If the result is false the client will be disconnected */
-	FORCEINLINE bool ServerChangeText_Validate(const FText & NewText, ANetworkSign* Sign) { return true; }
+	void Server_RequestServerPlayerListUpdate();
+	void Server_RequestServerPlayerListUpdate_Implementation();
+	bool Server_RequestServerPlayerListUpdate_Validate();
+	
+	void SetCameraView();
+	
+	UFUNCTION(Client, Reliable)
+	void Client_SetCameraView();
+	void Client_SetCameraView_Implementation();
 };

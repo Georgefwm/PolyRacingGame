@@ -3,3 +3,13 @@
 
 #include "Controller/MenuPlayerController.h"
 
+AMenuPlayerController::AMenuPlayerController()
+	: APlayerController()
+{
+}
+
+void AMenuPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}

@@ -13,5 +13,8 @@ UCLASS()
 class POLYRACINGGAME_API AMenuPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+	AMenuPlayerController();
 	
+	virtual void BeginPlay() override;
 };
