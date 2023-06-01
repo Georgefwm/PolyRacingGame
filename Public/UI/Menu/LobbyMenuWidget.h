@@ -16,7 +16,7 @@ public:
 
 	SLATE_BEGIN_ARGS(SLobbyMenuWidget) {}
 
-	SLATE_ARGUMENT(TWeakObjectPtr<class AMenuHUD>, OwningHUD)
+	SLATE_ARGUMENT(TWeakObjectPtr<class ALobbyHUD>, OwningHUD)
 
 	SLATE_END_ARGS()
 
@@ -26,7 +26,7 @@ public:
 	FReply OnFreeRoamClicked() const;
 	FReply OnBackClicked() const;
 
-	TWeakObjectPtr<class AMenuHUD> OwningHUD;
+	TWeakObjectPtr<class ALobbyHUD> OwningHUD;
 	const struct FGlobalStyle* Style;
 
 	virtual bool SupportsKeyboardFocus() const override { return true; }

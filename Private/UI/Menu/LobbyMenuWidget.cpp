@@ -5,6 +5,7 @@
 
 #include "Framework/PolyRacingSessionSubsystem.h"
 #include "Kismet/GameplayStatics.h"
+#include "UI/LobbyHUD.h"
 #include "UI/Style/GlobalMenuStyle.h"
 #include "UI/Menu/MainMenuWidget.h"
 #include "UI/MenuHUD.h"
@@ -113,7 +114,6 @@ FReply SLobbyMenuWidget::OnFreeRoamClicked() const
 	SessionSubsystem->StartSession();
 
 	
-	
 	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_FreeRoamGamemode.BP_FreeRoamGamemode_C"));
 	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/Docks", true, LevelOptions);
 
@@ -124,10 +124,13 @@ FReply SLobbyMenuWidget::OnFreeRoamClicked() const
 
 FReply SLobbyMenuWidget::OnBackClicked() const
 {
-	if (!OwningHUD->MainMenuWidget)
-		OwningHUD->MainMenuWidget = SNew(SMainMenuWidget).OwningHUD(OwningHUD);
+	// TODO: Add "are you sure" prompt
 	
-	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->MainMenuWidget.ToSharedRef());
+	UPolyRacingSessionSubsystem* SessionSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UPolyRacingSessionSubsystem>();
+	SessionSubsystem->DestroySession();
+	
+	FString const LevelOptions = FString(TEXT("-game=/Game/GameModes/BP_MainMenuGamemode.BP_MainMenuGamemode_C"));
+	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/MainMenuScene", true, LevelOptions);
 	
 	return FReply::Handled();
 }
