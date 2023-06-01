@@ -112,8 +112,8 @@ FReply SMultiplayerMenuWidget::OnFreeRoamClicked() const
 	SessionSubsystem->CreateSession(6, false);
 	SessionSubsystem->StartSession();
 	
-	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_FreeRoamGamemode.BP_FreeRoamGamemode_C"));
-	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/Docks", true, LevelOptions);
+	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_LobbyGamemode.BP_LobbyGamemode_C"));
+	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/MainMenuScene", true, LevelOptions);
 
 	
 	
