@@ -9,7 +9,7 @@
 #include "Framework/PolyRacingPlayerState.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
-#include "UI/LobbyHUD.h"
+#include "UI/MenuHUD.h"
 
 
 // Sets default values
@@ -20,7 +20,7 @@ ALobbyGameMode::ALobbyGameMode()
 	bStartPlayersAsSpectators = true;
 
 	PlayerControllerClass = ALobbyPlayerController::StaticClass();
-	HUDClass = ALobbyHUD::StaticClass();
+	HUDClass = AMenuHUD::StaticClass();
 	PlayerStateClass = APolyRacingPlayerState::StaticClass();
 	
 	DefaultPawnClass = APolyRacingSpectatorPawn::StaticClass();
@@ -66,7 +66,11 @@ void ALobbyGameMode::StartPlay()
 	for (ALobbyPlayerController* Player : ConnectedPlayers)
 	{
 		Player->Client_SetCameraView();
+		
+		if (AMenuHUD* Hud = StaticCast<AMenuHUD*>(Player->GetHUD()))
+			Hud->ShowLobbyMenu();
 	}
+	
 }
 
 // Called every frame

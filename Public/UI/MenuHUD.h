@@ -23,6 +23,8 @@ public:
 	TSharedPtr<class SMultiplayerMenuWidget> MultiplayerMenuWidget;
 	TSharedPtr<class SGarageMenuWidget> GarageWidget;
 	TSharedPtr<class SVehicleCustomisationMenuWidget> CustomiseWidget;
+	TSharedPtr<class SLobbyMenuWidget> LobbyWidget;
+	
 	
 	TSharedPtr<class SWeakWidget> MenuWidgetContainer;
 
@@ -32,6 +34,10 @@ public:
 	virtual void BeginPlay() override;
 
 public:
-	void ShowMenu();
+	void ShowMainMenu();
+	void ShowLobbyMenu();
 	void RemoveMenu();
+
+	void OnBeginLoading();
+	void OnEndLoading();
 };

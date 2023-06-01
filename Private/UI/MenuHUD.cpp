@@ -5,22 +5,36 @@
 #include "UI/Menu/MainMenuWidget.h"
 #include "Widgets/SWeakWidget.h"
 #include "Engine/Engine.h"
+#include "UI/Menu/LobbyMenuWidget.h"
 
 void AMenuHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
 	VehicleCustomiser = GetGameInstance()->GetSubsystem<UVehicleCustomiser>();
-	
-	ShowMenu();
 }
 
-void AMenuHUD::ShowMenu()
+void AMenuHUD::ShowMainMenu()
 {
 	if (GEngine && GEngine->GameViewport)
 	{
 		MainMenuWidget = SNew(SMainMenuWidget).OwningHUD(this);
 		GEngine->GameViewport->AddViewportWidgetContent(SAssignNew(MenuWidgetContainer, SWeakWidget).PossiblyNullContent(MainMenuWidget.ToSharedRef()));
+
+		if (PlayerOwner)
+		{
+			PlayerOwner->bShowMouseCursor = true;
+			PlayerOwner->SetInputMode(FInputModeUIOnly());
+		}
+	}
+}
+
+void AMenuHUD::ShowLobbyMenu()
+{
+	if (GEngine && GEngine->GameViewport)
+	{
+		LobbyWidget = SNew(SLobbyMenuWidget).OwningHUD(this);
+		GEngine->GameViewport->AddViewportWidgetContent(SAssignNew(MenuWidgetContainer, SWeakWidget).PossiblyNullContent(LobbyWidget.ToSharedRef()));
 
 		if (PlayerOwner)
 		{
@@ -42,4 +56,14 @@ void AMenuHUD::RemoveMenu()
 			PlayerOwner->SetInputMode(FInputModeGameOnly());
 		}
 	}
+}
+
+
+void AMenuHUD::OnBeginLoading()
+{
+}
+
+void AMenuHUD::OnEndLoading()
+{
+	
 }

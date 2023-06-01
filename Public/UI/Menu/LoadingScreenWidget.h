@@ -4,27 +4,21 @@
 
 #include "SlateBasics.h"
 #include "SlateExtras.h"
-#include "Customisation/VehicleCustomiser.h"
-
 
 /**
  * 
  */
-class SLobbyMenuWidget : public SCompoundWidget
+class SLoadingScreenWidget : public SCompoundWidget
 {
 public:
 
-	SLATE_BEGIN_ARGS(SLobbyMenuWidget) {}
+	SLATE_BEGIN_ARGS(SLoadingScreenWidget) {}
 
 	SLATE_ARGUMENT(TWeakObjectPtr<class AMenuHUD>, OwningHUD)
 
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
-
-	FReply OnRaceClicked() const;
-	FReply OnFreeRoamClicked() const;
-	FReply OnBackClicked() const;
 
 	TWeakObjectPtr<class AMenuHUD> OwningHUD;
 	const struct FGlobalStyle* Style;

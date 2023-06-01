@@ -5,7 +5,6 @@
 
 #include "Framework/PolyRacingSessionSubsystem.h"
 #include "Kismet/GameplayStatics.h"
-#include "UI/LobbyHUD.h"
 #include "UI/Style/GlobalMenuStyle.h"
 #include "UI/Menu/MainMenuWidget.h"
 #include "UI/MenuHUD.h"

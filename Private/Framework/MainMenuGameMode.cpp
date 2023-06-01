@@ -59,4 +59,8 @@ void AMainMenuGameMode::StartPlay()
 		
 	if (Camera)
 		GetWorld()->GetFirstPlayerController()->SetViewTarget(Camera);
+
+	if (AMenuHUD* Hud = StaticCast<AMenuHUD*>(GetWorld()->GetFirstPlayerController()->GetHUD()))
+		Hud->ShowMainMenu();
+	
 }
