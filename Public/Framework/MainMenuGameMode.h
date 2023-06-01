@@ -16,5 +16,10 @@ class POLYRACINGGAME_API AMainMenuGameMode : public AGameModeBase
 
 	AMainMenuGameMode();
 
+	UPROPERTY()
+	ACameraActor* Camera;
+
 	virtual void BeginPlay() override;
+
+	virtual void StartPlay() override;
 };

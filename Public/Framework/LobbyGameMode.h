@@ -6,6 +6,20 @@
 #include "GameFramework/GameModeBase.h"
 #include "LobbyGameMode.generated.h"
 
+
+USTRUCT()
+struct FLobbyPlayerInfo
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY()
+	bool bPlayerReadyState = false;
+
+	UPROPERTY()
+	FString PlayerName;
+};
+
+
 UCLASS()
 class POLYRACINGGAME_API ALobbyGameMode : public AGameModeBase
 {
@@ -16,11 +30,16 @@ public:
 	ALobbyGameMode();
 
 	TArray<class ALobbyPlayerController*> ConnectedPlayers;
-	TArray<struct FLobbyPlayerInfo> ConnectedPlayerInfo;
+	TArray<FLobbyPlayerInfo> ConnectedPlayerInfo;
+
+	UPROPERTY()
+	ACameraActor* Camera;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void StartPlay() override;
 
 public:
 	// Called every frame
@@ -29,7 +48,7 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	virtual void Logout(AController* ExitingPlayer) override;
-
+	
 	//called from player controller when he sends a chat message
 	void ProdcastChatMessage(const FText & ChatMessage);
 
@@ -37,6 +56,8 @@ public:
 	void KickPlayer(int32 PlayerIndex);
 
 	void PlayerRequestUpdate();
+
+	FLobbyPlayerInfo GetPlayerInfoAtIndex(int Index);
 	
 	void UpdatePlayerList();
 
