@@ -24,8 +24,8 @@ void SLobbyMenuWidget::Construct(const FArguments& InArgs)
 	/** Text */
 	const FText TitleText		= LOCTEXT("menu title", "Lobby");
 	
-	const FText GarageText	= LOCTEXT("GarageText", "Garage");
-	const FText VetoMapText	= LOCTEXT("VetoMapText", "Veto Map");
+	const FText GarageText		= LOCTEXT("GarageText", "Garage");
+	const FText VetoMapText		= LOCTEXT("VetoMapText", "Veto Map");
 	
 	const FText BackText		= LOCTEXT("Back text", "Back");
 
