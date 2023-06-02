@@ -8,6 +8,7 @@
 #include "UI/Style/GlobalMenuStyle.h"
 #include "UI/Menu/MainMenuWidget.h"
 #include "UI/MenuHUD.h"
+#include "UI/Menu/GarageMenuWidget.h"
 #include "UI/Style/UiStyles.h"
 
 #define LOCTEXT_NAMESPACE "multiplayermenu"
@@ -23,8 +24,8 @@ void SLobbyMenuWidget::Construct(const FArguments& InArgs)
 	/** Text */
 	const FText TitleText		= LOCTEXT("menu title", "Lobby");
 	
-	const FText RaceModeText	= LOCTEXT("RaceModeText", "Race");
-	const FText FreeModeText	= LOCTEXT("FreeModeText", "Free Roam");
+	const FText GarageText	= LOCTEXT("GarageText", "Garage");
+	const FText VetoMapText	= LOCTEXT("VetoMapText", "Veto Map");
 	
 	const FText BackText		= LOCTEXT("Back text", "Back");
 
@@ -56,8 +57,8 @@ void SLobbyMenuWidget::Construct(const FArguments& InArgs)
 				SNew(SButton)
 				.ButtonStyle(&Style->MenuButtonStyle)
 				.TextStyle(&Style->MenuButtonTextStyle)
-				.Text(RaceModeText)
-				.OnClicked(this, &SLobbyMenuWidget::OnRaceClicked)
+				.Text(GarageText)
+				.OnClicked(this, &SLobbyMenuWidget::OnGarageClicked)
 			]
 
 			+ SVerticalBox::Slot()
@@ -66,8 +67,8 @@ void SLobbyMenuWidget::Construct(const FArguments& InArgs)
 				SNew(SButton)
 				.ButtonStyle(&Style->MenuButtonStyle)
 				.TextStyle(&Style->MenuButtonTextStyle)
-				.Text(FreeModeText)
-				.OnClicked(this, &SLobbyMenuWidget::OnFreeRoamClicked)
+				.Text(VetoMapText)
+				.OnClicked(this, &SLobbyMenuWidget::OnVetoMapClicked)
 			]
 		]
 		
@@ -100,24 +101,18 @@ void SLobbyMenuWidget::Construct(const FArguments& InArgs)
 	];
 }
 
-FReply SLobbyMenuWidget::OnRaceClicked() const
+FReply SLobbyMenuWidget::OnGarageClicked() const
 {
-
+	if (!OwningHUD->GarageWidget)
+		OwningHUD->GarageWidget = SNew(SGarageMenuWidget).OwningHUD(OwningHUD);
+	
+	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->GarageWidget.ToSharedRef());
+	
 	return FReply::Handled();
 }
 
-FReply SLobbyMenuWidget::OnFreeRoamClicked() const
+FReply SLobbyMenuWidget::OnVetoMapClicked() const
 {
-	UPolyRacingSessionSubsystem* SessionSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UPolyRacingSessionSubsystem>();
-	SessionSubsystem->CreateSession(6, false);
-	SessionSubsystem->StartSession();
-
-	
-	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_FreeRoamGamemode.BP_FreeRoamGamemode_C"));
-	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/Docks", true, LevelOptions);
-
-	
-	
 	return FReply::Handled();
 }
 
