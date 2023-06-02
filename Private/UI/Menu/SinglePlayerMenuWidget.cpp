@@ -16,6 +16,8 @@ void SSinglePlayerMenuWidget::Construct(const FArguments& InArgs)
 {
 	bCanSupportFocus = true;
 
+	PreviousMenu = InArgs._PreviousMenu;
+
 	OwningHUD = InArgs._OwningHUD;
 	Style = &FUiStyles::Get().GetWidgetStyle<FGlobalStyle>("PolyRacingMenuStyle");
 	
@@ -114,18 +116,13 @@ FReply SSinglePlayerMenuWidget::OnFreeRoamClicked() const
 	
 	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_FreeRoamGamemode.BP_FreeRoamGamemode_C"));
 	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/Docks", true, LevelOptions);
-
-	
 	
 	return FReply::Handled();
 }
 
 FReply SSinglePlayerMenuWidget::OnBackClicked() const
 {
-	if (!OwningHUD->MainMenuWidget)
-		OwningHUD->MainMenuWidget = SNew(SMainMenuWidget).OwningHUD(OwningHUD);
-	
-	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->MainMenuWidget.ToSharedRef());
+	OwningHUD->MenuWidgetContainer.Get()->SetContent(PreviousMenu.ToSharedRef());
 	
 	return FReply::Handled();
 }

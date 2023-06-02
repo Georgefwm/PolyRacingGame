@@ -122,10 +122,7 @@ FReply SMultiplayerMenuWidget::OnFreeRoamClicked() const
 
 FReply SMultiplayerMenuWidget::OnBackClicked() const
 {
-	if (!OwningHUD->MainMenuWidget)
-		OwningHUD->MainMenuWidget = SNew(SMainMenuWidget).OwningHUD(OwningHUD);
-	
-	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->MainMenuWidget.ToSharedRef());
+	OwningHUD->MenuWidgetContainer.Get()->SetContent(PreviousMenu.ToSharedRef());
 	
 	return FReply::Handled();
 }

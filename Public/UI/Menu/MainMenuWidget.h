@@ -15,6 +15,7 @@ public:
 	SLATE_BEGIN_ARGS(SMainMenuWidget) {}
 
 	SLATE_ARGUMENT(TWeakObjectPtr<class AMenuHUD>, OwningHUD)
+	SLATE_ARGUMENT(TSharedPtr<class SCompoundWidget>, PreviousMenu)
 
 	SLATE_END_ARGS()
 
@@ -25,6 +26,8 @@ public:
 	FReply OnGarageClicked() const;
 	FReply OnSettingsClicked() const;
 	FReply OnQuitClicked() const;
+	
+	TSharedPtr<SCompoundWidget> PreviousMenu;
 
 	TWeakObjectPtr<class AMenuHUD> OwningHUD;
 	const struct FGlobalStyle* Style;

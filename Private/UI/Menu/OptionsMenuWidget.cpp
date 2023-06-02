@@ -77,10 +77,7 @@ void SOptionsMenuWidget::Construct(const FArguments& InArgs)
 
 FReply SOptionsMenuWidget::OnBackClicked() const
 {
-	if (!OwningHUD->MainMenuWidget)
-		OwningHUD->MainMenuWidget = SNew(SMainMenuWidget).OwningHUD(OwningHUD);
-	
-	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->MainMenuWidget.ToSharedRef());
+	OwningHUD->MenuWidgetContainer.Get()->SetContent(PreviousMenu.ToSharedRef());
 	
 	return FReply::Handled();
 }

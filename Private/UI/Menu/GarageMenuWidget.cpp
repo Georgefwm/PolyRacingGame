@@ -177,7 +177,7 @@ FReply SGarageMenuWidget::SetSelectedSlot(int DesiredSlot)
 FReply SGarageMenuWidget::OnEditClicked() const
 {
 	if (!OwningHUD->CustomiseWidget)
-		OwningHUD->CustomiseWidget = SNew(SVehicleCustomisationMenuWidget).OwningHUD(OwningHUD);
+		OwningHUD->CustomiseWidget = SNew(SVehicleCustomisationMenuWidget).OwningHUD(OwningHUD).PreviousMenu(OwningHUD->GarageWidget);
 	
 	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->CustomiseWidget.ToSharedRef());
 	
@@ -193,13 +193,10 @@ FReply SGarageMenuWidget::OnSetActiveClicked() const
 
 FReply SGarageMenuWidget::OnBackClicked() const
 {
-	if (!OwningHUD->MainMenuWidget)
-		OwningHUD->MainMenuWidget = SNew(SMainMenuWidget).OwningHUD(OwningHUD);
-
 	// Change the preview to the active selection on exiting menu
 	OwningHUD->VehicleCustomiser->LoadConfiguration(OwningHUD->VehicleCustomiser->ActiveConfigurationSlotIndex);
 	
-	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->MainMenuWidget.ToSharedRef());
+	OwningHUD->MenuWidgetContainer.Get()->SetContent(PreviousMenu.ToSharedRef());
 	
 	return FReply::Handled();
 }

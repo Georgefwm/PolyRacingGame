@@ -134,10 +134,7 @@ FReply SVehicleCustomisationMenuWidget::OnSaveClicked()
 
 FReply SVehicleCustomisationMenuWidget::OnBackClicked()
 {
-	if (!OwningHUD->GarageWidget)
-		OwningHUD->GarageWidget = SNew(SGarageMenuWidget).OwningHUD(OwningHUD);
-	
-	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->GarageWidget.ToSharedRef());
+	OwningHUD->MenuWidgetContainer.Get()->SetContent(PreviousMenu.ToSharedRef());
 	
 	return FReply::Handled();
 }

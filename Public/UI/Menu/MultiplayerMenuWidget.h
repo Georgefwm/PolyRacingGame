@@ -17,6 +17,7 @@ public:
 	SLATE_BEGIN_ARGS(SMultiplayerMenuWidget) {}
 
 	SLATE_ARGUMENT(TWeakObjectPtr<class AMenuHUD>, OwningHUD)
+	SLATE_ARGUMENT(TSharedPtr<class SCompoundWidget>, PreviousMenu)
 
 	SLATE_END_ARGS()
 
@@ -25,6 +26,8 @@ public:
 	FReply OnRaceClicked() const;
 	FReply OnFreeRoamClicked() const;
 	FReply OnBackClicked() const;
+
+	TSharedPtr<SCompoundWidget> PreviousMenu;
 
 	TWeakObjectPtr<class AMenuHUD> OwningHUD;
 	const struct FGlobalStyle* Style;

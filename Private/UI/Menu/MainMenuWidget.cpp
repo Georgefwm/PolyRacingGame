@@ -107,7 +107,7 @@ void SMainMenuWidget::Construct(const FArguments& InArgs)
 FReply SMainMenuWidget::OnSinglePlayerClicked() const
 {
 	if (!OwningHUD->SinglePlayerMenuWidget)
-		OwningHUD->SinglePlayerMenuWidget = SNew(SSinglePlayerMenuWidget).OwningHUD(OwningHUD);
+		OwningHUD->SinglePlayerMenuWidget = SNew(SSinglePlayerMenuWidget).OwningHUD(OwningHUD).PreviousMenu(OwningHUD->MainMenuWidget);
 	
 	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->SinglePlayerMenuWidget.ToSharedRef());
 	
@@ -117,7 +117,7 @@ FReply SMainMenuWidget::OnSinglePlayerClicked() const
 FReply SMainMenuWidget::OnMultiPlayerClicked() const
 {
 	if (!OwningHUD->MultiplayerMenuWidget)
-		OwningHUD->MultiplayerMenuWidget = SNew(SMultiplayerMenuWidget).OwningHUD(OwningHUD);
+		OwningHUD->MultiplayerMenuWidget = SNew(SMultiplayerMenuWidget).OwningHUD(OwningHUD).PreviousMenu(OwningHUD->MainMenuWidget);
 	
 	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->MultiplayerMenuWidget.ToSharedRef());
 	
@@ -127,7 +127,7 @@ FReply SMainMenuWidget::OnMultiPlayerClicked() const
 FReply SMainMenuWidget::OnGarageClicked() const
 {
 	if (!OwningHUD->GarageWidget)
-		OwningHUD->GarageWidget = SNew(SGarageMenuWidget).OwningHUD(OwningHUD);
+		OwningHUD->GarageWidget = SNew(SGarageMenuWidget).OwningHUD(OwningHUD).PreviousMenu(OwningHUD->MainMenuWidget);
 	
 	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->GarageWidget.ToSharedRef());
 	
