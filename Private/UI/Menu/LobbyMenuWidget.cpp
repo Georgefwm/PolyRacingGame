@@ -104,7 +104,7 @@ void SLobbyMenuWidget::Construct(const FArguments& InArgs)
 FReply SLobbyMenuWidget::OnGarageClicked() const
 {
 	if (!OwningHUD->GarageWidget)
-		OwningHUD->GarageWidget = SNew(SGarageMenuWidget).OwningHUD(OwningHUD);
+		OwningHUD->GarageWidget = SNew(SGarageMenuWidget).OwningHUD(OwningHUD).PreviousMenu(OwningHUD->LobbyWidget.ToSharedRef());
 	
 	OwningHUD->MenuWidgetContainer.Get()->SetContent(OwningHUD->GarageWidget.ToSharedRef());
 	

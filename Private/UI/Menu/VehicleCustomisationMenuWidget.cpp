@@ -15,6 +15,8 @@ void SVehicleCustomisationMenuWidget::Construct(const FArguments& InArgs)
 {
 	bCanSupportFocus = true;
 
+	PreviousMenu = InArgs._PreviousMenu;
+
 	OwningHUD = InArgs._OwningHUD;
 	Style = &FUiStyles::Get().GetWidgetStyle<FGlobalStyle>("PolyRacingMenuStyle");
 
