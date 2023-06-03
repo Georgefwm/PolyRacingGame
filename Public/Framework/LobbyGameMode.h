@@ -35,6 +35,9 @@ public:
 	UPROPERTY()
 	ACameraActor* Camera;
 
+	UPROPERTY()
+	FString MapName = TEXT("/Game/Scenes/Docks");
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -50,7 +53,7 @@ public:
 	virtual void Logout(AController* ExitingPlayer) override;
 	
 	//called from player controller when he sends a chat message
-	void ProdcastChatMessage(const FText & ChatMessage);
+	void ProdcastChatMessage(const FText& ChatMessage);
 
 	//called from the host to kick a player
 	void KickPlayer(int32 PlayerIndex);

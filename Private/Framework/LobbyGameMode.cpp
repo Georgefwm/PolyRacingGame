@@ -121,6 +121,7 @@ void ALobbyGameMode::KickPlayer(int32 PlayerIndex)
 
 void ALobbyGameMode::PlayerRequestUpdate()
 {
+	UpdatePlayerList();
 }
 
 FLobbyPlayerInfo ALobbyGameMode::GetPlayerInfoAtIndex(int Index)
@@ -158,7 +159,7 @@ void ALobbyGameMode::UpdatePlayerList()
 
 void ALobbyGameMode::StartGameFromLobby()
 {
-	//GetWorld()->ServerTravel(GameMapName);
+	GetWorld()->ServerTravel(MapName);
 }
 
 bool ALobbyGameMode::IsAllPlayerReady() const
