@@ -155,6 +155,8 @@ void UPolyRacingSessionSubsystem::FindSessions(int32 MaxSearchResults, bool IsLA
 	// Set search params
 	LastSessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 
+	// LastSessionSearch->QuerySettings.Set(SETTING_MAPNAME, FString(), EOnlineComparisonOp::Equals);
+
 	
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 	if (!SessionInterface->FindSessions(*LocalPlayer->GetPreferredUniqueNetId(), LastSessionSearch.ToSharedRef()))

@@ -3,10 +3,11 @@
 
 #include "Controller/LobbyPlayerController.h"
 
+#include "Camera/CameraActor.h"
 #include "Framework/LobbyGameMode.h"
 #include "Framework/PolyRacingGameInstance.h"
 #include "Framework/PolyRacingPlayerState.h"
-#include "Kismet/GameplayStatics.h"
+#include "UI/MenuHUD.h"
 
 
 // Sets default values
@@ -14,14 +15,23 @@ ALobbyPlayerController::ALobbyPlayerController()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// TODO: Remove after testing
+	 
+	FLobbyPlayerInfo TestPlayer1 = FLobbyPlayerInfo();
+	TestPlayer1.PlayerName = FText::FromString("testplayer1");
+
+	FLobbyPlayerInfo TestPlayer2 = FLobbyPlayerInfo();
+	TestPlayer2.PlayerName = FText::FromString("testplayer2");
+	
+	LobbyPlayerInfoList.Add(MakeShareable<FLobbyPlayerInfo>(&TestPlayer1));
+	LobbyPlayerInfoList.Add(MakeShareable<FLobbyPlayerInfo>(&TestPlayer2));
 }
 
 // Called when the game starts or when spawned
 void ALobbyPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
 }
 
 // Called every frame
@@ -96,6 +106,10 @@ void ALobbyPlayerController::Client_GotKicked_Implementation()
 
 void ALobbyPlayerController::UpdatePlayerList(const TArray<FLobbyPlayerInfo>& PlayerInfoArray)
 {
+	if (AMenuHUD* MenuHUD = static_cast<AMenuHUD*>(GetHUD()))
+	{
+		
+	}
 }
 
 void ALobbyPlayerController::Client_UpdatePlayerList_Implementation(const TArray<FLobbyPlayerInfo>& PlayerInfoArray)
@@ -136,7 +150,7 @@ void ALobbyPlayerController::SetCameraView()
 	if (!GameMode)
 		return;
 
-	SetViewTarget(GameMode->Camera);
+	SetViewTarget(GameMode->Camera->GroupActor);
 }
 
 void ALobbyPlayerController::Client_SetCameraView_Implementation()

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "Customisation/VehicleCustomiser.h"
+#include "Framework/LobbyGameMode.h"
 #include "MenuHUD.generated.h"
 
 
@@ -37,6 +38,8 @@ public:
 	void ShowMainMenu();
 	void ShowLobbyMenu();
 	void RemoveMenu();
+
+	void UpdatePlayerList(FLobbyPlayerInfo LobbyPlayerInfo);
 
 	void OnBeginLoading();
 	void OnEndLoading();

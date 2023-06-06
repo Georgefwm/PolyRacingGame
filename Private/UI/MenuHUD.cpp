@@ -58,6 +58,10 @@ void AMenuHUD::RemoveMenu()
 	}
 }
 
+void AMenuHUD::UpdatePlayerList(FLobbyPlayerInfo LobbyPlayerInfo)
+{
+}
+
 
 void AMenuHUD::OnBeginLoading()
 {

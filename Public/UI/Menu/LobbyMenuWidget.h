@@ -5,6 +5,7 @@
 #include "SlateBasics.h"
 #include "SlateExtras.h"
 #include "Customisation/VehicleCustomiser.h"
+#include "Framework/LobbyGameMode.h"
 
 
 /**
@@ -26,6 +27,8 @@ public:
 	FReply OnGarageClicked() const;
 	FReply OnVetoMapClicked() const;
 	FReply OnBackClicked() const;
+
+	TSharedRef<ITableRow> GenerateItemRow(TSharedPtr<FLobbyPlayerInfo> Item, const TSharedRef<STableViewBase>& OwnerTable);
 
 	TSharedPtr<SCompoundWidget> PreviousMenu;
 

@@ -147,8 +147,8 @@ void ALobbyGameMode::UpdatePlayerList()
 			TempLobbyPlayerInfo.bPlayerReadyState = PlayerState->bIsReady;
 		else
 			TempLobbyPlayerInfo.bPlayerReadyState = false;
-
-		TempLobbyPlayerInfo.PlayerName = PlayerController->PlayerState->GetPlayerName();
+		
+		TempLobbyPlayerInfo.PlayerName = FText::FromString(PlayerController->PlayerState->GetPlayerName());
 		ConnectedPlayerInfo.Add(TempLobbyPlayerInfo);
 	}
 

@@ -3,6 +3,7 @@
 
 #include "UI/Menu/LobbyMenuWidget.h"
 
+#include "Controller/LobbyPlayerController.h"
 #include "Framework/PolyRacingSessionSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/Style/GlobalMenuStyle.h"
@@ -19,8 +20,14 @@ void SLobbyMenuWidget::Construct(const FArguments& InArgs)
 
 	OwningHUD = InArgs._OwningHUD;
 	Style = &FUiStyles::Get().GetWidgetStyle<FGlobalStyle>("PolyRacingMenuStyle");
-	
 
+	TArray<TSharedPtr<FLobbyPlayerInfo>> LobbyPlayerInfo;
+	
+	if (ALobbyPlayerController* PlayerController = static_cast<ALobbyPlayerController*>(OwningHUD->GetWorld()->GetFirstPlayerController()))
+	{
+		LobbyPlayerInfo = PlayerController->LobbyPlayerInfoList;
+	}
+	
 	/** Text */
 	const FText TitleText		= LOCTEXT("menu title", "Lobby");
 	
@@ -69,6 +76,20 @@ void SLobbyMenuWidget::Construct(const FArguments& InArgs)
 				.TextStyle(&Style->MenuButtonTextStyle)
 				.Text(VetoMapText)
 				.OnClicked(this, &SLobbyMenuWidget::OnVetoMapClicked)
+			]
+		]
+
+		// lobby player list
+		+ SOverlay::Slot()
+		.HAlign(HAlign_Left)
+		.VAlign(VAlign_Center)
+		.Padding(Style->MenuBoxMargin)
+		[
+			SNew(SBox)
+			[
+				SNew(SListView<TSharedPtr<FLobbyPlayerInfo>>)
+					.ListItemsSource(&LobbyPlayerInfo)
+					.OnGenerateRow(this, &SLobbyMenuWidget::GenerateItemRow)
 			]
 		]
 		
@@ -127,6 +148,24 @@ FReply SLobbyMenuWidget::OnBackClicked() const
 	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/MainMenuScene", true, LevelOptions);
 	
 	return FReply::Handled();
+}
+
+TSharedRef<ITableRow> SLobbyMenuWidget::GenerateItemRow(TSharedPtr<FLobbyPlayerInfo> Item, const TSharedRef<STableViewBase>& OwnerTable)
+{
+	return SNew(STableRow<TSharedPtr<FLobbyPlayerInfo>>, OwnerTable)
+ 		[
+ 			SNew(SHorizontalBox)
+ 			+ SHorizontalBox::Slot()
+			[
+				SNew(SBox)
+				[
+					SNew(STextBlock)
+					.TextStyle(&Style->MenuTitleStyle)
+					.Text(Item.Get()->PlayerName)
+					.LineHeightPercentage(2.f)
+				]
+			]
+ 		];
 }
 
 #undef LOCTEXT_NAMESPACE

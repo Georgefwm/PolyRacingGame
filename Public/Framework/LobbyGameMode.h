@@ -16,7 +16,7 @@ struct FLobbyPlayerInfo
 	bool bPlayerReadyState = false;
 
 	UPROPERTY()
-	FString PlayerName;
+	FText PlayerName;
 };
 
 

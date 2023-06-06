@@ -3,9 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Camera/CameraActor.h"
 #include "GameFramework/PlayerController.h"
 #include "LobbyPlayerController.generated.h"
+
+struct FLobbyPlayerInfo;
 
 UCLASS()
 class POLYRACINGGAME_API ALobbyPlayerController : public APlayerController
@@ -23,6 +24,9 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// Surely theres a better name...
+	TArray<TSharedPtr<FLobbyPlayerInfo>> LobbyPlayerInfoList;
 	
 	void SendChatMessage(const FText &ChatMessage);
 
