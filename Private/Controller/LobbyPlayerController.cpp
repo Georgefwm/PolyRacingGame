@@ -16,22 +16,32 @@ ALobbyPlayerController::ALobbyPlayerController()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// TODO: Remove after testing
-	 
-	FLobbyPlayerInfo TestPlayer1 = FLobbyPlayerInfo();
-	TestPlayer1.PlayerName = FText::FromString("testplayer1");
-
-	FLobbyPlayerInfo TestPlayer2 = FLobbyPlayerInfo();
-	TestPlayer2.PlayerName = FText::FromString("testplayer2");
+	LobbyPlayerInfoList = TArray<TSharedPtr<FLobbyPlayerInfo>>();
 	
-	LobbyPlayerInfoList.Add(MakeShareable<FLobbyPlayerInfo>(&TestPlayer1));
-	LobbyPlayerInfoList.Add(MakeShareable<FLobbyPlayerInfo>(&TestPlayer2));
+	for (int i = 0; i < 10; i++)
+	{
+		FLobbyPlayerInfo TestPlayer = FLobbyPlayerInfo();
+		TestPlayer.PlayerName = FText::FromString("Player " + i);
+
+		LobbyPlayerInfoList.Add(MakeShareable<FLobbyPlayerInfo>(&TestPlayer));
+	}
 }
 
 // Called when the game starts or when spawned
 void ALobbyPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// TODO: Remove after testing
+	 
+	// FLobbyPlayerInfo TestPlayer1 = FLobbyPlayerInfo();
+	// TestPlayer1.PlayerName = FText::FromString("testplayer1");
+	//
+	// FLobbyPlayerInfo TestPlayer2 = FLobbyPlayerInfo();
+	// TestPlayer2.PlayerName = FText::FromString("testplayer2");
+	//
+	// LobbyPlayerInfoList.Add(MakeShareable<FLobbyPlayerInfo>(&TestPlayer1));
+	// LobbyPlayerInfoList.Add(MakeShareable<FLobbyPlayerInfo>(&TestPlayer2));
 }
 
 // Called every frame
@@ -150,14 +160,11 @@ void ALobbyPlayerController::SetCameraView()
 	if (!GameMode)
 		return;
 
-	SetViewTarget(GameMode->Camera->GroupActor);
+	SetViewTarget(GameMode->Camera);
 }
 
 void ALobbyPlayerController::Client_SetCameraView_Implementation()
 {
-	if (!HasAuthority())
-		return;
-
 	SetCameraView();
 }
 
