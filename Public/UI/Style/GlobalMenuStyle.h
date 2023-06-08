@@ -77,6 +77,31 @@ struct FGlobalStyle : public FSlateWidgetStyle
 
 	UPROPERTY(EditAnywhere, Category = MenuActionButton)
 	FMargin MenuActionButtonContainerMargin;
+
+	
+	UPROPERTY(EditAnywhere, Category = LobbyPlayerList)
+	FMargin LobbyPlayerListBoxMargin;
+	
+	UPROPERTY(EditAnywhere, Category = LobbyPlayerList)
+	FTableViewStyle LobbyPlayerListTableViewStyle;
+
+	UPROPERTY(EditAnywhere, Category = LobbyPlayerList)
+	FHeaderRowStyle LobbyPlayerListTableHeaderStyle;
+	
+	UPROPERTY(EditAnywhere, Category = LobbyPlayerList)
+	FTableRowStyle LobbyPlayerListTableRowStyle;
+
+	UPROPERTY(EditAnywhere, Category = LobbyPlayerList)
+	FTextBlockStyle LobbyPlayerHeaderTextStyle;
+	
+	UPROPERTY(EditAnywhere, Category = LobbyPlayerList)
+	FTextBlockStyle LobbyPlayerTextStyle;
+
+	UPROPERTY(EditAnywhere, Category = LobbyPlayerList)
+	FMargin LobbyPlayerTextMargin;
+
+	UPROPERTY(EditAnywhere, Category = LobbyPlayerList)
+	float LobbyPlayerBoxWidthOverride;
 };
 
 // Provides a widget style container to allow us to edit properties in-editor
