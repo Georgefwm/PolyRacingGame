@@ -124,12 +124,12 @@ void ALobbyGameMode::PlayerRequestUpdate()
 	UpdatePlayerList();
 }
 
-FLobbyPlayerInfo ALobbyGameMode::GetPlayerInfoAtIndex(int Index)
+FLobbyPlayerInfo* ALobbyGameMode::GetPlayerInfoAtIndex(int Index)
 {
 	if (!ConnectedPlayerInfo.IsValidIndex(Index))
-		return ConnectedPlayerInfo.GetData()[Index];
+		return &ConnectedPlayerInfo.GetData()[Index];
 	
-	return FLobbyPlayerInfo();
+	return new FLobbyPlayerInfo();
 }
 
 void ALobbyGameMode::UpdatePlayerList()

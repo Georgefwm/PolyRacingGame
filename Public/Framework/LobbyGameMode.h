@@ -60,7 +60,7 @@ public:
 
 	void PlayerRequestUpdate();
 
-	FLobbyPlayerInfo GetPlayerInfoAtIndex(int Index);
+	FLobbyPlayerInfo* GetPlayerInfoAtIndex(int Index);
 	
 	void UpdatePlayerList();
 
