@@ -50,7 +50,7 @@ public:
 	void Client_GotKicked_Implementation();
 
 
-	void UpdatePlayerList(const TArray<struct FLobbyPlayerInfo>& PlayerInfoArray);
+	void UpdatePlayerList(const TArray<FLobbyPlayerInfo>& PlayerInfoArray);
 	
 	UFUNCTION(Client, Reliable)
 	void Client_UpdatePlayerList(const TArray<FLobbyPlayerInfo>& PlayerInfoArray);

@@ -15,16 +15,6 @@ ALobbyPlayerController::ALobbyPlayerController()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	LobbyPlayerInfoList = TArray<TSharedPtr<FLobbyPlayerInfo>>();
-	
-	for (int i = 0; i < 10; i++)
-	{
-		FLobbyPlayerInfo TestPlayer = FLobbyPlayerInfo();
-		TestPlayer.PlayerName = FText::FromString("Player " + i);
-
-		LobbyPlayerInfoList.Add(MakeShareable<FLobbyPlayerInfo>(&TestPlayer));
-	}
 }
 
 // Called when the game starts or when spawned
@@ -32,16 +22,19 @@ void ALobbyPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// TODO: Remove after testing
-	 
-	// FLobbyPlayerInfo TestPlayer1 = FLobbyPlayerInfo();
-	// TestPlayer1.PlayerName = FText::FromString("testplayer1");
-	//
-	// FLobbyPlayerInfo TestPlayer2 = FLobbyPlayerInfo();
-	// TestPlayer2.PlayerName = FText::FromString("testplayer2");
-	//
-	// LobbyPlayerInfoList.Add(MakeShareable<FLobbyPlayerInfo>(&TestPlayer1));
-	// LobbyPlayerInfoList.Add(MakeShareable<FLobbyPlayerInfo>(&TestPlayer2));
+	LobbyPlayerInfoList = TArray<TSharedPtr<FLobbyPlayerInfo>>();
+	
+	for (int i = 0; i < 8; i++)
+	{
+		FLobbyPlayerInfo* TestPlayer = new FLobbyPlayerInfo();
+		
+		TestPlayer->PlayerName = FText::FromString(TEXT("player " + FString::FromInt(i)));
+
+		TSharedPtr<FLobbyPlayerInfo> PlayerInfo = MakeShareable(TestPlayer);
+		LobbyPlayerInfoList.Add(PlayerInfo);
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("LobbyPlayerInfoList initialised"))
 }
 
 // Called every frame
