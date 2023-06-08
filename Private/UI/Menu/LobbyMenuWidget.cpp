@@ -21,12 +21,7 @@ void SLobbyMenuWidget::Construct(const FArguments& InArgs)
 	OwningHUD = InArgs._OwningHUD;
 	Style = &FUiStyles::Get().GetWidgetStyle<FGlobalStyle>("PolyRacingMenuStyle");
 
-	TArray<TSharedPtr<FLobbyPlayerInfo>> LobbyPlayerInfo;
-	
-	if (ALobbyPlayerController* PlayerController = static_cast<ALobbyPlayerController*>(OwningHUD->GetWorld()->GetFirstPlayerController()))
-	{
-		LobbyPlayerInfo = PlayerController->LobbyPlayerInfoList;
-	}
+	const ALobbyPlayerController* PlayerController = static_cast<ALobbyPlayerController*>(OwningHUD->GetWorld()->GetFirstPlayerController());
 	
 	/** Text */
 	const FText TitleText		= LOCTEXT("menu title", "Lobby");
@@ -81,15 +76,27 @@ void SLobbyMenuWidget::Construct(const FArguments& InArgs)
 
 		// lobby player list
 		+ SOverlay::Slot()
-		.HAlign(HAlign_Left)
+		.HAlign(HAlign_Right)
 		.VAlign(VAlign_Center)
-		.Padding(Style->MenuBoxMargin)
+		.Padding(Style->LobbyPlayerListBoxMargin)
 		[
 			SNew(SBox)
+			.WidthOverride(500.f)
 			[
 				SNew(SListView<TSharedPtr<FLobbyPlayerInfo>>)
-					.ListItemsSource(&LobbyPlayerInfo)
-					.OnGenerateRow(this, &SLobbyMenuWidget::GenerateItemRow)
+				.ListViewStyle(&Style->LobbyPlayerListTableViewStyle)
+				.ListItemsSource(&PlayerController->LobbyPlayerInfoList)
+				.OnGenerateRow(this, &SLobbyMenuWidget::GenerateItemRow)
+				.HeaderRow(
+					SNew(SHeaderRow)
+					.Style(&Style->LobbyPlayerListTableHeaderStyle)
+					+ SHeaderRow::Column("Name")
+					[
+						SNew(STextBlock)
+						.TextStyle(&Style->LobbyPlayerHeaderTextStyle)
+						.Text(FText::FromString("Name"))
+					]
+				)
 			]
 		]
 		
@@ -100,7 +107,7 @@ void SLobbyMenuWidget::Construct(const FArguments& InArgs)
 		.Padding(Style->MenuActionButtonContainerMargin)
 		[
 			SNew(SBox)
-			.WidthOverride(1000.f)
+			.WidthOverride(Style->LobbyPlayerBoxWidthOverride)
 			[
 				SNew(SHorizontalBox)
 				+ SHorizontalBox::Slot()
@@ -152,20 +159,25 @@ FReply SLobbyMenuWidget::OnBackClicked() const
 
 TSharedRef<ITableRow> SLobbyMenuWidget::GenerateItemRow(TSharedPtr<FLobbyPlayerInfo> Item, const TSharedRef<STableViewBase>& OwnerTable)
 {
+	UE_LOG(LogTemp, Warning, TEXT("GenerateItemRow called"))
+	
 	return SNew(STableRow<TSharedPtr<FLobbyPlayerInfo>>, OwnerTable)
- 		[
- 			SNew(SHorizontalBox)
- 			+ SHorizontalBox::Slot()
+		.Style(&Style->LobbyPlayerListTableRowStyle)
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
 			[
 				SNew(SBox)
 				[
 					SNew(STextBlock)
-					.TextStyle(&Style->MenuTitleStyle)
-					.Text(Item.Get()->PlayerName)
-					.LineHeightPercentage(2.f)
+					.Margin(Style->LobbyPlayerTextMargin)
+					.TextStyle(&Style->LobbyPlayerTextStyle)
+					.Text(FText(Item->PlayerName))
 				]
 			]
- 		];
+		];
+	
+
 }
 
 #undef LOCTEXT_NAMESPACE
