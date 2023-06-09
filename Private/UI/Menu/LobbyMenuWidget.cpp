@@ -166,29 +166,6 @@ FReply SLobbyMenuWidget::OnBackClicked() const
 	return FReply::Handled();
 }
 
-void SLobbyMenuWidget::UpdatePlayerList(const TArray<FLobbyPlayerInfo>& PlayerInfoArray)
-{
-	UE_LOG(LogTemp, Warning, TEXT("PLAYERCONTROLLER: Updating player list"));
-	
-	for (int PlayerIndex = 0; PlayerIndex < PlayerInfoArray.Num(); PlayerIndex++)
-	{
-		FLobbyPlayerInfo* TempPlayerInfo = new FLobbyPlayerInfo();
-
-		if (PlayerInfoArray.IsValidIndex(PlayerIndex))
-			TempPlayerInfo->PlayerName = PlayerInfoArray.GetData()[PlayerIndex].PlayerName;
-		else
-			TempPlayerInfo->PlayerName = FText::FromString(TEXT("Searching for player... "));
-		
-		
-		TSharedPtr<FLobbyPlayerInfo> PlayerInfo = MakeShareable(TempPlayerInfo);
-
-		if (LobbyPlayerInfoList.IsValidIndex(PlayerIndex))
-			LobbyPlayerInfoList[PlayerIndex] = PlayerInfo;
-		else
-			LobbyPlayerInfoList.Add(PlayerInfo);
-	}
-}
-
 TSharedRef<ITableRow> SLobbyMenuWidget::GenerateItemRow(TSharedPtr<FLobbyPlayerInfo> Item, const TSharedRef<STableViewBase>& OwnerTable)
 {
 	UE_LOG(LogTemp, Warning, TEXT("GenerateItemRow: %s"), *FText(Item->PlayerName).ToString())
