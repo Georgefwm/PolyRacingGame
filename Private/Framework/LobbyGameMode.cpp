@@ -6,6 +6,7 @@
 #include "PolyRacingSpectatorPawn.h"
 #include "Camera/CameraActor.h"
 #include "Controller/LobbyPlayerController.h"
+#include "Framework/LobbyGameState.h"
 #include "Framework/PolyRacingPlayerState.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
@@ -21,6 +22,7 @@ ALobbyGameMode::ALobbyGameMode()
 
 	PlayerControllerClass = ALobbyPlayerController::StaticClass();
 	HUDClass = AMenuHUD::StaticClass();
+	GameStateClass = ALobbyGameState::StaticClass();
 	PlayerStateClass = APolyRacingPlayerState::StaticClass();
 	
 	DefaultPawnClass = APolyRacingSpectatorPawn::StaticClass();
@@ -70,7 +72,8 @@ void ALobbyGameMode::StartPlay()
 		if (AMenuHUD* Hud = StaticCast<AMenuHUD*>(Player->GetHUD()))
 			Hud->ShowLobbyMenu();
 	}
-	
+
+	UpdatePlayerList();
 }
 
 // Called every frame
@@ -83,12 +86,20 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	// If the joining player is a lobby player controller, add him to a list of connected Players
+	
+
+	// If the joining player is a lobby player controller, add them to a list of connected Players
 	ALobbyPlayerController* JoiningPlayer = Cast<ALobbyPlayerController>(NewPlayer);
 	if (!JoiningPlayer)
 		return;
 	
+	UE_LOG(LogTemp, Warning, TEXT("GAMEMODE: Player joined the lobby"))
+	
 	ConnectedPlayers.Add(JoiningPlayer);
+
+	UpdatePlayerList();
+
+	DebugPrintConnectedPlayers();
 }
 
 void ALobbyGameMode::Logout(AController* ExitingPlayer)
@@ -103,7 +114,8 @@ void ALobbyGameMode::Logout(AController* ExitingPlayer)
 	}
 	
 	ConnectedPlayers.Remove(LobbyPlayerController);
-	UpdatePlayerList();
+	
+	PlayerRequestUpdate();
 }
 
 void ALobbyGameMode::ProdcastChatMessage(const FText& ChatMessage)
@@ -134,6 +146,13 @@ FLobbyPlayerInfo* ALobbyGameMode::GetPlayerInfoAtIndex(int Index)
 
 void ALobbyGameMode::UpdatePlayerList()
 {
+	if (!HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("GAMEMODE: I dont have auth"))
+		return;
+	}
+		
+	
 	// Empty the PlayerInfo Array to re-populate it
 	ConnectedPlayerInfo.Empty();
 
@@ -142,13 +161,13 @@ void ALobbyGameMode::UpdatePlayerList()
 	{
 		FLobbyPlayerInfo TempLobbyPlayerInfo;
 
-		APolyRacingPlayerState* PlayerState = Cast<APolyRacingPlayerState>(PlayerController->PlayerState);
-		if (PlayerState)
+		TempLobbyPlayerInfo.PlayerName = FText::FromString(PlayerController->GetName());
+		
+		if (APolyRacingPlayerState* PlayerState = Cast<APolyRacingPlayerState>(PlayerController->PlayerState))
 			TempLobbyPlayerInfo.bPlayerReadyState = PlayerState->bIsReady;
 		else
 			TempLobbyPlayerInfo.bPlayerReadyState = false;
 		
-		TempLobbyPlayerInfo.PlayerName = FText::FromString(PlayerController->PlayerState->GetPlayerName());
 		ConnectedPlayerInfo.Add(TempLobbyPlayerInfo);
 	}
 
@@ -159,7 +178,7 @@ void ALobbyGameMode::UpdatePlayerList()
 
 void ALobbyGameMode::StartGameFromLobby()
 {
-	GetWorld()->ServerTravel(MapName);
+	GetWorld()->ServerTravel(NextMap);
 }
 
 bool ALobbyGameMode::IsAllPlayerReady() const
@@ -175,5 +194,18 @@ bool ALobbyGameMode::IsAllPlayerReady() const
 	}
 	
 	return true;
+}
+
+void ALobbyGameMode::DebugPrintConnectedPlayers()
+{
+	UE_LOG(LogTemp, Warning, TEXT("------------------------------------"));
+	UE_LOG(LogTemp, Warning, TEXT("          Current Lobby"));
+	UE_LOG(LogTemp, Warning, TEXT("Current Lobby Size: %i/8"), ConnectedPlayers.Num());
+	UE_LOG(LogTemp, Warning, TEXT("------------------------------------"));
+	for (ALobbyPlayerController* PlayerController : ConnectedPlayers)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player: %s"), *PlayerController->GetName());
+	}
+	UE_LOG(LogTemp, Warning, TEXT("------------------------------------"));
 }
 

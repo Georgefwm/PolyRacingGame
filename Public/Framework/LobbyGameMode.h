@@ -30,13 +30,14 @@ public:
 	ALobbyGameMode();
 
 	TArray<class ALobbyPlayerController*> ConnectedPlayers;
+	
 	TArray<FLobbyPlayerInfo> ConnectedPlayerInfo;
 
 	UPROPERTY()
-	ACameraActor* Camera;
-
+	FString NextMap = TEXT("/Game/Scenes/Docks");
+	
 	UPROPERTY()
-	FString MapName = TEXT("/Game/Scenes/Docks");
+	ACameraActor* Camera;
 
 protected:
 	// Called when the game starts or when spawned
@@ -67,4 +68,6 @@ public:
 	void StartGameFromLobby();
 
 	bool IsAllPlayerReady() const;
+
+	void DebugPrintConnectedPlayers();
 };

@@ -18,10 +18,19 @@ void SLobbyMenuWidget::Construct(const FArguments& InArgs)
 {
 	bCanSupportFocus = true;
 
+	LobbyPlayerInfoList = TArray<TSharedPtr<FLobbyPlayerInfo>>();
+	
+	for (int i = 0; i < 8; i++)
+	{
+		FLobbyPlayerInfo* TestPlayer = new FLobbyPlayerInfo();
+		TestPlayer->PlayerName = FText::FromString(TEXT("Searching for player... "));
+
+		TSharedPtr<FLobbyPlayerInfo> PlayerInfo = MakeShareable(TestPlayer);
+		LobbyPlayerInfoList.Add(PlayerInfo);
+	}
+
 	OwningHUD = InArgs._OwningHUD;
 	Style = &FUiStyles::Get().GetWidgetStyle<FGlobalStyle>("PolyRacingMenuStyle");
-
-	const ALobbyPlayerController* PlayerController = static_cast<ALobbyPlayerController*>(OwningHUD->GetWorld()->GetFirstPlayerController());
 	
 	/** Text */
 	const FText TitleText		= LOCTEXT("menu title", "Lobby");
@@ -83,9 +92,9 @@ void SLobbyMenuWidget::Construct(const FArguments& InArgs)
 			SNew(SBox)
 			.WidthOverride(500.f)
 			[
-				SNew(SListView<TSharedPtr<FLobbyPlayerInfo>>)
+				SAssignNew(ListViewWidget, SListView<TSharedPtr<FLobbyPlayerInfo>>)
 				.ListViewStyle(&Style->LobbyPlayerListTableViewStyle)
-				.ListItemsSource(&PlayerController->LobbyPlayerInfoList)
+				.ListItemsSource(&LobbyPlayerInfoList)
 				.OnGenerateRow(this, &SLobbyMenuWidget::GenerateItemRow)
 				.HeaderRow(
 					SNew(SHeaderRow)
@@ -157,8 +166,33 @@ FReply SLobbyMenuWidget::OnBackClicked() const
 	return FReply::Handled();
 }
 
+void SLobbyMenuWidget::UpdatePlayerList(const TArray<FLobbyPlayerInfo>& PlayerInfoArray)
+{
+	UE_LOG(LogTemp, Warning, TEXT("PLAYERCONTROLLER: Updating player list"));
+	
+	for (int PlayerIndex = 0; PlayerIndex < PlayerInfoArray.Num(); PlayerIndex++)
+	{
+		FLobbyPlayerInfo* TempPlayerInfo = new FLobbyPlayerInfo();
+
+		if (PlayerInfoArray.IsValidIndex(PlayerIndex))
+			TempPlayerInfo->PlayerName = PlayerInfoArray.GetData()[PlayerIndex].PlayerName;
+		else
+			TempPlayerInfo->PlayerName = FText::FromString(TEXT("Searching for player... "));
+		
+		
+		TSharedPtr<FLobbyPlayerInfo> PlayerInfo = MakeShareable(TempPlayerInfo);
+
+		if (LobbyPlayerInfoList.IsValidIndex(PlayerIndex))
+			LobbyPlayerInfoList[PlayerIndex] = PlayerInfo;
+		else
+			LobbyPlayerInfoList.Add(PlayerInfo);
+	}
+}
+
 TSharedRef<ITableRow> SLobbyMenuWidget::GenerateItemRow(TSharedPtr<FLobbyPlayerInfo> Item, const TSharedRef<STableViewBase>& OwnerTable)
 {
+	UE_LOG(LogTemp, Warning, TEXT("GenerateItemRow: %s"), *FText(Item->PlayerName).ToString())
+	
 	return SNew(STableRow<TSharedPtr<FLobbyPlayerInfo>>, OwnerTable)
 		.Style(&Style->LobbyPlayerListTableRowStyle)
 		[

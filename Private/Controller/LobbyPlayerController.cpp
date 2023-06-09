@@ -8,6 +8,7 @@
 #include "Framework/PolyRacingGameInstance.h"
 #include "Framework/PolyRacingPlayerState.h"
 #include "UI/MenuHUD.h"
+#include "UI/Menu/LobbyMenuWidget.h"
 
 
 // Sets default values
@@ -27,14 +28,11 @@ void ALobbyPlayerController::BeginPlay()
 	for (int i = 0; i < 8; i++)
 	{
 		FLobbyPlayerInfo* TestPlayer = new FLobbyPlayerInfo();
-		
-		TestPlayer->PlayerName = FText::FromString(TEXT("player " + FString::FromInt(i)));
+		TestPlayer->PlayerName = FText::FromString(TEXT("Searching for player... "));
 
 		TSharedPtr<FLobbyPlayerInfo> PlayerInfo = MakeShareable(TestPlayer);
 		LobbyPlayerInfoList.Add(PlayerInfo);
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("LobbyPlayerInfoList initialised"))
 }
 
 // Called every frame
@@ -109,9 +107,32 @@ void ALobbyPlayerController::Client_GotKicked_Implementation()
 
 void ALobbyPlayerController::UpdatePlayerList(const TArray<FLobbyPlayerInfo>& PlayerInfoArray)
 {
-	if (AMenuHUD* MenuHUD = static_cast<AMenuHUD*>(GetHUD()))
+	UE_LOG(LogTemp, Warning, TEXT("PLAYERCONTROLLER: Updating player list"));
+
+	// TODO: remove magic number
+	for (int PlayerIndex = 0; PlayerIndex < 8; PlayerIndex++)
 	{
+		FLobbyPlayerInfo* TempPlayerInfo = new FLobbyPlayerInfo();
+
+		if (PlayerInfoArray.IsValidIndex(PlayerIndex))
+		{
+			TempPlayerInfo->PlayerName = PlayerInfoArray.GetData()[PlayerIndex].PlayerName;
+		}
+		else
+		{
+			TempPlayerInfo->PlayerName = FText::FromString(TEXT("Searching for player... "));
+		}
 		
+		if (LobbyPlayerInfoList.IsValidIndex(PlayerIndex))
+		{
+			LobbyPlayerInfoList[PlayerIndex] = MakeShareable(TempPlayerInfo);
+		}
+		else
+		{
+			LobbyPlayerInfoList.Add(MakeShareable(TempPlayerInfo));
+		}
+		
+		GetHUD<AMenuHUD>()->UpdateLobby();
 	}
 }
 

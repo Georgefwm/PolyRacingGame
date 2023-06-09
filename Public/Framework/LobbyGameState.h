@@ -3,11 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameState.h"
+#include "GameFramework/GameStateBase.h"
+#include "LobbyGameMode.h"
 #include "LobbyGameState.generated.h"
 
+struct FLobbyPlayerInfo;
+class ALobbyPlayerController;
+
 UCLASS()
-class POLYRACINGGAME_API ALobbyGameState : public AGameState
+class POLYRACINGGAME_API ALobbyGameState : public AGameStateBase
 {
 	GENERATED_BODY()
 
@@ -23,9 +27,5 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	TArray<class ALobbyPlayerController*> ConnectedPlayers;
-	TArray<FLobbyPlayerInfo> ConnectedPlayerInfo;
-
-	UPROPERTY()
-	FString NextMap = TEXT("/Game/Scenes/Docks");
+	
 };

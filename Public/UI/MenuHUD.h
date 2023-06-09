@@ -39,7 +39,7 @@ public:
 	void ShowLobbyMenu();
 	void RemoveMenu();
 
-	void UpdatePlayerList(FLobbyPlayerInfo LobbyPlayerInfo);
+	void UpdateLobby();
 
 	void OnBeginLoading();
 	void OnEndLoading();

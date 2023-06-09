@@ -28,6 +28,10 @@ public:
 	FReply OnVetoMapClicked() const;
 	FReply OnBackClicked() const;
 
+	void UpdatePlayerList(const TArray<FLobbyPlayerInfo>& PlayerInfoArray);
+
+	TArray<TSharedPtr<FLobbyPlayerInfo>> LobbyPlayerInfoList;
+	TSharedPtr<SListView<TSharedPtr<FLobbyPlayerInfo>>> ListViewWidget;
 	TSharedRef<ITableRow> GenerateItemRow(TSharedPtr<FLobbyPlayerInfo> Item, const TSharedRef<STableViewBase>& OwnerTable);
 
 	TSharedPtr<SCompoundWidget> PreviousMenu;
