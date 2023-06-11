@@ -13,6 +13,19 @@ UPolyRacingSessionSubsystem::UPolyRacingSessionSubsystem()
 	, FindSessionsCompleteDelegate(		FOnFindSessionsCompleteDelegate::CreateUObject(		this, &ThisClass::OnFindSessionsCompleted))
 	, JoinSessionCompleteDelegate(		FOnJoinSessionCompleteDelegate::CreateUObject(		this, &ThisClass::OnJoinSessionCompleted))
 {
+	FString const GameModeDataTablePath = TEXT("/Script/Engine.DataTable'/Game/GameModes/DT_GameModeTable.DT_GameModeTable'");
+	
+	GameModes = Cast<UDataTable>(FSoftObjectPath(*GameModeDataTablePath).ResolveObject());
+	if (!GameModes) GameModes = Cast<UDataTable>(FSoftObjectPath(*GameModeDataTablePath).TryLoad());
+	
+	if (GameModes)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SessionSubsystem: GameMode data found!"))
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SessionSubsystem: GameMode data NOT found!"))
+	}
 }
 
 void UPolyRacingSessionSubsystem::CreateSession(int32 NumPublicConnections, bool IsLANMatch)
@@ -36,10 +49,7 @@ void UPolyRacingSessionSubsystem::CreateSession(int32 NumPublicConnections, bool
 	LastSessionSettings->bIsLANMatch = IsLANMatch;
 	LastSessionSettings->bShouldAdvertise = true;
 
-	if (IsLANMatch)
-		LastSessionSettings->Set(SETTING_MAPNAME, FString("%LEVEL_NAME%"), EOnlineDataAdvertisementType::DontAdvertise);
-	else
-		LastSessionSettings->Set(SETTING_MAPNAME, FString("%LEVEL_NAME%"), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	LastSessionSettings->Set(SETTING_MAPNAME, FString("%LEVEL_NAME%"), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
 	CreateSessionCompleteDelegateHandle = SessionInterface->AddOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegate);
 

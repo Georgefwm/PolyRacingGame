@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataTables.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "PolyRacingSessionSubsystem.generated.h"
@@ -26,6 +27,9 @@ class POLYRACINGGAME_API UPolyRacingSessionSubsystem : public UGameInstanceSubsy
 
 public:
 	UPolyRacingSessionSubsystem();
+
+	UPROPERTY()
+	UDataTable* GameModes;
 
 	void CreateSession(int32 NumPublicConnections, bool IsLANMatch);
 	void UpdateSession();
