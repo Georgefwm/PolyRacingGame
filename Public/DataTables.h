@@ -14,6 +14,8 @@ USTRUCT(BlueprintType)
 struct FVehicleSlotOptions : public FTableRowBase
 {
     GENERATED_BODY()
+
+public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<TSoftObjectPtr<USkeletalMesh>> Meshes;
@@ -27,6 +29,8 @@ struct FPresetVehicleType : public FTableRowBase
 {
 	GENERATED_BODY()
 
+public:
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString VehicleName;
 
@@ -34,18 +38,35 @@ struct FPresetVehicleType : public FTableRowBase
 	TArray<TSubclassOf<APolyRacingWheeledVehiclePawn>> Presets;
 };
 
-
 UCLASS()
 class UColorOptions : public UDataAsset
 {
 	GENERATED_BODY()
+
 public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<TSoftObjectPtr<UMaterialInstance>> MaterialInstances;
 };
 
+USTRUCT(BlueprintType)
+struct FGameModeTableRow : public FTableRowBase
+{
+	GENERATED_BODY()
 
+public:
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString GameModeName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString DisplayName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Path;
+};
+
+// Old system
 USTRUCT(BlueprintType)
 struct FVehicleType : public FTableRowBase
 {
@@ -72,6 +93,8 @@ struct FVehicleType : public FTableRowBase
 	float AxelLength = 1.f;
 };
 
+
+// Old system
 USTRUCT(BlueprintType)
 struct FPresetVehicleConfiguration : public FTableRowBase
 {
@@ -90,6 +113,8 @@ struct FPresetVehicleConfiguration : public FTableRowBase
 	int AccentColor = 3;
 };
 
+
+// Old system
 USTRUCT(BlueprintType)
 struct FVehicleConfiguration : public FTableRowBase
 {
