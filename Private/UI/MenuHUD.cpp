@@ -74,8 +74,8 @@ void AMenuHUD::UpdateLobby()
 		return;
 
 	if (!LobbyWidget.IsValid())
-		ShowLobbyMenu();
-
+		return;
+	
 	for (int Index = 0; Index < 8; ++Index)
 	{
 		// Override the TSharedPtr in the target array with a copy of the TSharedPtr from the source array
@@ -83,18 +83,6 @@ void AMenuHUD::UpdateLobby()
 	}
 
 	LobbyWidget->ListViewWidget->RebuildList();
-	
-	UE_LOG(LogTemp, Warning, TEXT("------------------------------------"));
-	UE_LOG(LogTemp, Warning, TEXT("          Current Lobby -> LOBBY WIDGET"));
-	UE_LOG(LogTemp, Warning, TEXT("Current Lobby Size: %i/8"), LobbyWidget->LobbyPlayerInfoList.Num());
-	UE_LOG(LogTemp, Warning, TEXT("------------------------------------"));
-	for (TSharedPtr<FLobbyPlayerInfo> PlayerInfo : LobbyWidget->LobbyPlayerInfoList)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player: %s"), *PlayerInfo.Get()->PlayerName.ToString());
-	}
-	UE_LOG(LogTemp, Warning, TEXT("------------------------------------"));
-
-	
 }
 
 void AMenuHUD::OnBeginLoading()

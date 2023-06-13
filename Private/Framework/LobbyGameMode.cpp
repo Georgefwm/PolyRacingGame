@@ -91,13 +91,18 @@ void ALobbyGameMode::HandleStartingNewPlayer_Implementation(APlayerController* N
 
 void ALobbyGameMode::InitializeHUDForPlayer_Implementation(APlayerController* NewPlayer)
 {
-	NewPlayer->ClientSetHUD(HUDClass);
+	Super::InitializeHUDForPlayer_Implementation(NewPlayer);
 
-	if (AMenuHUD* HUD = NewPlayer->GetHUD<AMenuHUD>())
+	if (ALobbyPlayerController* PlayerController = static_cast<ALobbyPlayerController*>(NewPlayer))
 	{
-		HUD->ShowLobbyMenu();
-		UpdatePlayerList();
+		PlayerController->Client_SetupHUD();
 	}
+	
+	// if (AMenuHUD* HUD = NewPlayer->GetHUD<AMenuHUD>())
+	// {
+	// 	HUD->ShowLobbyMenu();
+	// 	UpdatePlayerList();
+	// }
 }
 
 // Called every frame
@@ -111,14 +116,13 @@ void ALobbyGameMode::PreLogin(const FString& Options, const FString& Address, co
 {
 	Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
 
-	UE_LOG(LogTemp, Warning, TEXT("get here i guess"))
+	// Logic for allowing player to connect go here 
 }
 
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	
-	// If the joining player is a lobby player controller, add them to a list of connected Players
 	ALobbyPlayerController* JoiningPlayer = Cast<ALobbyPlayerController>(NewPlayer);
 	if (!JoiningPlayer)
 	{
@@ -204,6 +208,7 @@ void ALobbyGameMode::UpdatePlayerList()
 	// call all the players to make them update and pass in the player info array
 	for (ALobbyPlayerController* Player : ConnectedPlayers)
 		Player->Client_UpdatePlayerList(ConnectedPlayerInfo);
+	
 }
 
 void ALobbyGameMode::StartGameFromLobby()

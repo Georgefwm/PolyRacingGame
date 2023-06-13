@@ -44,6 +44,12 @@ public:
 	void Client_ReceiveChatMessage(const FText &ChatMessage);
 	void Client_ReceiveChatMessage_Implementation(const FText &ChatMessage);
 
+	void SetupHUD();
+
+	UFUNCTION(Client, Reliable)
+	void Client_SetupHUD();
+	void Client_SetupHUD_Implementation();
+
 
 	void KickPlayer(int32 PlayerIndex);
 	

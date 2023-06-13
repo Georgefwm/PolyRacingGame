@@ -9,7 +9,6 @@
 #include "Framework/PolyRacingPlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/MenuHUD.h"
-#include "UI/Menu/LobbyMenuWidget.h"
 
 
 // Sets default values
@@ -34,8 +33,6 @@ void ALobbyPlayerController::BeginPlay()
 		TSharedPtr<FLobbyPlayerInfo> PlayerInfo = MakeShareable(TestPlayer);
 		LobbyPlayerInfoList.Add(PlayerInfo);
 	}
-
-	RequestServerPlayerListUpdate();
 
 	SetCameraView();
 }
@@ -86,6 +83,20 @@ void ALobbyPlayerController::Client_ReceiveChatMessage_Implementation(const FTex
 {
 	// Call the Receive message function to show it on UMG
 	ReceiveChatMessage(ChatMessage);
+}
+
+void ALobbyPlayerController::SetupHUD()
+{
+	if (AMenuHUD* HUD = GetHUD<AMenuHUD>())
+	{
+		HUD->ShowLobbyMenu();
+		RequestServerPlayerListUpdate();
+	}
+}
+
+void ALobbyPlayerController::Client_SetupHUD_Implementation()
+{
+	SetupHUD();
 }
 
 void ALobbyPlayerController::KickPlayer(int32 PlayerIndex)
@@ -145,10 +156,6 @@ void ALobbyPlayerController::UpdatePlayerList(const TArray<FLobbyPlayerInfo>& Pl
 
 	if (AMenuHUD* HUD = GetHUD<AMenuHUD>())
 		HUD->UpdateLobby();
-	else
-		UE_LOG(LogTemp, Warning, TEXT("CLIENT HUD UPDATE FAIL"))
-	
-	
 }
 
 void ALobbyPlayerController::Client_UpdatePlayerList_Implementation(const TArray<FLobbyPlayerInfo>& PlayerInfoArray)
@@ -194,8 +201,6 @@ void ALobbyPlayerController::SetCameraView()
 	
 	if (!Cameras.IsEmpty())
 		SetViewTarget(StaticCast<ACameraActor*>(Cameras[0]));
-	else
-		UE_LOG(LogTemp, Warning, TEXT("CLIENT RPC: No Camera found!"))
 }
 
 void ALobbyPlayerController::Client_SetCameraView_Implementation()
