@@ -3,6 +3,8 @@
 
 #include "Framework/PolyRacingGameInstance.h"
 
+#include "Controller/LobbyPlayerController.h"
+
 void UPolyRacingGameInstance::Init()
 {
 	Super::Init();
@@ -22,6 +24,10 @@ void UPolyRacingGameInstance::EndLoadingScreen(UWorld* InLoadedWorld)
 	// 	GetMoviePlayer()->SetupLoadingScreen(LoadingScreen);
 	// }
 	UE_LOG(LogTemp, Warning, TEXT("MAP END LOADING"))
+
+	
+	// if (ALobbyPlayerController* PlayerController = static_cast<ALobbyPlayerController*>(GetFirstLocalPlayerController()))
+	// 	PlayerController->OnFinishedLoad();
 }
 
 void UPolyRacingGameInstance::BeginLoadingScreen(const FString& MapName)

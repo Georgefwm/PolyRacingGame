@@ -35,15 +35,16 @@ public:
 
 	UPROPERTY()
 	FString NextMap = TEXT("/Game/Scenes/Docks");
-	
-	UPROPERTY()
-	ACameraActor* Camera;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	virtual void StartPlay() override;
+
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+
+	virtual void InitializeHUDForPlayer_Implementation(APlayerController* NewPlayer) override;
 
 public:
 	// Called every frame

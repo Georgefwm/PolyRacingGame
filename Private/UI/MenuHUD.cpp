@@ -4,10 +4,10 @@
 #include "UI/MenuHUD.h"
 
 #include "Controller/LobbyPlayerController.h"
+#include "Controller/MenuPlayerController.h"
 #include "UI/Menu/MainMenuWidget.h"
 #include "Widgets/SWeakWidget.h"
 #include "Engine/Engine.h"
-#include "Kismet/GameplayStatics.h"
 #include "UI/Menu/LobbyMenuWidget.h"
 
 void AMenuHUD::BeginPlay()
@@ -36,9 +36,15 @@ void AMenuHUD::ShowLobbyMenu()
 {
 	if (GEngine && GEngine->GameViewport)
 	{
-		LobbyWidget = SNew(SLobbyMenuWidget).OwningHUD(this);
-		GEngine->GameViewport->AddViewportWidgetContent(SAssignNew(MenuWidgetContainer, SWeakWidget).PossiblyNullContent(LobbyWidget.ToSharedRef()));
-
+		if (!LobbyWidget.IsValid())
+		{
+			LobbyWidget = SNew(SLobbyMenuWidget).OwningHUD(this);
+			GEngine->GameViewport->AddViewportWidgetContent(SAssignNew(MenuWidgetContainer, SWeakWidget).PossiblyNullContent(LobbyWidget.ToSharedRef()));
+		}
+		else
+			MenuWidgetContainer.Get()->SetContent(LobbyWidget.ToSharedRef());
+		
+		
 		if (PlayerOwner)
 		{
 			PlayerOwner->bShowMouseCursor = true;
@@ -63,21 +69,32 @@ void AMenuHUD::RemoveMenu()
 
 void AMenuHUD::UpdateLobby()
 {
-	if (!LobbyWidget)
-		return;
-	
 	ALobbyPlayerController* PlayerController = static_cast<ALobbyPlayerController*>(GetOwningPlayerController());
 	if (!PlayerController)
 		return;
 
-	TArray<TSharedPtr<FLobbyPlayerInfo>> CopiedArray;
-	//LobbyWidget->LobbyPlayerInfoList.Empty(PlayerController->LobbyPlayerInfoList.Num());
+	if (!LobbyWidget.IsValid())
+		ShowLobbyMenu();
 
 	for (int Index = 0; Index < 8; ++Index)
 	{
 		// Override the TSharedPtr in the target array with a copy of the TSharedPtr from the source array
-		LobbyWidget->LobbyPlayerInfoList[Index] = MakeShareable(new FLobbyPlayerInfo(*PlayerController->LobbyPlayerInfoList[Index]));
+		LobbyWidget->LobbyPlayerInfoList[Index] = PlayerController->LobbyPlayerInfoList[Index];
 	}
+
+	LobbyWidget->ListViewWidget->RebuildList();
+	
+	UE_LOG(LogTemp, Warning, TEXT("------------------------------------"));
+	UE_LOG(LogTemp, Warning, TEXT("          Current Lobby -> LOBBY WIDGET"));
+	UE_LOG(LogTemp, Warning, TEXT("Current Lobby Size: %i/8"), LobbyWidget->LobbyPlayerInfoList.Num());
+	UE_LOG(LogTemp, Warning, TEXT("------------------------------------"));
+	for (TSharedPtr<FLobbyPlayerInfo> PlayerInfo : LobbyWidget->LobbyPlayerInfoList)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player: %s"), *PlayerInfo.Get()->PlayerName.ToString());
+	}
+	UE_LOG(LogTemp, Warning, TEXT("------------------------------------"));
+
+	
 }
 
 void AMenuHUD::OnBeginLoading()

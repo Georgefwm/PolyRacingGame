@@ -25,7 +25,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Setup();
+	void OnFinishedLoad();
 
 	// Surely theres a better name...
 	TArray<TSharedPtr<FLobbyPlayerInfo>> LobbyPlayerInfoList;

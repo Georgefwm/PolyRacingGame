@@ -60,26 +60,44 @@ void ALobbyGameMode::BeginPlay()
 void ALobbyGameMode::StartPlay()
 {
 	Super::StartPlay();
+	
+	UPolyRacingSessionSubsystem* SessionSubsystem = GetGameInstance()->GetSubsystem<UPolyRacingSessionSubsystem>();
+	SessionSubsystem->FindSessions(10, true);
 
 	TArray<AActor*> Cameras;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), Cameras);
 	
 	if (!Cameras.IsEmpty())
-		Camera = StaticCast<ACameraActor*>(Cameras[0]);
-		
-	for (ALobbyPlayerController* Player : ConnectedPlayers)
 	{
-		Player->Client_SetCameraView();
-		
-		if (AMenuHUD* Hud = StaticCast<AMenuHUD*>(Player->GetHUD()))
-			Hud->ShowLobbyMenu();
+		for (ALobbyPlayerController* Player : ConnectedPlayers)
+			Player->SetCameraView();
 	}
+	else
+		UE_LOG(LogTemp, Warning, TEXT("LOBBYGAMEMODE: Camera not found"))
+}
 
-	UpdatePlayerList();
+void ALobbyGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+
+	TArray<AActor*> Cameras;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), Cameras);
 	
-	UPolyRacingSessionSubsystem* SessionSubsystem = GetGameInstance()->GetSubsystem<UPolyRacingSessionSubsystem>();
-	Online::GetSessionInterface(GetWorld())->DumpSessionState();
-	SessionSubsystem->FindSessions(10, true);
+	if (!Cameras.IsEmpty())
+		NewPlayer->SetViewTarget(StaticCast<ACameraActor*>(Cameras[0]));
+	else
+		UE_LOG(LogTemp, Warning, TEXT("LOBBYGAMEMODE: Camera not found"))
+}
+
+void ALobbyGameMode::InitializeHUDForPlayer_Implementation(APlayerController* NewPlayer)
+{
+	NewPlayer->ClientSetHUD(HUDClass);
+
+	if (AMenuHUD* HUD = NewPlayer->GetHUD<AMenuHUD>())
+	{
+		HUD->ShowLobbyMenu();
+		UpdatePlayerList();
+	}
 }
 
 // Called every frame
@@ -111,8 +129,6 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	UE_LOG(LogTemp, Warning, TEXT("GAMEMODE: Player joined the lobby"))
 	
 	ConnectedPlayers.Add(JoiningPlayer);
-
-	UpdatePlayerList();
 
 	DebugPrintConnectedPlayers();
 }
@@ -185,7 +201,7 @@ void ALobbyGameMode::UpdatePlayerList()
 		ConnectedPlayerInfo.Add(TempLobbyPlayerInfo);
 	}
 
-	//call all the players to make them update and pass in the player info array
+	// call all the players to make them update and pass in the player info array
 	for (ALobbyPlayerController* Player : ConnectedPlayers)
 		Player->Client_UpdatePlayerList(ConnectedPlayerInfo);
 }

@@ -22,4 +22,8 @@ class POLYRACINGGAME_API AMainMenuGameMode : public AGameModeBase
 	virtual void BeginPlay() override;
 
 	virtual void StartPlay() override;
+
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+
+	virtual void InitializeHUDForPlayer_Implementation(APlayerController* NewPlayer) override;
 };

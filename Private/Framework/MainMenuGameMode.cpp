@@ -55,14 +55,26 @@ void AMainMenuGameMode::StartPlay()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), Cameras);
 	
 	if (!Cameras.IsEmpty())
-		Camera = StaticCast<ACameraActor*>(Cameras[0]);
+		GetWorld()->GetFirstPlayerController()->SetViewTarget(StaticCast<ACameraActor*>(Cameras[0]));
+	else
+		UE_LOG(LogTemp, Warning, TEXT("LOBBYGAMEMODE: Camera not found"))
+}
+
+void AMainMenuGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+
+	TArray<AActor*> Cameras;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), Cameras);
+	
+	if (!Cameras.IsEmpty())
+		NewPlayer->SetViewTarget(StaticCast<ACameraActor*>(Cameras[0]));
 	else
 		UE_LOG(LogTemp, Warning, TEXT("MAINMENUGAMEMODE: Camera not found"))
-		
-	if (Camera)
-		GetWorld()->GetFirstPlayerController()->SetViewTarget(Camera);
+}
 
-	if (AMenuHUD* Hud = StaticCast<AMenuHUD*>(GetWorld()->GetFirstPlayerController()->GetHUD()))
-		Hud->ShowMainMenu();
-	
+void AMainMenuGameMode::InitializeHUDForPlayer_Implementation(APlayerController* NewPlayer)
+{
+	NewPlayer->ClientSetHUD(HUDClass);
+	NewPlayer->GetHUD<AMenuHUD>()->ShowMainMenu();
 }

@@ -30,16 +30,25 @@ void ALobbyPlayerController::BeginPlay()
 	{
 		FLobbyPlayerInfo* TestPlayer = new FLobbyPlayerInfo();
 		TestPlayer->PlayerName = FText::FromString(TEXT("Searching for player... "));
-
+	
 		TSharedPtr<FLobbyPlayerInfo> PlayerInfo = MakeShareable(TestPlayer);
 		LobbyPlayerInfoList.Add(PlayerInfo);
 	}
+
+	RequestServerPlayerListUpdate();
+
+	SetCameraView();
 }
 
 // Called every frame
 void ALobbyPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ALobbyPlayerController::OnFinishedLoad()
+{
+	
 }
 
 void ALobbyPlayerController::SendChatMessage(const FText& ChatMessage)
@@ -81,7 +90,7 @@ void ALobbyPlayerController::Client_ReceiveChatMessage_Implementation(const FTex
 
 void ALobbyPlayerController::KickPlayer(int32 PlayerIndex)
 {
-	//if the player is the host, get the game mode and send it to kick the player from the game
+	// If the player is the host, get the game mode and send it to kick the player from the game
 	if (!HasAuthority())
 		return;
 	
@@ -94,7 +103,7 @@ void ALobbyPlayerController::KickPlayer(int32 PlayerIndex)
 
 void ALobbyPlayerController::Client_GotKicked_Implementation()
 {
-	// get the game Instance to make the player destroy his session and leave game
+	// Get the game Instance to make the player destroy his session and leave game
 	UPolyRacingGameInstance* GameInstance = Cast<UPolyRacingGameInstance>(GetWorld()->GetGameInstance());
 	if (!GameInstance)
 		return;
@@ -132,9 +141,14 @@ void ALobbyPlayerController::UpdatePlayerList(const TArray<FLobbyPlayerInfo>& Pl
 		{
 			LobbyPlayerInfoList.Add(MakeShareable(TempPlayerInfo));
 		}
-		
-		GetHUD<AMenuHUD>()->UpdateLobby();
 	}
+
+	if (AMenuHUD* HUD = GetHUD<AMenuHUD>())
+		HUD->UpdateLobby();
+	else
+		UE_LOG(LogTemp, Warning, TEXT("CLIENT HUD UPDATE FAIL"))
+	
+	
 }
 
 void ALobbyPlayerController::Client_UpdatePlayerList_Implementation(const TArray<FLobbyPlayerInfo>& PlayerInfoArray)
@@ -181,9 +195,7 @@ void ALobbyPlayerController::SetCameraView()
 	if (!Cameras.IsEmpty())
 		SetViewTarget(StaticCast<ACameraActor*>(Cameras[0]));
 	else
-	{
 		UE_LOG(LogTemp, Warning, TEXT("CLIENT RPC: No Camera found!"))
-	}
 }
 
 void ALobbyPlayerController::Client_SetCameraView_Implementation()
