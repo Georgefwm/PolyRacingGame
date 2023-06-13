@@ -56,6 +56,8 @@ void AMainMenuGameMode::StartPlay()
 	
 	if (!Cameras.IsEmpty())
 		Camera = StaticCast<ACameraActor*>(Cameras[0]);
+	else
+		UE_LOG(LogTemp, Warning, TEXT("MAINMENUGAMEMODE: Camera not found"))
 		
 	if (Camera)
 		GetWorld()->GetFirstPlayerController()->SetViewTarget(Camera);

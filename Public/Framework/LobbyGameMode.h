@@ -49,6 +49,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
+
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	virtual void Logout(AController* ExitingPlayer) override;
@@ -66,6 +68,8 @@ public:
 	void UpdatePlayerList();
 
 	void StartGameFromLobby();
+
+	void SearchForLobbies();
 
 	bool IsAllPlayerReady() const;
 

@@ -104,18 +104,20 @@ void SMultiplayerMenuWidget::Construct(const FArguments& InArgs)
 
 FReply SMultiplayerMenuWidget::OnRaceClicked() const
 {
-
 	return FReply::Handled();
 }
 
 FReply SMultiplayerMenuWidget::OnFreeRoamClicked() const
 {
 	UPolyRacingSessionSubsystem* SessionSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UPolyRacingSessionSubsystem>();
-	SessionSubsystem->CreateSession(6, false);
-	SessionSubsystem->StartSession();
+
+	//SessionSubsystem->FindSessions(10, true);
 	
-	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_LobbyGamemode.BP_LobbyGamemode_C"));
-	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/MainMenuScene", true, LevelOptions);
+	
+	SessionSubsystem->CreateSession(6, true);
+	
+	// FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_LobbyGamemode.BP_LobbyGamemode_C"));
+	// UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/MainMenuScene", true, LevelOptions);
 
 	
 	

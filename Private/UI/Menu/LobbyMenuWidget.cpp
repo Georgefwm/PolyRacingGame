@@ -168,8 +168,6 @@ FReply SLobbyMenuWidget::OnBackClicked() const
 
 TSharedRef<ITableRow> SLobbyMenuWidget::GenerateItemRow(TSharedPtr<FLobbyPlayerInfo> Item, const TSharedRef<STableViewBase>& OwnerTable)
 {
-	UE_LOG(LogTemp, Warning, TEXT("GenerateItemRow: %s"), *FText(Item->PlayerName).ToString())
-	
 	return SNew(STableRow<TSharedPtr<FLobbyPlayerInfo>>, OwnerTable)
 		.Style(&Style->LobbyPlayerListTableRowStyle)
 		[

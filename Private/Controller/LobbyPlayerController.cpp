@@ -7,6 +7,7 @@
 #include "Framework/LobbyGameMode.h"
 #include "Framework/PolyRacingGameInstance.h"
 #include "Framework/PolyRacingPlayerState.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/MenuHUD.h"
 #include "UI/Menu/LobbyMenuWidget.h"
 
@@ -174,7 +175,15 @@ void ALobbyPlayerController::SetCameraView()
 	if (!GameMode)
 		return;
 
-	SetViewTarget(GameMode->Camera);
+	TArray<AActor*> Cameras;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), Cameras);
+	
+	if (!Cameras.IsEmpty())
+		SetViewTarget(StaticCast<ACameraActor*>(Cameras[0]));
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("CLIENT RPC: No Camera found!"))
+	}
 }
 
 void ALobbyPlayerController::Client_SetCameraView_Implementation()

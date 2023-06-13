@@ -26,6 +26,6 @@ void UPolyRacingGameInstance::EndLoadingScreen(UWorld* InLoadedWorld)
 
 void UPolyRacingGameInstance::BeginLoadingScreen(const FString& MapName)
 {
-	GetFirstLocalPlayerController()->GetHUD();
+	//GetFirstLocalPlayerController()->GetHUD();
 	UE_LOG(LogTemp, Warning, TEXT("MAP START LOADING"))
 }

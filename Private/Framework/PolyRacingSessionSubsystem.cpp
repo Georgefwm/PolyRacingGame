@@ -2,6 +2,7 @@
 
 #include "Framework/PolyRacingSessionSubsystem.h"
 #include "OnlineSubsystemUtils.h"
+#include "Kismet/GameplayStatics.h"
 
 
 UPolyRacingSessionSubsystem::UPolyRacingSessionSubsystem()
@@ -18,13 +19,9 @@ UPolyRacingSessionSubsystem::UPolyRacingSessionSubsystem()
 	GameModes = Cast<UDataTable>(FSoftObjectPath(*GameModeDataTablePath).ResolveObject());
 	if (!GameModes) GameModes = Cast<UDataTable>(FSoftObjectPath(*GameModeDataTablePath).TryLoad());
 	
-	if (GameModes)
+	if (!GameModes)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("SessionSubsystem: GameMode data found!"))
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("SessionSubsystem: GameMode data NOT found!"))
 	}
 }
 
@@ -38,23 +35,25 @@ void UPolyRacingSessionSubsystem::CreateSession(int32 NumPublicConnections, bool
 	}
 
 	LastSessionSettings = MakeShareable(new FOnlineSessionSettings());
-	LastSessionSettings->NumPrivateConnections = 0;
+	LastSessionSettings->NumPrivateConnections = 2;
 	LastSessionSettings->NumPublicConnections = NumPublicConnections;
 	LastSessionSettings->bAllowInvites = true;
 	LastSessionSettings->bAllowJoinInProgress = true;
 	LastSessionSettings->bAllowJoinViaPresence = true;
-	LastSessionSettings->bAllowJoinViaPresenceFriendsOnly = true;
+	LastSessionSettings->bAllowJoinViaPresenceFriendsOnly = false;
 	LastSessionSettings->bIsDedicated = false;
 	LastSessionSettings->bUsesPresence = true;
 	LastSessionSettings->bIsLANMatch = IsLANMatch;
 	LastSessionSettings->bShouldAdvertise = true;
 
-	LastSessionSettings->Set(SETTING_MAPNAME, FString("%LEVEL_NAME%"), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	LastSessionSettings->Set(SETTING_MAPNAME, FString("/Game/Scenes/MainMenuScene"), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	LastSessionSettings->Set(SEARCH_PRESENCE, true, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	
 
 	CreateSessionCompleteDelegateHandle = SessionInterface->AddOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegate);
 
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
-	if (!SessionInterface->CreateSession(*LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, *LastSessionSettings))
+	if (!SessionInterface->CreateSession(*LocalPlayer->GetPreferredUniqueNetId(), FName("PolyRacingSession"), *LastSessionSettings))
 	{
 		SessionInterface->ClearOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegateHandle);
 
@@ -74,7 +73,7 @@ void UPolyRacingSessionSubsystem::UpdateSession()
 	TSharedPtr<FOnlineSessionSettings> UpdatedSessionSettings = MakeShareable(new FOnlineSessionSettings(*LastSessionSettings));
 
 	// Make session changes/updates
-	UpdatedSessionSettings->Set(SETTING_MAPNAME, FString("%UPDATED_LEVEL_NAME%"), EOnlineDataAdvertisementType::ViaOnlineService);
+	UpdatedSessionSettings->Set(SETTING_MAPNAME, FString("/Game/Scenes/MainMenuScene"), EOnlineDataAdvertisementType::ViaOnlineService);
 
 	UpdateSessionCompleteDelegateHandle = SessionInterface->AddOnUpdateSessionCompleteDelegate_Handle(UpdateSessionCompleteDelegate);
 
@@ -139,7 +138,7 @@ void UPolyRacingSessionSubsystem::DestroySession()
 
 	DestroySessionCompleteDelegateHandle = SessionInterface->AddOnDestroySessionCompleteDelegate_Handle(DestroySessionCompleteDelegate);
 
-	if (!SessionInterface->DestroySession(NAME_GameSession))
+	if (!SessionInterface->DestroySession(FName("PolyRacingSession")))
 	{
 		SessionInterface->ClearOnDestroySessionCompleteDelegate_Handle(DestroySessionCompleteDelegateHandle);
 
@@ -163,10 +162,8 @@ void UPolyRacingSessionSubsystem::FindSessions(int32 MaxSearchResults, bool IsLA
 	LastSessionSearch->bIsLanQuery = IsLANQuery;
 
 	// Set search params
+	LastSessionSearch->QuerySettings.Set(SETTING_MAPNAME, FString("/Game/Scenes/MainMenuScene"), EOnlineComparisonOp::Equals);
 	LastSessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
-
-	// LastSessionSearch->QuerySettings.Set(SETTING_MAPNAME, FString(), EOnlineComparisonOp::Equals);
-
 	
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 	if (!SessionInterface->FindSessions(*LocalPlayer->GetPreferredUniqueNetId(), LastSessionSearch.ToSharedRef()))
@@ -189,7 +186,7 @@ void UPolyRacingSessionSubsystem::JoinGameSession(const FOnlineSessionSearchResu
 	JoinSessionCompleteDelegateHandle = SessionInterface->AddOnJoinSessionCompleteDelegate_Handle(JoinSessionCompleteDelegate);
 
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
-	if (!SessionInterface->JoinSession(*LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, SessionResult))
+	if (!SessionInterface->JoinSession(*LocalPlayer->GetPreferredUniqueNetId(), FName("PolyRacingSession"), SessionResult))
 	{
 		SessionInterface->ClearOnJoinSessionCompleteDelegate_Handle(JoinSessionCompleteDelegateHandle);
 
@@ -205,6 +202,19 @@ void UPolyRacingSessionSubsystem::OnCreateSessionCompleted(FName SessionName, bo
 	}
 
 	OnCreateSessionCompleteEvent.Broadcast(Successful);
+	
+	UE_LOG(LogTemp, Warning, TEXT("Creating session: %s"), Successful ? *FString("Success") : *FString("Fail"))
+
+	if (Successful)
+	{
+		FString const LevelOptions = FString(TEXT("?listen -game=/Game/GameModes/BP_LobbyGamemode.BP_LobbyGamemode_C"));
+
+		GetWorld()->GetGameInstance()->EnableListenServer(true, 7779);
+		GetWorld()->ServerTravel("/Game/Scenes/MainMenuScene" + LevelOptions);
+
+		// FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_LobbyGamemode.BP_LobbyGamemode_C"));
+		// UGameplayStatics::OpenLevel(GetWorld(), "/Game/Scenes/MainMenuScene", true, LevelOptions);
+	}
 }
 
 void UPolyRacingSessionSubsystem::OnUpdateSessionCompleted(FName SessionName, bool Successful)
@@ -246,6 +256,15 @@ void UPolyRacingSessionSubsystem::OnDestroySessionCompleted(FName SessionName, b
 	}
 
 	OnDestroySessionCompleteEvent.Broadcast(Successful);
+
+	UE_LOG(LogTemp, Warning, TEXT("Destroying %s"), Successful ? *FString("Success") : *FString("Fail"))
+	UE_LOG(LogTemp, Warning, TEXT("Joining new session..."))
+
+	if (!LastSessionSearch)
+		return;
+	
+	if (LastSessionSearch->SearchResults.IsValidIndex(0))
+		JoinGameSession(LastSessionSearch->SearchResults.GetData()[0]);
 }
 
 void UPolyRacingSessionSubsystem::OnFindSessionsCompleted(bool Successful)
@@ -262,6 +281,19 @@ void UPolyRacingSessionSubsystem::OnFindSessionsCompleted(bool Successful)
 	}
 
 	OnFindSessionsCompleteEvent.Broadcast(LastSessionSearch->SearchResults, Successful);
+
+	UE_LOG(LogTemp, Warning, TEXT("Session found, Destroying current..."))
+
+	if (GetGameInstance()->GetOnlineSession())
+		DestroySession();
+	else
+	{
+		if (!LastSessionSearch)
+			return;
+	
+		if (LastSessionSearch->SearchResults.IsValidIndex(0))
+			JoinGameSession(LastSessionSearch->SearchResults.GetData()[0]);
+	}
 }
 
 void UPolyRacingSessionSubsystem::OnJoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
@@ -272,6 +304,22 @@ void UPolyRacingSessionSubsystem::OnJoinSessionCompleted(FName SessionName, EOnJ
 	}
 
 	OnJoinGameSessionCompleteEvent.Broadcast(Result);
+	
+	UE_LOG(LogTemp, Warning, TEXT("join: %s"), Result > 0 ? *FString("Fail") : *FString("Success"))
+	
+	if (Result > 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Aborting..."))
+
+		
+		Online::GetSessionInterface(GetWorld())->DumpSessionState();
+		
+		return;
+	}
+	
+	UE_LOG(LogTemp, Warning, TEXT("Traveling to session..."))
+	
+	TryTravelToCurrentSession();
 }
 
 bool UPolyRacingSessionSubsystem::TryTravelToCurrentSession()
@@ -281,14 +329,17 @@ bool UPolyRacingSessionSubsystem::TryTravelToCurrentSession()
 	{
 		return false;
 	}
-
+	
 	FString ConnectString;
-	if (!SessionInterface->GetResolvedConnectString(NAME_GameSession, ConnectString))
+	if (!SessionInterface->GetResolvedConnectString(FName("PolyRacingSession"), ConnectString))
 	{
 		return false;
 	}
 
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	PlayerController->ClientTravel(ConnectString, TRAVEL_Absolute);
+	UE_LOG(LogTemp, Warning, TEXT("Connect string: %s"), *ConnectString)
+	// GetGameInstance()->ClientTravelToSession(PlayerController->ID, NAME_GameSession);
+	
+	PlayerController->ClientTravel(ConnectString, TRAVEL_Absolute, false);
 	return true;
 }

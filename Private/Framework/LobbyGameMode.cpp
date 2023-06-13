@@ -3,11 +3,13 @@
 
 #include "Framework/LobbyGameMode.h"
 
+#include "OnlineSubsystemUtils.h"
 #include "PolyRacingSpectatorPawn.h"
 #include "Camera/CameraActor.h"
 #include "Controller/LobbyPlayerController.h"
 #include "Framework/LobbyGameState.h"
 #include "Framework/PolyRacingPlayerState.h"
+#include "Framework/PolyRacingSessionSubsystem.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/MenuHUD.h"
@@ -74,6 +76,10 @@ void ALobbyGameMode::StartPlay()
 	}
 
 	UpdatePlayerList();
+	
+	UPolyRacingSessionSubsystem* SessionSubsystem = GetGameInstance()->GetSubsystem<UPolyRacingSessionSubsystem>();
+	Online::GetSessionInterface(GetWorld())->DumpSessionState();
+	SessionSubsystem->FindSessions(10, true);
 }
 
 // Called every frame
@@ -82,16 +88,25 @@ void ALobbyGameMode::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void ALobbyGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId,
+	FString& ErrorMessage)
+{
+	Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
+
+	UE_LOG(LogTemp, Warning, TEXT("get here i guess"))
+}
+
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-
 	
-
 	// If the joining player is a lobby player controller, add them to a list of connected Players
 	ALobbyPlayerController* JoiningPlayer = Cast<ALobbyPlayerController>(NewPlayer);
 	if (!JoiningPlayer)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("GAMEMODE: invalid player tried to join the lobby"))
 		return;
+	}
 	
 	UE_LOG(LogTemp, Warning, TEXT("GAMEMODE: Player joined the lobby"))
 	
@@ -151,7 +166,6 @@ void ALobbyGameMode::UpdatePlayerList()
 		UE_LOG(LogTemp, Warning, TEXT("GAMEMODE: I dont have auth"))
 		return;
 	}
-		
 	
 	// Empty the PlayerInfo Array to re-populate it
 	ConnectedPlayerInfo.Empty();
@@ -179,6 +193,11 @@ void ALobbyGameMode::UpdatePlayerList()
 void ALobbyGameMode::StartGameFromLobby()
 {
 	GetWorld()->ServerTravel(NextMap);
+}
+
+void ALobbyGameMode::SearchForLobbies()
+{
+	
 }
 
 bool ALobbyGameMode::IsAllPlayerReady() const
