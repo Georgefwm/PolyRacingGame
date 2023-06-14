@@ -2,7 +2,6 @@
 
 #include "Framework/PolyRacingSessionSubsystem.h"
 #include "OnlineSubsystemUtils.h"
-#include "Kismet/GameplayStatics.h"
 
 
 UPolyRacingSessionSubsystem::UPolyRacingSessionSubsystem()

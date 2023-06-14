@@ -36,6 +36,9 @@ public:
 	UPROPERTY()
 	FString NextMap = TEXT("/Game/Scenes/Docks");
 
+	UPROPERTY()
+	FTimerHandle GameStartTimerHandle;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -73,6 +76,8 @@ public:
 	void SearchForLobbies();
 
 	bool IsAllPlayerReady() const;
+
+	void CheckLobbyState();
 
 	void DebugPrintConnectedPlayers();
 };

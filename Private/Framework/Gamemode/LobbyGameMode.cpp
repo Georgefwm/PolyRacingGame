@@ -3,7 +3,6 @@
 
 #include "Framework/LobbyGameMode.h"
 
-#include "OnlineSubsystemUtils.h"
 #include "PolyRacingSpectatorPawn.h"
 #include "Camera/CameraActor.h"
 #include "Controller/LobbyPlayerController.h"
@@ -74,6 +73,9 @@ void ALobbyGameMode::StartPlay()
 	}
 	else
 		UE_LOG(LogTemp, Warning, TEXT("LOBBYGAMEMODE: Camera not found"))
+
+	
+	GetWorld()->GetTimerManager().SetTimer(GameStartTimerHandle, this, &ALobbyGameMode::CheckLobbyState, 5.f, false);
 }
 
 void ALobbyGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
@@ -213,7 +215,11 @@ void ALobbyGameMode::UpdatePlayerList()
 
 void ALobbyGameMode::StartGameFromLobby()
 {
-	GetWorld()->ServerTravel(NextMap);
+	if (!HasAuthority())
+		return;
+	
+	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_FreeRoamGamemode.BP_FreeRoamGamemode"));
+	GetWorld()->ServerTravel(FString(NextMap + "?" + LevelOptions));
 }
 
 void ALobbyGameMode::SearchForLobbies()
@@ -234,6 +240,19 @@ bool ALobbyGameMode::IsAllPlayerReady() const
 	}
 	
 	return true;
+}
+
+void ALobbyGameMode::CheckLobbyState()
+{
+	if (ConnectedPlayers.Num() >= 2)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Starting game in 5..."))
+		GetWorld()->GetTimerManager().SetTimer(GameStartTimerHandle, this, &ALobbyGameMode::StartGameFromLobby, 5.f, false);
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Checking if game is ready to start"))
+	GetWorld()->GetTimerManager().SetTimer(GameStartTimerHandle, this, &ALobbyGameMode::CheckLobbyState, 5.f, false);
 }
 
 void ALobbyGameMode::DebugPrintConnectedPlayers()
