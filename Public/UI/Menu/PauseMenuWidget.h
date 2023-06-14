@@ -14,7 +14,7 @@ public:
 
 	SLATE_BEGIN_ARGS(SPauseMenuWidget) {}
 
-	SLATE_ARGUMENT(TWeakObjectPtr<class AMenuHUD>, OwningHUD)
+	SLATE_ARGUMENT(TWeakObjectPtr<class AInGameHUD>, OwningHUD)
 
 	SLATE_END_ARGS()
 
@@ -26,7 +26,7 @@ public:
 	FReply OnSettingsClicked() const;
 	FReply OnLeaveClicked() const;
 
-	TWeakObjectPtr<class AMenuHUD> OwningHUD;
+	TWeakObjectPtr<class AInGameHUD> OwningHUD;
 	const struct FGlobalStyle* Style;
 
 	virtual bool SupportsKeyboardFocus() const override { return true; }

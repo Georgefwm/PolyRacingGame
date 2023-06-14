@@ -4,6 +4,7 @@
 #include "UI/Menu/PauseMenuWidget.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "UI/InGameHUD.h"
 #include "UI/Style/GlobalMenuStyle.h"
 #include "UI/MenuHUD.h"
 #include "UI/Style/UiStyles.h"
@@ -67,7 +68,7 @@ void SPauseMenuWidget::Construct(const FArguments& InArgs)
 
 FReply SPauseMenuWidget::OnResumeClicked() const
 {
-	OwningHUD->RemoveMenu();
+	OwningHUD->TogglePauseMenu();
 	
 	return FReply::Handled();
 }
