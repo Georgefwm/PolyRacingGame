@@ -3,7 +3,7 @@
 
 #include "Framework/PolyRacingGameInstance.h"
 
-#include "Controller/LobbyPlayerController.h"
+#include "MoviePlayer.h"
 
 void UPolyRacingGameInstance::Init()
 {
@@ -15,16 +15,16 @@ void UPolyRacingGameInstance::Init()
 
 void UPolyRacingGameInstance::EndLoadingScreen(UWorld* InLoadedWorld)
 {
-	// if (!IsRunningDedicatedServer())
-	// {
-	// 	FLoadingScreenAttributes LoadingScreen;
-	// 	LoadingScreen.bAutoCompleteWhenLoadingCompletes = false;
-	// 	LoadingScreen.WidgetLoadingScreen = FLoadingScreenAttributes::NewTestLoadingScreenWidget();
-	//
-	// 	GetMoviePlayer()->SetupLoadingScreen(LoadingScreen);
-	// }
 	UE_LOG(LogTemp, Warning, TEXT("MAP END LOADING"))
-
+	
+	if (!IsRunningDedicatedServer())
+	{
+		FLoadingScreenAttributes LoadingScreen;
+		LoadingScreen.bAutoCompleteWhenLoadingCompletes = true;
+		LoadingScreen.WidgetLoadingScreen = FLoadingScreenAttributes::NewTestLoadingScreenWidget();
+	
+		GetMoviePlayer()->SetupLoadingScreen(LoadingScreen);
+	}
 	
 	// if (ALobbyPlayerController* PlayerController = static_cast<ALobbyPlayerController*>(GetFirstLocalPlayerController()))
 	// 	PlayerController->OnFinishedLoad();
@@ -32,6 +32,7 @@ void UPolyRacingGameInstance::EndLoadingScreen(UWorld* InLoadedWorld)
 
 void UPolyRacingGameInstance::BeginLoadingScreen(const FString& MapName)
 {
-	//GetFirstLocalPlayerController()->GetHUD();
 	UE_LOG(LogTemp, Warning, TEXT("MAP START LOADING"))
+	//GetFirstLocalPlayerController()->GetHUD();
+	
 }

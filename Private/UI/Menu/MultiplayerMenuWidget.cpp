@@ -4,7 +4,6 @@
 #include "UI/Menu/MultiplayerMenuWidget.h"
 
 #include "Framework/PolyRacingSessionSubsystem.h"
-#include "Kismet/GameplayStatics.h"
 #include "UI/Style/GlobalMenuStyle.h"
 #include "UI/Menu/MainMenuWidget.h"
 #include "UI/MenuHUD.h"
@@ -112,9 +111,9 @@ FReply SMultiplayerMenuWidget::OnFreeRoamClicked() const
 	UPolyRacingSessionSubsystem* SessionSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UPolyRacingSessionSubsystem>();
 
 	//SessionSubsystem->FindSessions(10, true);
+
 	
-	
-	SessionSubsystem->CreateSession(6, true);
+	SessionSubsystem->CreateSession(6, true, FString("FreeRoam"));
 	
 	// FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_LobbyGamemode.BP_LobbyGamemode_C"));
 	// UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/MainMenuScene", true, LevelOptions);

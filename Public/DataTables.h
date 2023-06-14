@@ -62,6 +62,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString DisplayName;
 
+	UPROPERTY()
+	int MaxPlayers = 8;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Path;
 };

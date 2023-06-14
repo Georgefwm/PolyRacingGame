@@ -8,6 +8,7 @@
 #include "Customisation/VehicleCustomiser.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
+#include "UI/InGameHUD.h"
 
 
 // Sets default values
@@ -16,11 +17,17 @@ AFreeRoamGameMode::AFreeRoamGameMode()
 	PrimaryActorTick.bCanEverTick = false;
 
 	PlayerControllerClass = APolyRacingPlayerController::StaticClass();
+	HUDClass = AInGameHUD::StaticClass();
 }
 
 void AFreeRoamGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AFreeRoamGameMode::StartPlay()
+{
+	Super::StartPlay();
 }
 
 void AFreeRoamGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
@@ -50,4 +57,30 @@ void AFreeRoamGameMode::HandleStartingNewPlayer_Implementation(APlayerController
 		APolyRacingWheeledVehiclePawn* NewVehicle = VehicleCustomiser->SpawnVehicle(GetWorld(), Location, Rotation, SpawnParameters);
 		NewPlayer->Possess(NewVehicle);
 	}
+}
+
+void AFreeRoamGameMode::InitializeHUDForPlayer_Implementation(APlayerController* NewPlayer)
+{
+	Super::InitializeHUDForPlayer_Implementation(NewPlayer);
+}
+
+void AFreeRoamGameMode::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+void AFreeRoamGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId,
+	FString& ErrorMessage)
+{
+	Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
+}
+
+void AFreeRoamGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+}
+
+void AFreeRoamGameMode::Logout(AController* ExitingPlayer)
+{
+	Super::Logout(ExitingPlayer);
 }

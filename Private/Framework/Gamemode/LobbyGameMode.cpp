@@ -3,10 +3,12 @@
 
 #include "Framework/LobbyGameMode.h"
 
+#include "Online.h"
 #include "PolyRacingSpectatorPawn.h"
 #include "Camera/CameraActor.h"
 #include "Controller/LobbyPlayerController.h"
 #include "Framework/LobbyGameState.h"
+#include "OnlineSessionSettings.h"
 #include "Framework/PolyRacingPlayerState.h"
 #include "Framework/PolyRacingSessionSubsystem.h"
 #include "GameFramework/PlayerStart.h"
@@ -61,7 +63,11 @@ void ALobbyGameMode::StartPlay()
 	Super::StartPlay();
 	
 	UPolyRacingSessionSubsystem* SessionSubsystem = GetGameInstance()->GetSubsystem<UPolyRacingSessionSubsystem>();
-	SessionSubsystem->FindSessions(10, true);
+
+	FString GameMode;
+	SessionSubsystem->LastSessionSettings->Get(SETTING_GAMEMODE, GameMode);
+
+	SessionSubsystem->FindSessions(5, true, GameMode);
 
 	TArray<AActor*> Cameras;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), Cameras);
@@ -74,8 +80,8 @@ void ALobbyGameMode::StartPlay()
 	else
 		UE_LOG(LogTemp, Warning, TEXT("LOBBYGAMEMODE: Camera not found"))
 
-	
-	GetWorld()->GetTimerManager().SetTimer(GameStartTimerHandle, this, &ALobbyGameMode::CheckLobbyState, 5.f, false);
+	if (HasAuthority())
+		GetWorld()->GetTimerManager().SetTimer(GameStartTimerHandle, this, &ALobbyGameMode::CheckLobbyState, 5.f, false);
 }
 
 void ALobbyGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
@@ -99,12 +105,6 @@ void ALobbyGameMode::InitializeHUDForPlayer_Implementation(APlayerController* Ne
 	{
 		PlayerController->Client_SetupHUD();
 	}
-	
-	// if (AMenuHUD* HUD = NewPlayer->GetHUD<AMenuHUD>())
-	// {
-	// 	HUD->ShowLobbyMenu();
-	// 	UpdatePlayerList();
-	// }
 }
 
 // Called every frame
@@ -217,8 +217,22 @@ void ALobbyGameMode::StartGameFromLobby()
 {
 	if (!HasAuthority())
 		return;
+
+	UPolyRacingSessionSubsystem* SessionSubsystem = GetGameInstance()->GetSubsystem<UPolyRacingSessionSubsystem>();
+
+	FString GameModeName;
+	SessionSubsystem->LastSessionSettings->Get(SETTING_GAMEMODE, GameModeName);
 	
-	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_FreeRoamGamemode.BP_FreeRoamGamemode"));
+	const FGameModeTableRow* GameMode = SessionSubsystem->GameModes->FindRow<FGameModeTableRow>(FName(GameModeName), "", false);
+	if (!GameMode)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("GameMode not found... cant start game"))
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("GameMode string: %s"), *GameMode->Path)
+	
+	FString const LevelOptions = FString(TEXT("listen -game=" + GameMode->Path));
 	GetWorld()->ServerTravel(FString(NextMap + "?" + LevelOptions));
 }
 

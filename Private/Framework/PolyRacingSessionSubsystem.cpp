@@ -24,7 +24,7 @@ UPolyRacingSessionSubsystem::UPolyRacingSessionSubsystem()
 	}
 }
 
-void UPolyRacingSessionSubsystem::CreateSession(int32 NumPublicConnections, bool IsLANMatch)
+void UPolyRacingSessionSubsystem::CreateSession(int32 NumPublicConnections, bool IsLANMatch, const FString& DesiredGameMode)
 {
 	const IOnlineSessionPtr SessionInterface = Online::GetSessionInterface(GetWorld());
 	if (!SessionInterface.IsValid())
@@ -33,9 +33,17 @@ void UPolyRacingSessionSubsystem::CreateSession(int32 NumPublicConnections, bool
 		return;
 	}
 
+	const FGameModeTableRow* GameMode = GameModes->FindRow<FGameModeTableRow>(FName(DesiredGameMode), "", false);
+	if (!GameMode)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("GameMode not found, aborting session creation..."))
+		OnCreateSessionCompleteEvent.Broadcast(false);
+		return;
+	}
+	
 	LastSessionSettings = MakeShareable(new FOnlineSessionSettings());
-	LastSessionSettings->NumPrivateConnections = 2;
-	LastSessionSettings->NumPublicConnections = NumPublicConnections;
+	LastSessionSettings->NumPrivateConnections = 0;
+	LastSessionSettings->NumPublicConnections = GameMode->MaxPlayers;
 	LastSessionSettings->bAllowInvites = true;
 	LastSessionSettings->bAllowJoinInProgress = true;
 	LastSessionSettings->bAllowJoinViaPresence = true;
@@ -46,9 +54,10 @@ void UPolyRacingSessionSubsystem::CreateSession(int32 NumPublicConnections, bool
 	LastSessionSettings->bShouldAdvertise = true;
 
 	LastSessionSettings->Set(SETTING_MAPNAME, FString("/Game/Scenes/MainMenuScene"), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	LastSessionSettings->Set(SETTING_GAMEMODE, DesiredGameMode, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	LastSessionSettings->Set(SEARCH_PRESENCE, true, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
-	
 
+	
 	CreateSessionCompleteDelegateHandle = SessionInterface->AddOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegate);
 
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
@@ -145,7 +154,7 @@ void UPolyRacingSessionSubsystem::DestroySession()
 	}
 }
 
-void UPolyRacingSessionSubsystem::FindSessions(int32 MaxSearchResults, bool IsLANQuery)
+void UPolyRacingSessionSubsystem::FindSessions(int32 MaxSearchResults, bool IsLANQuery, const FString& DesiredGameMode)
 {
 	const IOnlineSessionPtr SessionInterface = Online::GetSessionInterface(GetWorld());
 	if (!SessionInterface.IsValid())
@@ -162,6 +171,7 @@ void UPolyRacingSessionSubsystem::FindSessions(int32 MaxSearchResults, bool IsLA
 
 	// Set search params
 	LastSessionSearch->QuerySettings.Set(SETTING_MAPNAME, FString("/Game/Scenes/MainMenuScene"), EOnlineComparisonOp::Equals);
+	LastSessionSearch->QuerySettings.Set(SETTING_GAMEMODE, DesiredGameMode, EOnlineComparisonOp::Equals);
 	LastSessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 	
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();

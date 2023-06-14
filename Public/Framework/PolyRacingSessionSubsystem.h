@@ -31,12 +31,12 @@ public:
 	UPROPERTY()
 	UDataTable* GameModes;
 
-	void CreateSession(int32 NumPublicConnections, bool IsLANMatch);
+	void CreateSession(int32 NumPublicConnections, bool IsLANMatch, const FString& DesiredGameMode);
 	void UpdateSession();
 	void StartSession();
 	void EndSession();
 	void DestroySession();
-	void FindSessions(int32 MaxSearchResults, bool IsLANQuery);
+	void FindSessions(int32 MaxSearchResults, bool IsLANQuery, const FString& DesiredGameMode);
 	void JoinGameSession(const FOnlineSessionSearchResult& SessionResult);
 
 protected:

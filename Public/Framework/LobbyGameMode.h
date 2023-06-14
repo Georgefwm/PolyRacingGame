@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataTables.h"
 #include "GameFramework/GameModeBase.h"
 #include "LobbyGameMode.generated.h"
 
@@ -32,6 +33,9 @@ public:
 	TArray<class ALobbyPlayerController*> ConnectedPlayers;
 	
 	TArray<FLobbyPlayerInfo> ConnectedPlayerInfo;
+
+	UPROPERTY()
+	FGameModeTableRow SelectedGameMode;
 
 	UPROPERTY()
 	FString NextMap = TEXT("/Game/Scenes/Docks");

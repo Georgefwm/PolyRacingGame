@@ -24,14 +24,13 @@ void SLoadingScreenWidget::Construct(const FArguments& InArgs)
 		SNew(SOverlay)
 		+ SOverlay::Slot()
 		.HAlign(HAlign_Left)
-		.VAlign(VAlign_Center)
+		.VAlign(VAlign_Top)
 		.Padding(Style->TitleTextMargin)
 		[
 			// TitleText
 			SNew(STextBlock)
 			.TextStyle(&Style->MenuTitleStyle)
 			.Text(TitleText)
-			.LineHeightPercentage(2.f)
 		]
 	];
 }
