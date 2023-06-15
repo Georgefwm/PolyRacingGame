@@ -1,6 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "SAdvancedTransformInputBox.h"
 #include "StartPositionActor.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -16,6 +17,15 @@ AStartPositionActor::AStartPositionActor()
 	UStaticMeshComponent* Position6 = CreateDefaultSubobject<UStaticMeshComponent>("Position6");
 	UStaticMeshComponent* Position7 = CreateDefaultSubobject<UStaticMeshComponent>("Position7");
 	UStaticMeshComponent* Position8 = CreateDefaultSubobject<UStaticMeshComponent>("Position8");
+
+	Position1->SetupAttachment(RootComponent);
+	Position2->SetupAttachment(RootComponent);
+	Position3->SetupAttachment(RootComponent);
+	Position4->SetupAttachment(RootComponent);
+	Position5->SetupAttachment(RootComponent);
+	Position6->SetupAttachment(RootComponent);
+	Position7->SetupAttachment(RootComponent);
+	Position8->SetupAttachment(RootComponent);
 	
 	PreviewMeshes.Add(Position1);
 	PreviewMeshes.Add(Position2);
@@ -40,26 +50,64 @@ FTransform AStartPositionActor::GetSpawnTransformFromIndex(int PlayerIndex)
 
 void AStartPositionActor::UpdateEditorPreview()
 {
-	for (int i = 0; i < UKismetMathLibrary::Min(MaxStartLocations, (Shape.X * Shape.Y)); i++)
+	int Iterations = 0;
+
+	
+
+	FVector StartLocation = GetActorLocation();
+	FVector EndLocation = StartLocation + (GetActorUpVector() * -1000);
+
+	FHitResult HitResult;
+	
+	FCollisionQueryParams QueryParams;
+	QueryParams.bTraceComplex = true;
+	QueryParams.AddIgnoredActor(this);
+
+	// Perform the line trace
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, QueryParams);
+
+	FVector GroundHeight = FVector::Zero();
+	if (bHit)
+		GroundHeight = HitResult.ImpactPoint;
+
+	float YOffset = 0.f;
+	if (Shape.X % 2 == 0)
+		YOffset = Size.X * 0.5;
+	
+	for (int y = 0; y < Shape.Y; y++)
 	{
-		if (!PreviewMeshes.IsValidIndex(i))
-			return;
-
-		if (!PreviewMesh)
+		for (int x = 0; x < Shape.X; x++)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Preview mesh not set"))
-			return;
-		}
-		
-		UStaticMeshComponent* EditingMeshComponent = PreviewMeshes.GetData()[i];
-		EditingMeshComponent->SetStaticMesh(PreviewMesh);
+			if (Iterations >= MaxStartLocations)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Exhausted iterations"))
+				return;
+			}
+			
+			if (!PreviewMeshes.IsValidIndex(Iterations))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Preview mesh out of bounds"))
+				return;
+			}
 
-		FVector NewLocation = FVector(
-			1.f,
-			1.f,
-			1.f
-			);
-		
-		EditingMeshComponent->SetRelativeLocation(NewLocation);
+			if (!PreviewMesh)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Preview mesh not set"))
+				return;
+			}
+			
+			PreviewMeshes.GetData()[Iterations]->SetStaticMesh(PreviewMesh);
+
+			UE_LOG(LogTemp, Warning, TEXT("RESULT: %i"), Shape.X % 2)
+
+			FVector NewLocation = FVector(
+				y * -Size.Y,
+				x * Size.X - Size.X * Shape.X / 2 + YOffset,
+				GroundHeight.Z);
+			
+			PreviewMeshes.GetData()[Iterations]->SetRelativeLocation(NewLocation);
+
+			Iterations++;
+		}
 	}
 }
