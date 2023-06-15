@@ -6,6 +6,7 @@
 ATimeTrialGameMode::ATimeTrialGameMode()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bUseSeamlessTravel = true;
 }
 
 void ATimeTrialGameMode::BeginPlay()
