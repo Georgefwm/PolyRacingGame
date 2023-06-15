@@ -12,11 +12,11 @@ class POLYRACINGGAME_API AFreeRoamGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
+	
 	AFreeRoamGameMode();
 
-protected:
-	// Called when the game starts or when spawned
+	TArray<class ALobbyPlayerController*> ConnectedPlayers;
+	
 	virtual void BeginPlay() override;
 
 	virtual void StartPlay() override;

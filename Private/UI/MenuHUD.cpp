@@ -69,7 +69,7 @@ void AMenuHUD::RemoveMenu()
 
 void AMenuHUD::UpdateLobby()
 {
-	ALobbyPlayerController* PlayerController = static_cast<ALobbyPlayerController*>(GetOwningPlayerController());
+	ALobbyPlayerController* PlayerController = Cast<ALobbyPlayerController>(GetOwningPlayerController());
 	if (!PlayerController)
 		return;
 

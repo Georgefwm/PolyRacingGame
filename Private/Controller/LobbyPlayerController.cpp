@@ -4,7 +4,7 @@
 #include "Controller/LobbyPlayerController.h"
 
 #include "Camera/CameraActor.h"
-#include "Framework/LobbyGameMode.h"
+#include "Framework/GameMode/LobbyGameMode.h"
 #include "Framework/PolyRacingGameInstance.h"
 #include "Framework/PolyRacingPlayerState.h"
 #include "Kismet/GameplayStatics.h"

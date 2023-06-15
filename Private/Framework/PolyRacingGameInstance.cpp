@@ -26,7 +26,7 @@ void UPolyRacingGameInstance::EndLoadingScreen(UWorld* InLoadedWorld)
 		GetMoviePlayer()->SetupLoadingScreen(LoadingScreen);
 	}
 	
-	// if (ALobbyPlayerController* PlayerController = static_cast<ALobbyPlayerController*>(GetFirstLocalPlayerController()))
+	// if (ALobbyPlayerController* PlayerController = Cast<ALobbyPlayerController>(GetFirstLocalPlayerController()))
 	// 	PlayerController->OnFinishedLoad();
 }
 

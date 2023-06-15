@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "Customisation/VehicleCustomiser.h"
-#include "Framework/LobbyGameMode.h"
 #include "MenuHUD.generated.h"
 
 

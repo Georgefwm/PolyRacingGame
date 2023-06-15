@@ -1,12 +1,13 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Framework/FreeRoamGameMode.h"
+#include "Framework/GameMode/FreeRoamGameMode.h"
 
 #include "PolyRacingWheeledVehiclePawn.h"
+#include "StartPositionActor.h"
+#include "Controller/LobbyPlayerController.h"
 #include "Controller/PolyRacingPlayerController.h"
 #include "Customisation/VehicleCustomiser.h"
-#include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/InGameHUD.h"
 
@@ -42,19 +43,26 @@ void AFreeRoamGameMode::HandleStartingNewPlayer_Implementation(APlayerController
 	
 	UVehicleCustomiser* VehicleCustomiser = GetGameInstance()->GetSubsystem<UVehicleCustomiser>();
 	
-	// Setup the vehicle
+	// Spawn and possess vehicle 
 	TArray<AActor*> StartPositions;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), StartPositions);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AStartPositionActor::StaticClass(), StartPositions);
 	if (!StartPositions.IsEmpty())
 	{
-		FVector Location = StartPositions[0]->GetTransform().GetLocation();
-		FRotator Rotation = StartPositions[0]->GetTransform().GetRotation().Rotator();
+		AStartPositionActor* StartPosition = Cast<AStartPositionActor>(StartPositions[0]);
+		const FTransform StartTransform = StartPosition->GetNextSpawnTransform(); // Only call once per player
+		
+		FVector Location = StartTransform.GetLocation();
+		FRotator Rotation = StartTransform.GetRotation().Rotator();
 
 		FActorSpawnParameters SpawnParameters;
 		SpawnParameters.Owner = NewPlayer;
 		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-		APolyRacingWheeledVehiclePawn* NewVehicle = VehicleCustomiser->SpawnVehicle(GetWorld(), Location, Rotation, SpawnParameters);
+		APolyRacingWheeledVehiclePawn* NewVehicle = VehicleCustomiser->SpawnVehicle(GetWorld(),
+			Location,
+			Rotation,
+			SpawnParameters);
+		
 		NewPlayer->Possess(NewVehicle);
 	}
 }
@@ -62,6 +70,8 @@ void AFreeRoamGameMode::HandleStartingNewPlayer_Implementation(APlayerController
 void AFreeRoamGameMode::InitializeHUDForPlayer_Implementation(APlayerController* NewPlayer)
 {
 	Super::InitializeHUDForPlayer_Implementation(NewPlayer);
+
+	NewPlayer->GetHUD<AInGameHUD>()->ShowPlayerHUD();
 }
 
 void AFreeRoamGameMode::Tick(float DeltaTime)
@@ -78,6 +88,15 @@ void AFreeRoamGameMode::PreLogin(const FString& Options, const FString& Address,
 void AFreeRoamGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
+
+	ALobbyPlayerController* JoiningPlayer = Cast<ALobbyPlayerController>(NewPlayer);
+	if (!JoiningPlayer)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("GAMEMODE: invalid player tried to join the lobby"))
+		return;
+	}
+	
+	ConnectedPlayers.Add(JoiningPlayer);
 }
 
 void AFreeRoamGameMode::Logout(AController* ExitingPlayer)

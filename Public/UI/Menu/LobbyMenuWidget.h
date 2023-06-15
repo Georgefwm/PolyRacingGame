@@ -5,7 +5,7 @@
 #include "SlateBasics.h"
 #include "SlateExtras.h"
 #include "Customisation/VehicleCustomiser.h"
-#include "Framework/LobbyGameMode.h"
+#include "Framework/GameMode/LobbyGameMode.h"
 
 
 /**

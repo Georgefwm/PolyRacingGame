@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Framework/LobbyGameMode.h"
+#include "Framework/GameMode/LobbyGameMode.h"
 
 #include "Online.h"
 #include "PolyRacingSpectatorPawn.h"
@@ -88,6 +88,8 @@ void ALobbyGameMode::HandleStartingNewPlayer_Implementation(APlayerController* N
 {
 	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 
+	UE_LOG(LogTemp, Warning, TEXT("GAMEMODE: HandleStartingNewPlayer_Implementation called"))
+
 	TArray<AActor*> Cameras;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), Cameras);
 	
@@ -101,7 +103,7 @@ void ALobbyGameMode::InitializeHUDForPlayer_Implementation(APlayerController* Ne
 {
 	Super::InitializeHUDForPlayer_Implementation(NewPlayer);
 
-	if (ALobbyPlayerController* PlayerController = static_cast<ALobbyPlayerController*>(NewPlayer))
+	if (ALobbyPlayerController* PlayerController = Cast<ALobbyPlayerController>(NewPlayer))
 	{
 		PlayerController->Client_SetupHUD();
 	}
@@ -233,7 +235,7 @@ void ALobbyGameMode::StartGameFromLobby()
 	UE_LOG(LogTemp, Warning, TEXT("GameMode string: %s"), *GameMode->Path)
 	
 	FString const LevelOptions = FString(TEXT("listen -game=" + GameMode->Path));
-	GetWorld()->ServerTravel(FString(NextMap + "?" + LevelOptions));
+	GetWorld()->ServerTravel(FString(NextMap + "?" + LevelOptions), true);
 }
 
 void ALobbyGameMode::SearchForLobbies()

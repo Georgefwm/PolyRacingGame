@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Framework/MainMenuGameMode.h"
+#include "Framework/GameMode/MainMenuGameMode.h"
 
 #include "PolyRacingSpectatorPawn.h"
 #include "Camera/CameraActor.h"

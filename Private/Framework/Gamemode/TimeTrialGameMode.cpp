@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Framework/TimeTrialGameMode.h"
+#include "Framework/GameMode/TimeTrialGameMode.h"
 
 ATimeTrialGameMode::ATimeTrialGameMode()
 {
