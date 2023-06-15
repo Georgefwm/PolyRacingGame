@@ -235,7 +235,7 @@ void ALobbyGameMode::StartGameFromLobby()
 	UE_LOG(LogTemp, Warning, TEXT("GameMode string: %s"), *GameMode->Path)
 	
 	FString const LevelOptions = FString(TEXT("listen -game=" + GameMode->Path));
-	GetWorld()->ServerTravel(FString(NextMap + "?" + LevelOptions), true);
+	GetWorld()->ServerTravel(FString(NextMap + "?" + LevelOptions));
 }
 
 void ALobbyGameMode::SearchForLobbies()
