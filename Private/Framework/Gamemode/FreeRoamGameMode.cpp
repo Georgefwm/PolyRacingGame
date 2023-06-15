@@ -16,7 +16,8 @@
 AFreeRoamGameMode::AFreeRoamGameMode()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
+	bUseSeamlessTravel = false;
+	
 	PlayerControllerClass = APolyRacingPlayerController::StaticClass();
 	HUDClass = AInGameHUD::StaticClass();
 }
@@ -24,6 +25,8 @@ AFreeRoamGameMode::AFreeRoamGameMode()
 void AFreeRoamGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	GetWorld()->GetGameInstance()->EnableListenServer(true, 7779);
 }
 
 void AFreeRoamGameMode::StartPlay()
@@ -33,45 +36,20 @@ void AFreeRoamGameMode::StartPlay()
 
 void AFreeRoamGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
-	if(NewPlayer->GetPawn())
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+
+	APolyRacingPlayerController* JoiningPlayer = Cast<APolyRacingPlayerController>(NewPlayer);
+	if (!JoiningPlayer)
 	{
-		NewPlayer->GetPawn()->Destroy();
+		return;
 	}
-
-	NewPlayer->bShowMouseCursor = false;
-	NewPlayer->SetInputMode(FInputModeGameOnly());
 	
-	UVehicleCustomiser* VehicleCustomiser = GetGameInstance()->GetSubsystem<UVehicleCustomiser>();
-	
-	// Spawn and possess vehicle 
-	TArray<AActor*> StartPositions;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AStartPositionActor::StaticClass(), StartPositions);
-	if (!StartPositions.IsEmpty())
-	{
-		AStartPositionActor* StartPosition = Cast<AStartPositionActor>(StartPositions[0]);
-		const FTransform StartTransform = StartPosition->GetNextSpawnTransform(); // Only call once per player
-		
-		FVector Location = StartTransform.GetLocation();
-		FRotator Rotation = StartTransform.GetRotation().Rotator();
-
-		FActorSpawnParameters SpawnParameters;
-		SpawnParameters.Owner = NewPlayer;
-		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-		APolyRacingWheeledVehiclePawn* NewVehicle = VehicleCustomiser->SpawnVehicle(GetWorld(),
-			Location,
-			Rotation,
-			SpawnParameters);
-		
-		NewPlayer->Possess(NewVehicle);
-	}
+	JoiningPlayer->Client_RequestVehicleSpawn();
 }
 
 void AFreeRoamGameMode::InitializeHUDForPlayer_Implementation(APlayerController* NewPlayer)
 {
 	Super::InitializeHUDForPlayer_Implementation(NewPlayer);
-
-	NewPlayer->GetHUD<AInGameHUD>()->ShowPlayerHUD();
 }
 
 void AFreeRoamGameMode::Tick(float DeltaTime)
@@ -89,7 +67,7 @@ void AFreeRoamGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	ALobbyPlayerController* JoiningPlayer = Cast<ALobbyPlayerController>(NewPlayer);
+	APolyRacingPlayerController* JoiningPlayer = Cast<APolyRacingPlayerController>(NewPlayer);
 	if (!JoiningPlayer)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("GAMEMODE: invalid player tried to join the lobby"))
@@ -97,9 +75,44 @@ void AFreeRoamGameMode::PostLogin(APlayerController* NewPlayer)
 	}
 	
 	ConnectedPlayers.Add(JoiningPlayer);
+	
+	if(JoiningPlayer->GetPawn())
+	{
+		JoiningPlayer->GetPawn()->Destroy();
+	}
+
+	JoiningPlayer->bShowMouseCursor = false;
+	JoiningPlayer->SetInputMode(FInputModeGameOnly());
+	
+	UVehicleCustomiser* VehicleCustomiser = GetGameInstance()->GetSubsystem<UVehicleCustomiser>();
+	
+	// Spawn and possess vehicle 
+	TArray<AActor*> StartPositions;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AStartPositionActor::StaticClass(), StartPositions);
+	if (!StartPositions.IsEmpty())
+	{
+		AStartPositionActor* StartPosition = Cast<AStartPositionActor>(StartPositions[0]);
+		const FTransform StartTransform = StartPosition->GetNextSpawnTransform(); // Only call once per player
+		
+		FVector Location = StartTransform.GetLocation();
+		FRotator Rotation = StartTransform.GetRotation().Rotator();
+
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.Owner = JoiningPlayer;
+		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+		APolyRacingWheeledVehiclePawn* NewVehicle = VehicleCustomiser->SpawnVehicle(GetWorld(),
+			Location,
+			Rotation,
+			SpawnParameters);
+		
+		JoiningPlayer->Possess(NewVehicle);
+	}
 }
 
 void AFreeRoamGameMode::Logout(AController* ExitingPlayer)
 {
 	Super::Logout(ExitingPlayer);
 }
+
+

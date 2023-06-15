@@ -22,6 +22,7 @@ ALobbyGameMode::ALobbyGameMode()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	bStartPlayersAsSpectators = true;
+	bUseSeamlessTravel = false;
 
 	PlayerControllerClass = ALobbyPlayerController::StaticClass();
 	HUDClass = AMenuHUD::StaticClass();
@@ -36,6 +37,8 @@ ALobbyGameMode::ALobbyGameMode()
 void ALobbyGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//GetWorld()->GetGameInstance()->EnableListenServer(true, 7779);
 
 	UVehicleCustomiser* VehicleCustomiser = GetGameInstance()->GetSubsystem<UVehicleCustomiser>();
 	
@@ -69,44 +72,15 @@ void ALobbyGameMode::StartPlay()
 
 	SessionSubsystem->FindSessions(5, true, GameMode);
 
-	TArray<AActor*> Cameras;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), Cameras);
+	UpdatePlayerList();
 	
-	if (!Cameras.IsEmpty())
-	{
-		for (ALobbyPlayerController* Player : ConnectedPlayers)
-			Player->SetCameraView();
-	}
-	else
-		UE_LOG(LogTemp, Warning, TEXT("LOBBYGAMEMODE: Camera not found"))
+	UE_LOG(LogTemp, Warning, TEXT("Net mode: %i"), GetWorld()->GetNetMode())
 
+	for (ALobbyPlayerController* Player : ConnectedPlayers)
+		Player->SetCameraView();
+	
 	if (HasAuthority())
 		GetWorld()->GetTimerManager().SetTimer(GameStartTimerHandle, this, &ALobbyGameMode::CheckLobbyState, 5.f, false);
-}
-
-void ALobbyGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
-{
-	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
-
-	UE_LOG(LogTemp, Warning, TEXT("GAMEMODE: HandleStartingNewPlayer_Implementation called"))
-
-	TArray<AActor*> Cameras;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), Cameras);
-	
-	if (!Cameras.IsEmpty())
-		NewPlayer->SetViewTarget(StaticCast<ACameraActor*>(Cameras[0]));
-	else
-		UE_LOG(LogTemp, Warning, TEXT("LOBBYGAMEMODE: Camera not found"))
-}
-
-void ALobbyGameMode::InitializeHUDForPlayer_Implementation(APlayerController* NewPlayer)
-{
-	Super::InitializeHUDForPlayer_Implementation(NewPlayer);
-
-	if (ALobbyPlayerController* PlayerController = Cast<ALobbyPlayerController>(NewPlayer))
-	{
-		PlayerController->Client_SetupHUD();
-	}
 }
 
 // Called every frame
@@ -138,6 +112,8 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	
 	ConnectedPlayers.Add(JoiningPlayer);
 
+	
+
 	DebugPrintConnectedPlayers();
 }
 
@@ -155,6 +131,16 @@ void ALobbyGameMode::Logout(AController* ExitingPlayer)
 	ConnectedPlayers.Remove(LobbyPlayerController);
 	
 	PlayerRequestUpdate();
+}
+
+void ALobbyGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	ALobbyPlayerController* JoiningPlayer = Cast<ALobbyPlayerController>(NewPlayer);
+	if (!JoiningPlayer)
+		return;
+	
+	JoiningPlayer->Client_SetupHUD(); // Must be client-side
+	JoiningPlayer->SetCameraView(); // can be either
 }
 
 void ALobbyGameMode::ProdcastChatMessage(const FText& ChatMessage)
@@ -231,11 +217,13 @@ void ALobbyGameMode::StartGameFromLobby()
 		UE_LOG(LogTemp, Warning, TEXT("GameMode not found... cant start game"))
 		return;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("GameMode string: %s"), *GameMode->Path)
 	
-	FString const LevelOptions = FString(TEXT("listen -game=" + GameMode->Path));
-	GetWorld()->ServerTravel(FString(NextMap + "?" + LevelOptions));
+	FString const LevelOptions = FString(TEXT("?listen -game=" + GameMode->Path));
+	FString TravelPath = FString(NextMap + LevelOptions);
+	
+	UE_LOG(LogTemp, Warning, TEXT("TravelPath: %s"), *TravelPath)
+	
+	GetWorld()->ServerTravel(TravelPath);
 }
 
 void ALobbyGameMode::SearchForLobbies()

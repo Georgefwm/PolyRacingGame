@@ -49,10 +49,6 @@ protected:
 
 	virtual void StartPlay() override;
 
-	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
-
-	virtual void InitializeHUDForPlayer_Implementation(APlayerController* NewPlayer) override;
-
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -62,6 +58,8 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	virtual void Logout(AController* ExitingPlayer) override;
+
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 	
 	//called from player controller when he sends a chat message
 	void ProdcastChatMessage(const FText& ChatMessage);

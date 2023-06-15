@@ -2,6 +2,7 @@
 
 #include "Framework/PolyRacingSessionSubsystem.h"
 #include "OnlineSubsystemUtils.h"
+#include "UI/MenuHUD.h"
 
 
 UPolyRacingSessionSubsystem::UPolyRacingSessionSubsystem()
@@ -216,10 +217,17 @@ void UPolyRacingSessionSubsystem::OnCreateSessionCompleted(FName SessionName, bo
 
 	if (Successful)
 	{
-		FString const LevelOptions = FString(TEXT("?listen -game=/Game/GameModes/BP_LobbyGamemode.BP_LobbyGamemode_C"));
+		FString const LevelOptions = FString(TEXT("?listen game=/Game/GameModes/BP_LobbyGamemode.BP_LobbyGamemode_C"));
+
+		// GetWorld()->GetFirstPlayerController()->GetHUD<AMenuHUD>()->RemoveMenu();
 
 		GetWorld()->GetGameInstance()->EnableListenServer(true, 7779);
-		GetWorld()->ServerTravel("/Game/Scenes/MainMenuScene" + LevelOptions);
+
+		FString TravelPath = FString("/Game/Scenes/MainMenuScene" + LevelOptions);
+	
+		UE_LOG(LogTemp, Warning, TEXT("TravelPath: %s"), *TravelPath)
+		
+		GetWorld()->ServerTravel(TravelPath);
 
 		// FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_LobbyGamemode.BP_LobbyGamemode_C"));
 		// UGameplayStatics::OpenLevel(GetWorld(), "/Game/Scenes/MainMenuScene", true, LevelOptions);
@@ -268,6 +276,9 @@ void UPolyRacingSessionSubsystem::OnDestroySessionCompleted(FName SessionName, b
 
 	UE_LOG(LogTemp, Warning, TEXT("Destroying %s"), Successful ? *FString("Success") : *FString("Fail"))
 	UE_LOG(LogTemp, Warning, TEXT("Joining new session..."))
+
+	if (Successful)
+		GetWorld()->GetGameInstance()->EnableListenServer(false, 7779);
 
 	if (!LastSessionSearch)
 		return;
@@ -347,8 +358,8 @@ bool UPolyRacingSessionSubsystem::TryTravelToCurrentSession()
 
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	UE_LOG(LogTemp, Warning, TEXT("Connect string: %s"), *ConnectString)
-	// GetGameInstance()->ClientTravelToSession(PlayerController->ID, NAME_GameSession);
+	//GetGameInstance()->ClientTravelToSession(PlayerController->GetUniqueID(), NAME_GameSession);
 	
-	PlayerController->ClientTravel(ConnectString, TRAVEL_Absolute, false);
+	PlayerController->ClientTravel(ConnectString, TRAVEL_Absolute);
 	return true;
 }

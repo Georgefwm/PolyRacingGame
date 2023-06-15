@@ -6,6 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "FreeRoamGameMode.generated.h"
 
+struct FPresetVehicleConfiguration;
+
 UCLASS()
 class POLYRACINGGAME_API AFreeRoamGameMode : public AGameModeBase
 {
@@ -15,7 +17,7 @@ public:
 	
 	AFreeRoamGameMode();
 
-	TArray<class ALobbyPlayerController*> ConnectedPlayers;
+	TArray<class APolyRacingPlayerController*> ConnectedPlayers;
 	
 	virtual void BeginPlay() override;
 
