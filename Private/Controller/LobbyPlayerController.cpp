@@ -33,8 +33,6 @@ void ALobbyPlayerController::BeginPlay()
 		TSharedPtr<FLobbyPlayerInfo> PlayerInfo = MakeShareable(TestPlayer);
 		LobbyPlayerInfoList.Add(PlayerInfo);
 	}
-
-	SetCameraView();
 }
 
 // Called every frame
@@ -201,6 +199,9 @@ void ALobbyPlayerController::SetCameraView()
 	
 	if (!Cameras.IsEmpty())
 		SetViewTarget(StaticCast<ACameraActor*>(Cameras[0]));
+	else
+		UE_LOG(LogTemp, Warning, TEXT("Camera not found"))
+	
 }
 
 void ALobbyPlayerController::Client_SetCameraView_Implementation()

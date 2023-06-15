@@ -29,6 +29,7 @@ public:
 
 	// Surely theres a better name...
 	TArray<TSharedPtr<FLobbyPlayerInfo>> LobbyPlayerInfoList;
+
 	
 	void SendChatMessage(const FText &ChatMessage);
 
@@ -44,6 +45,7 @@ public:
 	void Client_ReceiveChatMessage(const FText &ChatMessage);
 	void Client_ReceiveChatMessage_Implementation(const FText &ChatMessage);
 
+	
 	void SetupHUD();
 
 	UFUNCTION(Client, Reliable)
@@ -71,6 +73,7 @@ public:
 	void Server_RequestServerPlayerListUpdate();
 	void Server_RequestServerPlayerListUpdate_Implementation();
 	bool Server_RequestServerPlayerListUpdate_Validate();
+
 	
 	void SetCameraView();
 	
