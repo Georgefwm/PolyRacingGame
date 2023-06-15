@@ -7,6 +7,7 @@
 AStartPositionActor::AStartPositionActor()
 {
 	bReplicates = true;
+	bAlwaysRelevant = true;
 	
 	RootComponent = CreateDefaultSubobject<USceneComponent>("SceneRoot");
 
@@ -46,6 +47,7 @@ AStartPositionActor::AStartPositionActor()
 void AStartPositionActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	DOREPLIFETIME(AStartPositionActor, Owner);
+	DOREPLIFETIME(AStartPositionActor, CurrentPlayerIndex);
 }
 
 void AStartPositionActor::BeginPlay()
@@ -82,7 +84,9 @@ FTransform AStartPositionActor::GetSpawnTransformFromIndex(int PlayerIndex)
 FTransform AStartPositionActor::GetNextSpawnTransform()
 {
 	const FTransform Transform = GetSpawnTransformFromIndex(CurrentPlayerIndex);
-	
+
+	UE_LOG(LogTemp, Warning, TEXT("Position %i: %s"), CurrentPlayerIndex, *Transform.GetLocation().ToString())
+
 	CurrentPlayerIndex++;
 	
 	return Transform;
