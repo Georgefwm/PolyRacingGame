@@ -1,14 +1,20 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SAdvancedTransformInputBox.h"
 #include "StartPositionActor.h"
-#include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 AStartPositionActor::AStartPositionActor()
 {
+	bReplicates = true;
+	
 	RootComponent = CreateDefaultSubobject<USceneComponent>("SceneRoot");
 
+	ArrowMarker = CreateDefaultSubobject<UArrowComponent>("MarkerMesh");
+	ArrowMarker->SetupAttachment(RootComponent);
+
+	// There is probably a better way to do this... Does the job but isn't very flexible
+	// TODO: Allow the positions/amount to be dynamically changed
 	UStaticMeshComponent* Position1 = CreateDefaultSubobject<UStaticMeshComponent>("Position1");
 	UStaticMeshComponent* Position2 = CreateDefaultSubobject<UStaticMeshComponent>("Position2");
 	UStaticMeshComponent* Position3 = CreateDefaultSubobject<UStaticMeshComponent>("Position3");
@@ -37,38 +43,69 @@ AStartPositionActor::AStartPositionActor()
 	PreviewMeshes.Add(Position8);
 }
 
+void AStartPositionActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	DOREPLIFETIME(AStartPositionActor, Owner);
+}
+
 void AStartPositionActor::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	SetActorHiddenInGame(true);
+
+	for (UStaticMeshComponent* Mesh : PreviewMeshes)
+	{
+		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+
+	CurrentPlayerIndex = 0;
 }
 
 FTransform AStartPositionActor::GetSpawnTransformFromIndex(int PlayerIndex)
 {
-	return FTransform();
+	if (!PreviewMeshes.IsValidIndex(PlayerIndex))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player index not valid"))
+		return FTransform();
+	}
+
+	return PreviewMeshes.GetData()[PlayerIndex]->GetComponentTransform();
+}
+
+/*
+ * @return FTransform describing the start position
+ *
+ * @note only call once, or there will be non-uniform positions.
+ * Used to quickly setup a start location for a new player.
+ */
+FTransform AStartPositionActor::GetNextSpawnTransform()
+{
+	const FTransform Transform = GetSpawnTransformFromIndex(CurrentPlayerIndex);
+	
+	CurrentPlayerIndex++;
+	
+	return Transform;
 }
 
 void AStartPositionActor::UpdateEditorPreview()
 {
 	int Iterations = 0;
-
 	
-
 	FVector StartLocation = GetActorLocation();
-	FVector EndLocation = StartLocation + (GetActorUpVector() * -1000);
+	FVector EndLocation = StartLocation + GetActorUpVector() * -5000;
 
 	FHitResult HitResult;
 	
 	FCollisionQueryParams QueryParams;
-	QueryParams.bTraceComplex = true;
 	QueryParams.AddIgnoredActor(this);
-
-	// Perform the line trace
+	
+	// Try find ground level
 	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, QueryParams);
-
-	FVector GroundHeight = FVector::Zero();
+	
+	float GroundHeight = 0.f;
 	if (bHit)
-		GroundHeight = HitResult.ImpactPoint;
+		GroundHeight = HitResult.ImpactPoint.Z;
 
 	float YOffset = 0.f;
 	if (Shape.X % 2 == 0)
@@ -103,10 +140,22 @@ void AStartPositionActor::UpdateEditorPreview()
 			FVector NewLocation = FVector(
 				y * -Size.Y,
 				x * Size.X - Size.X * Shape.X / 2 + YOffset,
-				GroundHeight.Z);
+				0.f);
 			
 			PreviewMeshes.GetData()[Iterations]->SetRelativeLocation(NewLocation);
 
+			if (bHit)
+			{
+				Iterations++;
+				continue;
+			}
+
+			// Apply world position for Z axis if ground height was found
+			FVector CurrentLocation = PreviewMeshes.GetData()[Iterations]->GetComponentLocation();
+			FVector ZWorldPosition(CurrentLocation.X, CurrentLocation.Y, GroundHeight + StartHeight);
+			
+			PreviewMeshes.GetData()[Iterations]->SetWorldLocation(ZWorldPosition);
+			
 			Iterations++;
 		}
 	}

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/ArrowComponent.h"
 #include "StartPositionActor.generated.h"
 
 /**
@@ -21,6 +22,14 @@ public:
 
 	FTransform GetSpawnTransformFromIndex(int PlayerIndex);
 
+	FTransform GetNextSpawnTransform();
+
+	UPROPERTY(Replicated)
+	int CurrentPlayerIndex = 0;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UArrowComponent* ArrowMarker;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Editor Preview")
 	TArray<UStaticMeshComponent*> PreviewMeshes;
 
@@ -29,11 +38,17 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Start Parameters")
 	bool UseVehicleForPreview = false;
-	
+
+	// Update the transform of the start position editor previews
 	UFUNCTION(CallInEditor, Category="Start Parameters")
 	void UpdateEditorPreview();
 
+	// How high above the ground the start positions should be
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Start Parameters")
+	float StartHeight = 20.f;
+
+	// Amount of start locations, locked for now
+	UPROPERTY(BlueprintReadOnly, Category="Start Parameters")
 	int MaxStartLocations = 8;
 
 	// Z will not be used, just feels cleaner to use a vector than two fields
