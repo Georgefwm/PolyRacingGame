@@ -16,6 +16,7 @@ AMainMenuGameMode::AMainMenuGameMode()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bStartPlayersAsSpectators = true;
+	bUseSeamlessTravel = false;
 	
 	PlayerControllerClass = AMenuPlayerController::StaticClass();
 	HUDClass = AMenuHUD::StaticClass();
