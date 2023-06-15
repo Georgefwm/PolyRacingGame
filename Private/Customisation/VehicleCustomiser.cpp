@@ -106,7 +106,7 @@ APolyRacingWheeledVehiclePawn* UVehicleCustomiser::SpawnVehicle(UWorld* World, F
 		Location,
 		Rotation,
 		SpawnParameters);
-
+	
 	CurrentIndices.Add(TEXT("Preset"), SavedConfigurations->GetData()[ActiveConfigurationSlotIndex].Preset);
 	
 	SetPrimaryColor(SavedConfigurations->GetData()[ActiveConfigurationSlotIndex].PrimaryColor);
@@ -116,6 +116,33 @@ APolyRacingWheeledVehiclePawn* UVehicleCustomiser::SpawnVehicle(UWorld* World, F
 	CurrentIndices.Add(TEXT("AccentColor"), SavedConfigurations->GetData()[ActiveConfigurationSlotIndex].AccentColor);
 	
 	return Vehicle;
+}
+
+APolyRacingWheeledVehiclePawn* UVehicleCustomiser::SpawnVehicle(FPresetVehicleConfiguration DesiredConfiguration, UWorld* World, FVector &Location, FRotator &Rotation, FActorSpawnParameters &SpawnParameters)
+{
+	if (!VehicleOptions)
+		return nullptr;
+
+	// Set what type of car is being used and available customisation options
+	CurrentVehicleTypeRow = *VehicleOptions->FindRow<FPresetVehicleType>(FName(DesiredConfiguration.VehicleType), "");
+
+	CurrentIndices.Add(TEXT("VehicleType"), VehicleNameToIndex(DesiredConfiguration.VehicleType));
+	
+	 APolyRacingWheeledVehiclePawn* NewVehicle = GetWorld()->SpawnActor<APolyRacingWheeledVehiclePawn>(
+		CurrentVehicleTypeRow.Presets.GetData()[DesiredConfiguration.Preset]->GetDefaultObject()->GetClass(),
+		Location,
+		Rotation,
+		SpawnParameters);
+
+	CurrentIndices.Add(TEXT("Preset"), DesiredConfiguration.Preset);
+	
+	SetPrimaryColor(DesiredConfiguration.PrimaryColor);
+	SetAccentColor(DesiredConfiguration.AccentColor);
+
+	CurrentIndices.Add(TEXT("PrimaryColor"), DesiredConfiguration.PrimaryColor);
+	CurrentIndices.Add(TEXT("AccentColor"), DesiredConfiguration.AccentColor);
+	
+	return NewVehicle;
 }
 
 // Is there a better way to do this? seems very verbose
