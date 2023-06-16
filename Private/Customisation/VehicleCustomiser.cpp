@@ -124,23 +124,18 @@ APolyRacingWheeledVehiclePawn* UVehicleCustomiser::SpawnVehicle(FPresetVehicleCo
 		return nullptr;
 
 	// Set what type of car is being used and available customisation options
-	CurrentVehicleTypeRow = *VehicleOptions->FindRow<FPresetVehicleType>(FName(DesiredConfiguration.VehicleType), "");
-
-	CurrentIndices.Add(TEXT("VehicleType"), VehicleNameToIndex(DesiredConfiguration.VehicleType));
+	FPresetVehicleType VehicleTypeRow = *VehicleOptions->FindRow<FPresetVehicleType>(FName(DesiredConfiguration.VehicleType), "");
 	
-	 APolyRacingWheeledVehiclePawn* NewVehicle = GetWorld()->SpawnActor<APolyRacingWheeledVehiclePawn>(
+	
+	APolyRacingWheeledVehiclePawn* NewVehicle = GetWorld()->SpawnActor<APolyRacingWheeledVehiclePawn>(
 		CurrentVehicleTypeRow.Presets.GetData()[DesiredConfiguration.Preset]->GetDefaultObject()->GetClass(),
 		Location,
 		Rotation,
 		SpawnParameters);
 
-	CurrentIndices.Add(TEXT("Preset"), DesiredConfiguration.Preset);
 	
-	SetPrimaryColor(DesiredConfiguration.PrimaryColor);
-	SetAccentColor(DesiredConfiguration.AccentColor);
-
-	CurrentIndices.Add(TEXT("PrimaryColor"), DesiredConfiguration.PrimaryColor);
-	CurrentIndices.Add(TEXT("AccentColor"), DesiredConfiguration.AccentColor);
+	NewVehicle->VehicleCustomisationComponent->SetPrimaryColor(ColorOptions->MaterialInstances[DesiredConfiguration.PrimaryColor].LoadSynchronous());
+	NewVehicle->VehicleCustomisationComponent->SetAccentColor(ColorOptions->MaterialInstances[DesiredConfiguration.AccentColor].LoadSynchronous());
 	
 	return NewVehicle;
 }
