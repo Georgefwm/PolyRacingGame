@@ -149,7 +149,7 @@ APolyRacingWheeledVehiclePawn* UVehicleCustomiser::SpawnVehicle(FPresetVehicleCo
 	
 	
 	APolyRacingWheeledVehiclePawn* NewVehicle = GetWorld()->SpawnActor<APolyRacingWheeledVehiclePawn>(
-		CurrentVehicleTypeRow.Presets.GetData()[DesiredConfiguration.Preset]->GetDefaultObject()->GetClass(),
+		VehicleTypeRow.Presets.GetData()[DesiredConfiguration.Preset]->GetDefaultObject()->GetClass(),
 		Location,
 		Rotation,
 		SpawnParameters);
