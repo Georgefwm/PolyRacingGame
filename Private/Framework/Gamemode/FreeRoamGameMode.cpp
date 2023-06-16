@@ -75,39 +75,6 @@ void AFreeRoamGameMode::PostLogin(APlayerController* NewPlayer)
 	}
 	
 	ConnectedPlayers.Add(JoiningPlayer);
-	
-	if(JoiningPlayer->GetPawn())
-	{
-		JoiningPlayer->GetPawn()->Destroy();
-	}
-
-	JoiningPlayer->bShowMouseCursor = false;
-	JoiningPlayer->SetInputMode(FInputModeGameOnly());
-	
-	UVehicleCustomiser* VehicleCustomiser = GetGameInstance()->GetSubsystem<UVehicleCustomiser>();
-	
-	// Spawn and possess vehicle 
-	TArray<AActor*> StartPositions;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AStartPositionActor::StaticClass(), StartPositions);
-	if (!StartPositions.IsEmpty())
-	{
-		AStartPositionActor* StartPosition = Cast<AStartPositionActor>(StartPositions[0]);
-		const FTransform StartTransform = StartPosition->GetNextSpawnTransform(); // Only call once per player
-		
-		FVector Location = StartTransform.GetLocation();
-		FRotator Rotation = StartTransform.GetRotation().Rotator();
-
-		FActorSpawnParameters SpawnParameters;
-		SpawnParameters.Owner = JoiningPlayer;
-		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-		APolyRacingWheeledVehiclePawn* NewVehicle = VehicleCustomiser->SpawnVehicle(GetWorld(),
-			Location,
-			Rotation,
-			SpawnParameters);
-		
-		JoiningPlayer->Possess(NewVehicle);
-	}
 }
 
 void AFreeRoamGameMode::Logout(AController* ExitingPlayer)
