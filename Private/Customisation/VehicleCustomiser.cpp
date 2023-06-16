@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "Engine/DataTable.h"
+#include "Engine/StreamableManager.h"
 #include "Kismet/KismetMathLibrary.h"
 
 
@@ -35,6 +36,8 @@ void UVehicleCustomiser::Initialize(FSubsystemCollectionBase& Collection)
 		Default.VehicleType = UVehicleCustomiser::VehicleIndexToName(Index);
 		SavedConfigurations->Add(Default);
 	}
+
+	
 }
 
 void UVehicleCustomiser::Deinitialize()
@@ -84,6 +87,24 @@ void UVehicleCustomiser::SetupVehicle(FPresetVehicleConfiguration DesiredConfig)
 
 	CurrentIndices.Add(TEXT("PrimaryColor"), DesiredConfig.PrimaryColor);
 	CurrentIndices.Add(TEXT("AccentColor"), DesiredConfig.AccentColor);
+}
+
+void UVehicleCustomiser::AsyncLoadAssets()
+{
+	FStreamableManager StreamableManager;
+
+	for (TSoftObjectPtr<UMaterialInstance> Asset : ColorOptions->MaterialInstances)
+	{
+		TSharedPtr<FStreamableHandle> Handle = StreamableManager.RequestAsyncLoad(
+			Asset.ToSoftObjectPath(),
+			FStreamableDelegate::CreateUObject(this, &UVehicleCustomiser::OnAssetsLoaded),
+			0,
+			false);
+	}
+}
+
+void UVehicleCustomiser::OnAssetsLoaded()
+{
 }
 
 APolyRacingWheeledVehiclePawn* UVehicleCustomiser::SpawnVehicle(UWorld* World, FVector &Location, FRotator &Rotation, FActorSpawnParameters &SpawnParameters)

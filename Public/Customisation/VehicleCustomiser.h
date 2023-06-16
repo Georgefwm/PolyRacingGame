@@ -17,6 +17,9 @@ public:
 	void SetupVehicle();
 	void SetupVehicle(FPresetVehicleConfiguration);
 
+	void AsyncLoadAssets();
+	void OnAssetsLoaded();
+
 	APolyRacingWheeledVehiclePawn* SpawnVehicle(UWorld* World, FVector &Location, FRotator &Rotation, FActorSpawnParameters &SpawnParameters);
 
 	APolyRacingWheeledVehiclePawn* SpawnVehicle(FPresetVehicleConfiguration DesiredConfiguration, UWorld* World, FVector &Location, FRotator &Rotation, FActorSpawnParameters &SpawnParameters);
