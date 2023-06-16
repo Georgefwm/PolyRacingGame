@@ -60,8 +60,6 @@ void AStartPositionActor::BeginPlay()
 	{
 		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
-
-	CurrentPlayerIndex = 0;
 }
 
 FTransform AStartPositionActor::GetSpawnTransformFromIndex(int PlayerIndex)

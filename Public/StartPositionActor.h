@@ -25,7 +25,7 @@ public:
 	FTransform GetNextSpawnTransform();
 
 	UPROPERTY(Replicated)
-	int CurrentPlayerIndex;
+	int CurrentPlayerIndex = 0;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UArrowComponent* ArrowMarker;
