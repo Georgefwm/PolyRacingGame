@@ -80,4 +80,11 @@ public:
 	UFUNCTION(Client, Reliable)
 	void Client_SetCameraView();
 	void Client_SetCameraView_Implementation();
+
+	
+	void SpawnVehicle();
+	
+	UFUNCTION(Client, Reliable)
+	void Client_SpawnVehicle();
+	void Client_SpawnVehicle_Implementation();
 };

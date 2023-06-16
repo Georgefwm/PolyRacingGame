@@ -3,10 +3,12 @@
 
 #include "Controller/LobbyPlayerController.h"
 
+#include "PolyRacingWheeledVehiclePawn.h"
 #include "Camera/CameraActor.h"
 #include "Framework/GameMode/LobbyGameMode.h"
 #include "Framework/PolyRacingGameInstance.h"
 #include "Framework/PolyRacingPlayerState.h"
+#include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/MenuHUD.h"
 
@@ -207,6 +209,43 @@ void ALobbyPlayerController::SetCameraView()
 void ALobbyPlayerController::Client_SetCameraView_Implementation()
 {
 	SetCameraView();
+}
+
+void ALobbyPlayerController::SpawnVehicle()
+{
+	
+	UVehicleCustomiser* VehicleCustomiser = GetGameInstance()->GetSubsystem<UVehicleCustomiser>();
+	
+	// Spawn and possess vehicle 
+	TArray<AActor*> StartPositions;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), StartPositions);
+	if (!StartPositions.IsEmpty())
+	{
+		APlayerStart* StartPosition = Cast<APlayerStart>(StartPositions[0]);
+		const FTransform StartTransform = StartPosition->GetTransform(); // Only call once per player
+		
+		FVector Location = StartTransform.GetLocation();
+		FRotator Rotation = StartTransform.GetRotation().Rotator();
+
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.Owner = this;
+		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+		APolyRacingWheeledVehiclePawn* NewVehicle = VehicleCustomiser->SpawnVehicle(GetWorld(),
+			Location,
+			Rotation,
+			SpawnParameters);
+
+		NewVehicle->SetReplicates(false);
+	}
+	else
+		UE_LOG(LogTemp, Warning, TEXT("Start not found, is 'AStartActor.bIsNetLoadOnClient' == true in scene?"))
+	
+}
+
+void ALobbyPlayerController::Client_SpawnVehicle_Implementation()
+{
+	SpawnVehicle();
 }
 
 
