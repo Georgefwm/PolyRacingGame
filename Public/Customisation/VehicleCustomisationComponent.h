@@ -17,7 +17,7 @@ public:
 	// Sets default values for this component's properties
 	UVehicleCustomisationComponent();
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	USkeletalMeshComponent* EditingMesh;
 
 protected:

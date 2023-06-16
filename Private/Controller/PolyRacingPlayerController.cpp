@@ -6,6 +6,7 @@
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "StartPositionActor.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "UI/InGameHUD.h"
 
 APolyRacingPlayerController::APolyRacingPlayerController()
@@ -14,11 +15,16 @@ APolyRacingPlayerController::APolyRacingPlayerController()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+void APolyRacingPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(APolyRacingPlayerController, VehicleConfiguration);
+}
+
 void APolyRacingPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
 }
 
 void APolyRacingPlayerController::SetupHUD()
@@ -85,8 +91,10 @@ void APolyRacingPlayerController::Server_SpawnVehicleForPlayer_Implementation(co
 void APolyRacingPlayerController::RequestVehicleSpawn()
 {
 	UVehicleCustomiser* VehicleCustomiser = GetGameInstance()->GetSubsystem<UVehicleCustomiser>();
+
+	VehicleConfiguration = VehicleCustomiser->SavedConfigurations->GetData()[VehicleCustomiser->ActiveConfigurationSlotIndex];
 	
-	Server_SpawnVehicleForPlayer(VehicleCustomiser->SavedConfigurations->GetData()[VehicleCustomiser->ActiveConfigurationSlotIndex], this);
+	Server_SpawnVehicleForPlayer(VehicleConfiguration, this);
 }
 
 void APolyRacingPlayerController::Client_RequestVehicleSpawn_Implementation()

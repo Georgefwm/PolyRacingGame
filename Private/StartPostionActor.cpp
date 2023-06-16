@@ -46,7 +46,8 @@ AStartPositionActor::AStartPositionActor()
 
 void AStartPositionActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	DOREPLIFETIME(AStartPositionActor, Owner);
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
 	DOREPLIFETIME(AStartPositionActor, CurrentPlayerIndex);
 }
 
