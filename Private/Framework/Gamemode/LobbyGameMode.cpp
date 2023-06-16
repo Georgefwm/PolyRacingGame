@@ -40,25 +40,25 @@ void ALobbyGameMode::BeginPlay()
 
 	//GetWorld()->GetGameInstance()->EnableListenServer(true, 7779);
 
-	UVehicleCustomiser* VehicleCustomiser = GetGameInstance()->GetSubsystem<UVehicleCustomiser>();
-	
-	// Setup the vehicle
-	TArray<AActor*> StartPositions;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), StartPositions);
-	if (!StartPositions.IsEmpty())
-	{
-		FVector Location = StartPositions[0]->GetTransform().GetLocation();
-		FRotator Rotation = StartPositions[0]->GetTransform().GetRotation().Rotator();
-
-		FActorSpawnParameters SpawnParameters;
-		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-		
-		VehicleCustomiser->SpawnVehicle(GetWorld(), Location, Rotation, SpawnParameters);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("GAMEMODE: Can't find start position!"))
-	}
+	// UVehicleCustomiser* VehicleCustomiser = GetGameInstance()->GetSubsystem<UVehicleCustomiser>();
+	//
+	// // Setup the vehicle
+	// TArray<AActor*> StartPositions;
+	// UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), StartPositions);
+	// if (!StartPositions.IsEmpty())
+	// {
+	// 	FVector Location = StartPositions[0]->GetTransform().GetLocation();
+	// 	FRotator Rotation = StartPositions[0]->GetTransform().GetRotation().Rotator();
+	//
+	// 	FActorSpawnParameters SpawnParameters;
+	// 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	// 	
+	// 	VehicleCustomiser->SpawnVehicle(GetWorld(), Location, Rotation, SpawnParameters);
+	// }
+	// else
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("GAMEMODE: Can't find start position!"))
+	// }
 }
 
 void ALobbyGameMode::StartPlay()
@@ -111,9 +111,7 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	UE_LOG(LogTemp, Warning, TEXT("GAMEMODE: Player joined the lobby"))
 	
 	ConnectedPlayers.Add(JoiningPlayer);
-
 	
-
 	DebugPrintConnectedPlayers();
 }
 
@@ -130,6 +128,8 @@ void ALobbyGameMode::Logout(AController* ExitingPlayer)
 	
 	ConnectedPlayers.Remove(LobbyPlayerController);
 	
+
+	
 	PlayerRequestUpdate();
 }
 
@@ -141,6 +141,7 @@ void ALobbyGameMode::HandleStartingNewPlayer_Implementation(APlayerController* N
 	
 	JoiningPlayer->Client_SetupHUD(); // Must be client-side
 	JoiningPlayer->SetCameraView(); // can be either
+	JoiningPlayer->Client_SpawnVehicle(); // Must be client-side
 }
 
 void ALobbyGameMode::ProdcastChatMessage(const FText& ChatMessage)

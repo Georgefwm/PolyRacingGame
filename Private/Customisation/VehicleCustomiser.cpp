@@ -37,7 +37,7 @@ void UVehicleCustomiser::Initialize(FSubsystemCollectionBase& Collection)
 		SavedConfigurations->Add(Default);
 	}
 
-	
+	AsyncLoadAssets();
 }
 
 void UVehicleCustomiser::Deinitialize()
