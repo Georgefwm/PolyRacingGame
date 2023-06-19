@@ -116,7 +116,7 @@ void SLobbyMenuWidget::Construct(const FArguments& InArgs)
 		.Padding(Style->MenuActionButtonContainerMargin)
 		[
 			SNew(SBox)
-			.WidthOverride(Style->LobbyPlayerBoxWidthOverride)
+			.WidthOverride(200.f)
 			[
 				SNew(SHorizontalBox)
 				+ SHorizontalBox::Slot()
