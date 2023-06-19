@@ -1,6 +1,5 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "StartPositionActor.h"
 #include "Net/UnrealNetwork.h"
 
@@ -42,6 +41,12 @@ AStartPositionActor::AStartPositionActor()
 	PreviewMeshes.Add(Position6);
 	PreviewMeshes.Add(Position7);
 	PreviewMeshes.Add(Position8);
+
+	for (UStaticMeshComponent* Mesh : PreviewMeshes)
+	{
+		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		Mesh->SetMobility(EComponentMobility::Movable);
+	}
 }
 
 void AStartPositionActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -56,11 +61,6 @@ void AStartPositionActor::BeginPlay()
 	Super::BeginPlay();
 	
 	SetActorHiddenInGame(true);
-
-	for (UStaticMeshComponent* Mesh : PreviewMeshes)
-	{
-		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
 }
 
 FTransform AStartPositionActor::GetSpawnTransformFromIndex(int PlayerIndex)
@@ -138,15 +138,13 @@ void AStartPositionActor::UpdateEditorPreview()
 			
 			PreviewMeshes.GetData()[Iterations]->SetStaticMesh(PreviewMesh);
 
-			UE_LOG(LogTemp, Warning, TEXT("RESULT: %i"), Shape.X % 2)
-
 			FVector NewLocation = FVector(
 				y * -Size.Y,
 				x * Size.X - Size.X * Shape.X / 2 + YOffset,
 				0.f);
 			
 			PreviewMeshes.GetData()[Iterations]->SetRelativeLocation(NewLocation);
-
+			
 			if (bHit)
 			{
 				Iterations++;
@@ -154,6 +152,7 @@ void AStartPositionActor::UpdateEditorPreview()
 			}
 
 			// Apply world position for Z axis if ground height was found
+			// TODO: Fix functionality
 			FVector CurrentLocation = PreviewMeshes.GetData()[Iterations]->GetComponentLocation();
 			FVector ZWorldPosition(CurrentLocation.X, CurrentLocation.Y, GroundHeight + StartHeight);
 			
