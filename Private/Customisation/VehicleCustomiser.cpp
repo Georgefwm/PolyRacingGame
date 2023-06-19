@@ -222,15 +222,11 @@ void UVehicleCustomiser::SetAccentColor(int DesiredOptionIndex)
 
 void UVehicleCustomiser::SetPrimaryColor(APolyRacingWheeledVehiclePawn* VehicleToModify, int DesiredOptionIndex)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Primary color index: %i"), DesiredOptionIndex)
-	
 	VehicleToModify->VehicleCustomisationComponent->SetPrimaryColor(ColorOptions->MaterialInstances[DesiredOptionIndex].LoadSynchronous());
 }
 
 void UVehicleCustomiser::SetAccentColor(APolyRacingWheeledVehiclePawn* VehicleToModify, int DesiredOptionIndex)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Accent color index: %i"), DesiredOptionIndex)
-	
 	VehicleToModify->VehicleCustomisationComponent->SetAccentColor(ColorOptions->MaterialInstances[DesiredOptionIndex].LoadSynchronous());
 }
 

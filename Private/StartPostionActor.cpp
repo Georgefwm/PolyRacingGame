@@ -84,8 +84,6 @@ FTransform AStartPositionActor::GetNextSpawnTransform()
 {
 	const FTransform Transform = GetSpawnTransformFromIndex(CurrentPlayerIndex);
 
-	UE_LOG(LogTemp, Warning, TEXT("Position %i: %s"), CurrentPlayerIndex, *Transform.GetLocation().ToString())
-
 	CurrentPlayerIndex++;
 	
 	return Transform;
