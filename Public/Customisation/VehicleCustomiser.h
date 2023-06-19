@@ -30,6 +30,9 @@ public:
 	void SetPreset(int DesiredOptionIndex);
 	void SetPrimaryColor(int DesiredOptionIndex);
 	void SetAccentColor(int DesiredOptionIndex);
+
+	void SetPrimaryColor(APolyRacingWheeledVehiclePawn* VehicleToModify, int DesiredOptionIndex);
+	void SetAccentColor(APolyRacingWheeledVehiclePawn* VehicleToModify, int DesiredOptionIndex);
 	
 	// Returns current index of specified option slot by name
 	FText GetOptionSlotCurrentIndex(FString OptionSlotName);

@@ -204,6 +204,7 @@ void ALobbyGameMode::UpdatePlayerList()
 
 void ALobbyGameMode::StartGameFromLobby()
 {
+	
 	if (!HasAuthority())
 		return;
 
@@ -219,7 +220,7 @@ void ALobbyGameMode::StartGameFromLobby()
 		return;
 	}
 	
-	FString const LevelOptions = FString(TEXT("?listen -game=" + GameMode->Path));
+	FString const LevelOptions = FString(TEXT("?game=" + GameMode->Path));
 	FString TravelPath = FString(NextMap + LevelOptions);
 	
 	UE_LOG(LogTemp, Warning, TEXT("TravelPath: %s"), *TravelPath)

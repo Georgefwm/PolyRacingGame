@@ -80,7 +80,15 @@ void APolyRacingPlayerController::SpawnVehicleForPlayer(const FPresetVehicleConf
 			SpawnParameters);
 		
 		PlayerController->Possess(NewVehicle);
+		PlayerController->VehiclePawn = NewVehicle;
+
+		NewVehicle->VehicleCustomisationComponent->CurrentPrimaryColor = DesiredConfiguration.PrimaryColor;
+		NewVehicle->VehicleCustomisationComponent->OnRep_PrimaryColorChanged();
+		
+		NewVehicle->VehicleCustomisationComponent->CurrentAccentColor = DesiredConfiguration.AccentColor;
+		NewVehicle->VehicleCustomisationComponent->OnRep_AccentColorChanged();
 	}
+	
 }
 
 void APolyRacingPlayerController::Server_SpawnVehicleForPlayer_Implementation(const FPresetVehicleConfiguration& DesiredConfiguration, APolyRacingPlayerController* PlayerController)

@@ -14,9 +14,12 @@ APolyRacingWheeledVehiclePawn::APolyRacingWheeledVehiclePawn(const FObjectInitia
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	GetMesh()->SetSimulatePhysics(true);
-	GetMesh()->SetIsReplicated(true);
 	bReplicates = true;
+	bAlwaysRelevant = true;
+
+	USkeletalMeshComponent* MeshComponent = GetMesh();
+	MeshComponent->SetIsReplicated(true);
+	MeshComponent->SetSimulatePhysics(true);
 	
 	SetupInputMappingContext();
 

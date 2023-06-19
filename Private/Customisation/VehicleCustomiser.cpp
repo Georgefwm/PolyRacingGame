@@ -153,7 +153,6 @@ APolyRacingWheeledVehiclePawn* UVehicleCustomiser::SpawnVehicle(FPresetVehicleCo
 		Location,
 		Rotation,
 		SpawnParameters);
-
 	
 	NewVehicle->VehicleCustomisationComponent->SetPrimaryColor(ColorOptions->MaterialInstances[DesiredConfiguration.PrimaryColor].LoadSynchronous());
 	NewVehicle->VehicleCustomisationComponent->SetAccentColor(ColorOptions->MaterialInstances[DesiredConfiguration.AccentColor].LoadSynchronous());
@@ -220,7 +219,21 @@ void UVehicleCustomiser::SetAccentColor(int DesiredOptionIndex)
 	Vehicle->VehicleCustomisationComponent->SetAccentColor(ColorOptions->MaterialInstances[UsingIndex].LoadSynchronous());
 	CurrentIndices.Add(TEXT("AccentColor"), UsingIndex);
 }
- 
+
+void UVehicleCustomiser::SetPrimaryColor(APolyRacingWheeledVehiclePawn* VehicleToModify, int DesiredOptionIndex)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Primary color index: %i"), DesiredOptionIndex)
+	
+	VehicleToModify->VehicleCustomisationComponent->SetPrimaryColor(ColorOptions->MaterialInstances[DesiredOptionIndex].LoadSynchronous());
+}
+
+void UVehicleCustomiser::SetAccentColor(APolyRacingWheeledVehiclePawn* VehicleToModify, int DesiredOptionIndex)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Accent color index: %i"), DesiredOptionIndex)
+	
+	VehicleToModify->VehicleCustomisationComponent->SetAccentColor(ColorOptions->MaterialInstances[DesiredOptionIndex].LoadSynchronous());
+}
+
 FText UVehicleCustomiser::GetOptionSlotCurrentIndex(FString OptionSlotName)
 {
 	if (OptionSlotName == TEXT("VehicleType"))

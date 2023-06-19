@@ -20,6 +20,19 @@ public:
 	UPROPERTY(Replicated)
 	USkeletalMeshComponent* EditingMesh;
 
+	UPROPERTY(ReplicatedUsing = OnRep_PrimaryColorChanged)
+	int CurrentPrimaryColor = 0;
+
+	UPROPERTY(ReplicatedUsing = OnRep_AccentColorChanged)
+	int CurrentAccentColor = 0;
+
+	UFUNCTION()
+	void OnRep_PrimaryColorChanged();
+
+	UFUNCTION()
+	void OnRep_AccentColorChanged();
+
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

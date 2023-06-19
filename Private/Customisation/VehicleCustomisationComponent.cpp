@@ -3,6 +3,8 @@
 
 #include "Customisation/VehicleCustomisationComponent.h"
 
+#include "PolyRacingWheeledVehiclePawn.h"
+#include "Customisation/VehicleCustomiser.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -20,6 +22,36 @@ void UVehicleCustomisationComponent::GetLifetimeReplicatedProps(TArray<FLifetime
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME(UVehicleCustomisationComponent, EditingMesh);
+	DOREPLIFETIME(UVehicleCustomisationComponent, CurrentPrimaryColor);
+	DOREPLIFETIME(UVehicleCustomisationComponent, CurrentAccentColor);
+}
+
+void UVehicleCustomisationComponent::OnRep_PrimaryColorChanged()
+{
+	UVehicleCustomiser* VehicleCustomiser = GetWorld()->GetGameInstance()->GetSubsystem<UVehicleCustomiser>();
+
+	if (!VehicleCustomiser)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OnRep called but vehicle customiser isnt valid"))
+		return;
+	}
+
+	if (APolyRacingWheeledVehiclePawn* Vehicle = Cast<APolyRacingWheeledVehiclePawn>(GetOwner()))
+		VehicleCustomiser->SetPrimaryColor(Vehicle, CurrentPrimaryColor);
+}
+
+void UVehicleCustomisationComponent::OnRep_AccentColorChanged()
+{
+	UVehicleCustomiser* VehicleCustomiser = GetWorld()->GetGameInstance()->GetSubsystem<UVehicleCustomiser>();
+
+	if (!VehicleCustomiser)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OnRep called but vehicle customiser isnt valid"))
+		return;
+	}
+
+	if (APolyRacingWheeledVehiclePawn* Vehicle = Cast<APolyRacingWheeledVehiclePawn>(GetOwner()))
+		VehicleCustomiser->SetAccentColor(Vehicle, CurrentAccentColor);
 }
 
 // Called when the game starts

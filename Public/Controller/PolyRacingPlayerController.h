@@ -21,21 +21,26 @@ public:
 
 	UPROPERTY(Replicated)
 	FPresetVehicleConfiguration VehicleConfiguration;
+
+	UPROPERTY(Replicated)
+	APolyRacingWheeledVehiclePawn* VehiclePawn;
 	
 	virtual void BeginPlay() override;
+	
 
 	void SetupHUD();
 
 	UFUNCTION(Client, Reliable)
 	void Client_SetupHUD();
 	void Client_SetupHUD_Implementation();
+	
 
 	void SpawnVehicleForPlayer(const FPresetVehicleConfiguration& DesiredConfiguration, APolyRacingPlayerController* PlayerController);
 
 	UFUNCTION(Server, Reliable)
 	void Server_SpawnVehicleForPlayer(const FPresetVehicleConfiguration& DesiredConfiguration, APolyRacingPlayerController* PlayerController);
 	void Server_SpawnVehicleForPlayer_Implementation(const FPresetVehicleConfiguration& DesiredConfiguration, APolyRacingPlayerController* PlayerController);
-
+	
 
 	void RequestVehicleSpawn();
 	
