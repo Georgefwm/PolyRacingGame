@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
 #include "WheeledVehiclePawn.h"
+#include "Camera/CameraComponent.h"
 #include "Customisation/VehicleCustomisationComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "PolyRacingWheeledVehiclePawn.generated.h"
 
 class UInputMappingContext;
@@ -22,6 +24,13 @@ public:
 
 	UPROPERTY()
 	UVehicleCustomisationComponent* VehicleCustomisationComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USpringArmComponent* SpringArmComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UCameraComponent* CameraComponent;
+	
 
 protected:
 	// Called when the game starts or when spawned

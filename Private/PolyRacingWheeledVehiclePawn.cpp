@@ -5,7 +5,6 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "ChaosVehicles/Public/ChaosVehicleMovementComponent.h"
-#include "Tests/AutomationTestSettings.h"
 
 
 // Sets default values
@@ -25,6 +24,23 @@ APolyRacingWheeledVehiclePawn::APolyRacingWheeledVehiclePawn(const FObjectInitia
 
 	VehicleCustomisationComponent = CreateDefaultSubobject<UVehicleCustomisationComponent>("Customisation Component");
 	VehicleCustomisationComponent->EditingMesh = GetMesh();
+	
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArm");
+	SpringArmComponent->SetupAttachment(GetRootComponent());
+
+	// Spring arm default settings
+	SpringArmComponent->TargetArmLength = 700.f;
+	SpringArmComponent->SetRelativeLocation(FVector(0.f, 0.f, 120.f));
+	SpringArmComponent->SetRelativeRotation(FRotator::MakeFromEuler(FVector(0.f, -10.f, 0.f)));
+	SpringArmComponent->bEnableCameraRotationLag = true;
+	SpringArmComponent->CameraRotationLagSpeed = 2.f;  // Lower = slower
+	SpringArmComponent->bInheritRoll = false;
+	
+	CameraComponent = CreateDefaultSubobject<UCameraComponent>("Camera");
+	CameraComponent->SetupAttachment(SpringArmComponent);
+
+	// Camera default settings
+	CameraComponent->FieldOfView = 90.f;
 }
 
 // Called when the game starts or when spawned
