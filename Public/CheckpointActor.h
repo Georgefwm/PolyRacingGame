@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "PolyRacingCheckpointActor.generated.h"
+#include "CheckpointActor.generated.h"
 
 class UBoxComponent;
 
 UCLASS()
-class POLYRACINGGAME_API APolyRacingCheckpointActor : public AActor
+class POLYRACINGGAME_API ACheckpointActor : public AActor
 {
 	GENERATED_BODY()
 
 public:
 
-	APolyRacingCheckpointActor();
+	ACheckpointActor();
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UBoxComponent* TriggerBox;
