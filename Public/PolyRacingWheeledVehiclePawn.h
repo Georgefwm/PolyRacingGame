@@ -54,6 +54,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input Actions")
 	UInputAction* HandbrakeAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input Actions")
+	UInputAction* ToggleInGameMenuAction;
 	
 	void SetupInputMappingContext();
 	

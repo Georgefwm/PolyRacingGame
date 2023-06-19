@@ -82,7 +82,7 @@ FReply SPauseMenuWidget::OnSettingsClicked() const
 
 FReply SPauseMenuWidget::OnLeaveClicked() const
 {
-	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_MainMenuGamemode.BP_MainMenuGamemode_C"));
+	FString const LevelOptions = FString(TEXT("game=/Game/GameModes/BP_MainMenuGamemode.BP_MainMenuGamemode_C"));
 	
 	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/MainMenuScene", true, LevelOptions);
 	

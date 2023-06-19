@@ -5,6 +5,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "ChaosVehicles/Public/ChaosVehicleMovementComponent.h"
+#include "Controller/PolyRacingPlayerController.h"
+#include "UI/InGameHUD.h"
 
 
 // Sets default values
@@ -84,6 +86,14 @@ void APolyRacingWheeledVehiclePawn::SetupPlayerInputComponent(UInputComponent* P
 	
 	EnhancedInputComponent->BindAction(HandbrakeAction, ETriggerEvent::Triggered, this, &APolyRacingWheeledVehiclePawn::OnHandBrakePressed);
 	EnhancedInputComponent->BindAction(HandbrakeAction, ETriggerEvent::Completed, this, &APolyRacingWheeledVehiclePawn::OnHandBrakeReleased);
+	
+	if (APolyRacingPlayerController* PlayerController = Cast<APolyRacingPlayerController>(GetController()))
+	{
+		if (AInGameHUD* HUD = Cast<AInGameHUD>(PlayerController->GetHUD()))
+		{
+			EnhancedInputComponent->BindAction(ToggleInGameMenuAction, ETriggerEvent::Started, HUD, &AInGameHUD::TogglePauseMenu);
+		}
+	}
 }	
 
 void APolyRacingWheeledVehiclePawn::ApplyThrottle(const FInputActionValue& Value)

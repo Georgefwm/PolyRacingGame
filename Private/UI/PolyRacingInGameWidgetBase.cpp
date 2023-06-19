@@ -25,13 +25,13 @@ void SPolyRacingInGameWidgetBase::Construct(const FArguments& InArgs)
 		.HAlign(HAlign_Left)
 		.VAlign(VAlign_Center)
 		.Padding(Style->TitleTextMargin)
-		[
+		// [
 			// TitleText
-			SNew(STextBlock)
-			.TextStyle(&Style->MenuTitleStyle)
-			.Text(TitleText)
-			.LineHeightPercentage(2.f)
-		]
+			// SNew(STextBlock)
+			// .TextStyle(&Style->MenuTitleStyle)
+			// .Text(TitleText)
+			// .LineHeightPercentage(2.f)
+		// ]
 	];
 }
 

@@ -16,10 +16,10 @@ void AInGameHUD::BeginPlay()
 	VehicleCustomiser = GetGameInstance()->GetSubsystem<UVehicleCustomiser>();
 
 	if (PlayerOwner)
-		{
-			PlayerOwner->bShowMouseCursor = false;
-			PlayerOwner->SetInputMode(FInputModeGameOnly());
-		}
+	{
+		PlayerOwner->bShowMouseCursor = false;
+		PlayerOwner->SetInputMode(FInputModeGameOnly());
+	}
 }
 
 void AInGameHUD::ShowPlayerHUD()
@@ -55,14 +55,14 @@ void AInGameHUD::TogglePauseMenu()
 		}
 
 		PauseMenuActive = true;
-
 		return;
 	}
 	
 	// Switch back to game UI
-	if (!InGameWidget.IsValid())
+	if (!InGameWidget)
 	{
 		InGameWidget = SNew(SPolyRacingInGameWidgetBase).OwningHUD(this);
+		GEngine->GameViewport->RemoveAllViewportWidgets();
 		GEngine->GameViewport->AddViewportWidgetContent(SAssignNew(WidgetContainer, SWeakWidget).PossiblyNullContent(InGameWidget.ToSharedRef()));
 	}
 	else
