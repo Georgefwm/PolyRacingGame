@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "NiagaraFunctionLibrary.h"
-#include "NiagaraComponent.h"
 #include "CheckpointActor.generated.h"
 
 class UBoxComponent;
@@ -31,6 +30,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UStaticMeshComponent* RightSign;
 
+	UPROPERTY()
+	int CheckpointCount = 0;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Checkpoint Attributes")
 	int CheckpointNumber = 0;
 
@@ -46,6 +48,9 @@ public:
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void BeginPlay() override;
 
 	// Updates elements automatically when CheckpointWidth is change in editor
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;

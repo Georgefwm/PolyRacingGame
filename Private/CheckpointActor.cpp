@@ -2,7 +2,11 @@
 
 
 #include "CheckpointActor.h"
+
+#include "PolyRacingWheeledVehiclePawn.h"
 #include "Components/BoxComponent.h"
+#include "Framework/PolyRacingPlayerState.h"
+#include "Kismet/GameplayStatics.h"
 
 ACheckpointActor::ACheckpointActor()
 {
@@ -37,8 +41,32 @@ ACheckpointActor::ACheckpointActor()
 void ACheckpointActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Overlap happened on checkpoint %i"), CheckpointNumber)
+	APolyRacingWheeledVehiclePawn* Vehicle = Cast<APolyRacingWheeledVehiclePawn>(OtherActor);
+	if (!OtherActor)
+		return;
+	
+	APolyRacingPlayerState* PlayerState = Vehicle->GetPlayerState<APolyRacingPlayerState>();
+	if (!PlayerState)
+		return;
+	
 
+	if (PlayerState->LastCheckpoint + 1 != CheckpointNumber)
+	{
+		if (PlayerState->LastCheckpoint != CheckpointCount - 1) // Don't add lap when starting behind first checkpoint
+			return;
+	}
+	
+	PlayerState->LastCheckpoint = CheckpointNumber;
+
+	if (CheckpointNumber == 0)
+	{
+		// TODO: Check for final lap and end game
+		
+		PlayerState->Lap++;
+		PlayerState->LastCheckpoint = CheckpointNumber;
+	}
+
+	// TODO: Convert FX logic into NetMulticast RPC
 	if (CheckpointPassedEffect) {
 		UNiagaraFunctionLibrary::SpawnSystemAttached(CheckpointPassedEffect,
 			LeftSign,
@@ -56,6 +84,27 @@ void ACheckpointActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 			EAttachLocation::Type::KeepRelativeOffset,
 			true);
 	}
+}
+
+void ACheckpointActor::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (CheckpointNumber != 0)
+		return;
+	
+	TArray<AActor*> Checkpoints;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACheckpointActor::StaticClass(), Checkpoints);
+	if (Checkpoints.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No checkpoints found... ?"))
+		return;
+	}
+
+	CheckpointCount = Checkpoints.Num();
+	
+	for (AActor* CheckpointActor : Checkpoints)
+		Cast<ACheckpointActor>(CheckpointActor)->CheckpointCount = Checkpoints.Num();
 }
 
 void ACheckpointActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
