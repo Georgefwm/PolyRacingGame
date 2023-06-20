@@ -14,6 +14,7 @@ ACheckpointActor::ACheckpointActor()
 
 	TriggerBoxRoot = CreateDefaultSubobject<USceneComponent>("TriggerBoxRoot");
 	TriggerBoxRoot->SetupAttachment(SceneRoot);
+	TriggerBoxRoot->SetRelativeLocation(FVector(0.f, 0.f, CheckpointHeight));
 	
 	TriggerBox = CreateDefaultSubobject<UBoxComponent>("TriggerBox");
 	TriggerBox->SetupAttachment(TriggerBoxRoot);
@@ -49,6 +50,7 @@ void ACheckpointActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyCha
 	{
 		// Update shape of the checkpoint in editor
 		TriggerBox->SetBoxExtent(FVector(25.f, CheckpointWidth, CheckpointHeight));
+		TriggerBoxRoot->SetRelativeLocation(FVector(0.f, 0.f, CheckpointHeight));
 		
 		LeftSign->SetRelativeLocation(FVector(0.f, -CheckpointWidth, 0.f));
 		RightSign->SetRelativeLocation(FVector(0.f, CheckpointWidth, 0.f));
