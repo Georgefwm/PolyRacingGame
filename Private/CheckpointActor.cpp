@@ -38,6 +38,24 @@ void ACheckpointActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Overlap happened on checkpoint %i"), CheckpointNumber)
+
+	if (CheckpointPassedEffect) {
+		UNiagaraFunctionLibrary::SpawnSystemAttached(CheckpointPassedEffect,
+			LeftSign,
+			NAME_None,
+			FVector(0.f, 0.f, 210),
+			FRotator(0.f),
+			EAttachLocation::Type::KeepRelativeOffset,
+			true);
+
+		UNiagaraFunctionLibrary::SpawnSystemAttached(CheckpointPassedEffect,
+			RightSign,
+			NAME_None,
+			FVector(0.f, 0.f, 210),
+			FRotator(0.f),
+			EAttachLocation::Type::KeepRelativeOffset,
+			true);
+	}
 }
 
 void ACheckpointActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
