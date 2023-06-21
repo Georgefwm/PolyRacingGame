@@ -10,6 +10,7 @@ APolyRacingPlayerState::APolyRacingPlayerState()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	bUseCustomPlayerNames = false;
+	bReplicates = true;
 }
 
 // Called when the game starts or when spawned
@@ -17,7 +18,7 @@ void APolyRacingPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetPlayerName("Player 1");
+	LastCheckpoint = 0;
 }
 
 // Called every frame

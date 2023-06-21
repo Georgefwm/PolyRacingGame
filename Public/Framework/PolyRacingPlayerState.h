@@ -15,7 +15,14 @@ public:
 	// Sets default values for this actor's properties
 	APolyRacingPlayerState();
 
-	bool bIsReady = false;
+	UPROPERTY()
+	bool bIsReady = true;
+
+	UPROPERTY()
+	int LastCheckpoint = -1;
+
+	UPROPERTY()
+	int Lap = 0;
 
 protected:
 	// Called when the game starts or when spawned
