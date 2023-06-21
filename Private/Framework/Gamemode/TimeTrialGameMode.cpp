@@ -70,10 +70,6 @@ void ATimeTrialGameMode::AddCheckpoints(TArray<ACheckpointActor*>& Checkpoints)
 	
 	CheckpointActors.Sort([](const ACheckpointActor& CpA, const ACheckpointActor& CpB) {
 		return  CpA.CheckpointNumber < CpB.CheckpointNumber;
-	});
-
-	for (ACheckpointActor* Checkpoint : CheckpointActors)
-		UE_LOG(LogTemp, Warning, TEXT("Checkpoint %i"), Checkpoint->CheckpointNumber)
-	
+	});	
 }
 
