@@ -3,14 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "CheckpointGameMode.h"
+#include "GameFramework/GameMode.h"
 #include "TimeTrialGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class POLYRACINGGAME_API ATimeTrialGameMode : public AGameModeBase
+class POLYRACINGGAME_API ATimeTrialGameMode : public AGameMode, public ICheckpointGameMode
 {
 	GENERATED_BODY()
 
@@ -18,8 +19,23 @@ public:
 	// Sets default values for this actor's properties
 	ATimeTrialGameMode();
 
+	UPROPERTY()
+	TArray<class APolyRacingPlayerController*> ConnectedPlayers;
+
+	UPROPERTY()
+	TArray<class ACheckpointActor*> CheckpointActors;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+
+	virtual void RestartPlayer(AController* NewPlayer) override;
+
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 	
+	virtual void Logout(AController* Exiting) override;
+
+	virtual void AddCheckpoints(TArray<ACheckpointActor*>& Checkpoints) override;
 };
