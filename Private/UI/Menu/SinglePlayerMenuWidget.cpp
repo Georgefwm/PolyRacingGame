@@ -23,12 +23,13 @@ void SSinglePlayerMenuWidget::Construct(const FArguments& InArgs)
 	
 
 	/** Text */
-	const FText TitleText		= LOCTEXT("menu title", "Single Player");
+	const FText TitleText		= LOCTEXT("menu title",		"Single Player");
 	
-	const FText RaceModeText	= LOCTEXT("RaceModeText", "Race");
-	const FText FreeModeText	= LOCTEXT("FreeModeText", "Free Roam");
+	const FText RaceModeText	= LOCTEXT("RaceModeText",	"Race");
+	const FText TimeTrialText	= LOCTEXT("TimeTrialText",	"Time Trial");
+	const FText FreeModeText	= LOCTEXT("FreeModeText",	"Free Roam");
 	
-	const FText BackText		= LOCTEXT("Back text", "Back");
+	const FText BackText		= LOCTEXT("Back text",		"Back");
 
 	
 	ChildSlot
@@ -60,6 +61,16 @@ void SSinglePlayerMenuWidget::Construct(const FArguments& InArgs)
 				.TextStyle(&Style->MenuButtonTextStyle)
 				.Text(RaceModeText)
 				.OnClicked(this, &SSinglePlayerMenuWidget::OnRaceClicked)
+			]
+
+			+ SVerticalBox::Slot()
+			.Padding(Style->MenuButtonSpacingMargin)
+			[
+				SNew(SButton)
+				.ButtonStyle(&Style->MenuButtonStyle)
+				.TextStyle(&Style->MenuButtonTextStyle)
+				.Text(TimeTrialText)
+				.OnClicked(this, &SSinglePlayerMenuWidget::OnTimeTrialClicked)
 			]
 
 			+ SVerticalBox::Slot()
@@ -105,6 +116,14 @@ void SSinglePlayerMenuWidget::Construct(const FArguments& InArgs)
 FReply SSinglePlayerMenuWidget::OnRaceClicked() const
 {
 
+	return FReply::Handled();
+}
+
+FReply SSinglePlayerMenuWidget::OnTimeTrialClicked() const
+{
+	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_TimeTrialGamemode.BP_TimeTrialGamemode_C"));
+	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/Docks", true, LevelOptions);
+	
 	return FReply::Handled();
 }
 

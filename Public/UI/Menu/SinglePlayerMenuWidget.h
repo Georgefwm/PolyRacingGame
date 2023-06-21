@@ -24,6 +24,7 @@ public:
 	void Construct(const FArguments& InArgs);
 
 	FReply OnRaceClicked() const;
+	FReply OnTimeTrialClicked() const;
 	FReply OnFreeRoamClicked() const;
 	FReply OnBackClicked() const;
 
