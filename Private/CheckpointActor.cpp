@@ -104,14 +104,13 @@ void ACheckpointActor::BeginPlay()
 
 	CheckpointCount = Actors.Num();
 	
-	
 	TArray<ACheckpointActor*> Checkpoints;
 	for (AActor* CheckpointActor : Actors)
 	{
 		ACheckpointActor* Checkpoint = Cast<ACheckpointActor>(CheckpointActor);
 		Checkpoints.Add(Checkpoint);
 		
-		Checkpoint->CheckpointCount = Checkpoints.Num();
+		Checkpoint->CheckpointCount = Actors.Num();
 	}
 	
 	AGameModeBase* PotentialCheckpointGameMode = GetWorld()->GetAuthGameMode();
