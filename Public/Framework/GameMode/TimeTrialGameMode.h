@@ -8,7 +8,7 @@
 #include "TimeTrialGameMode.generated.h"
 
 /**
- * 
+ * For now this GameMode is assumed to be single-player only
  */
 UCLASS()
 class POLYRACINGGAME_API ATimeTrialGameMode : public AGameMode, public ICheckpointGameMode
