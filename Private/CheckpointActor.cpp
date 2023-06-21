@@ -6,6 +6,7 @@
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "Components/BoxComponent.h"
 #include "Framework/PolyRacingPlayerState.h"
+#include "Framework/GameMode/TimeTrialGameMode.h"
 #include "Kismet/GameplayStatics.h"
 
 ACheckpointActor::ACheckpointActor()
@@ -90,21 +91,35 @@ void ACheckpointActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (CheckpointNumber != 0)
+	if (CheckpointNumber != 0 || !HasAuthority())
 		return;
 	
-	TArray<AActor*> Checkpoints;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACheckpointActor::StaticClass(), Checkpoints);
-	if (Checkpoints.IsEmpty())
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACheckpointActor::StaticClass(), Actors);
+	if (Actors.IsEmpty())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No checkpoints found... ?"))
 		return;
 	}
 
-	CheckpointCount = Checkpoints.Num();
+	CheckpointCount = Actors.Num();
 	
-	for (AActor* CheckpointActor : Checkpoints)
-		Cast<ACheckpointActor>(CheckpointActor)->CheckpointCount = Checkpoints.Num();
+	
+	TArray<ACheckpointActor*> Checkpoints;
+	for (AActor* CheckpointActor : Actors)
+	{
+		ACheckpointActor* Checkpoint = Cast<ACheckpointActor>(CheckpointActor);
+		Checkpoints.Add(Checkpoint);
+		
+		Checkpoint->CheckpointCount = Checkpoints.Num();
+	}
+	
+	AGameModeBase* PotentialCheckpointGameMode = GetWorld()->GetAuthGameMode();
+	if (!PotentialCheckpointGameMode->Implements<UCheckpointGameMode>())
+		return;
+
+	ICheckpointGameMode* GameMode = Cast<ICheckpointGameMode>(PotentialCheckpointGameMode);
+	GameMode->AddCheckpoints(Checkpoints);
 }
 
 void ACheckpointActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
