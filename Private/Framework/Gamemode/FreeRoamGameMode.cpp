@@ -4,6 +4,7 @@
 #include "Framework/GameMode/FreeRoamGameMode.h"
 
 #include "Controller/PolyRacingPlayerController.h"
+#include "Framework/PolyRacingPlayerState.h"
 #include "UI/InGameHUD.h"
 
 
@@ -15,6 +16,8 @@ AFreeRoamGameMode::AFreeRoamGameMode()
 	
 	PlayerControllerClass = APolyRacingPlayerController::StaticClass();
 	HUDClass = AInGameHUD::StaticClass();
+
+	PlayerStateClass = APolyRacingPlayerState::StaticClass();
 }
 
 void AFreeRoamGameMode::BeginPlay()
