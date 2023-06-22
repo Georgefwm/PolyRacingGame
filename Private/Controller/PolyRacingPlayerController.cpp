@@ -3,6 +3,8 @@
 
 #include "Controller/PolyRacingPlayerController.h"
 
+#include "LevelSequenceActor.h"
+#include "LevelSequencePlayer.h"
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "StartPositionActor.h"
 #include "Kismet/GameplayStatics.h"
@@ -82,13 +84,14 @@ void APolyRacingPlayerController::SpawnVehicleForPlayer(const FPresetVehicleConf
 		PlayerController->Possess(NewVehicle);
 		PlayerController->VehiclePawn = NewVehicle;
 
+		PlayerController->PlayerCameraManager->StartCameraFade(1.f, 0.f, 3, FColor::Black, true);
+
 		NewVehicle->VehicleCustomisationComponent->CurrentPrimaryColor = DesiredConfiguration.PrimaryColor;
 		NewVehicle->VehicleCustomisationComponent->OnRep_PrimaryColorChanged();
 		
 		NewVehicle->VehicleCustomisationComponent->CurrentAccentColor = DesiredConfiguration.AccentColor;
 		NewVehicle->VehicleCustomisationComponent->OnRep_AccentColorChanged();
 	}
-	
 }
 
 void APolyRacingPlayerController::Server_SpawnVehicleForPlayer_Implementation(const FPresetVehicleConfiguration& DesiredConfiguration, APolyRacingPlayerController* PlayerController)
@@ -108,4 +111,39 @@ void APolyRacingPlayerController::RequestVehicleSpawn()
 void APolyRacingPlayerController::Client_RequestVehicleSpawn_Implementation()
 {
 	RequestVehicleSpawn();
+}
+
+void APolyRacingPlayerController::PlayLevelIntroSequence(ULevelSequence* Sequence)
+{
+	ALevelSequenceActor* LevelSequenceActor;
+	ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), Sequence, FMovieSceneSequencePlaybackSettings(), LevelSequenceActor);
+
+	SequencePlayer = LevelSequenceActor->GetSequencePlayer();
+	
+	if (LevelSequenceActor)
+	{
+		// We can't use the ULevelSequence.OnStop event, so we just use a timer
+		GetWorldTimerManager().SetTimer(SequenceTimerHandle,
+			this,
+			&APolyRacingPlayerController::OnLevelIntroSequenceEnd,
+			SequencePlayer->GetEndTime().AsSeconds());
+
+		SequencePlayer->Play();
+	}
+	else  // If there is any error, skip to vehicle spawn logic
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Sequence player Error"))
+		
+		Client_RequestVehicleSpawn();
+	}
+}
+
+void APolyRacingPlayerController::OnLevelIntroSequenceEnd()
+{
+	Client_RequestVehicleSpawn();
+}
+
+void APolyRacingPlayerController::Client_PlayLevelIntroSequence_Implementation(ULevelSequence* Sequence)
+{
+	PlayLevelIntroSequence(Sequence);
 }

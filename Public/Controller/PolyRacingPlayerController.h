@@ -7,6 +7,8 @@
 #include "GameFramework/PlayerController.h"
 #include "PolyRacingPlayerController.generated.h"
 
+class ULevelSequencePlayer;
+
 /**
  * 
  */
@@ -24,6 +26,12 @@ public:
 
 	UPROPERTY(Replicated)
 	APolyRacingWheeledVehiclePawn* VehiclePawn;
+
+	UPROPERTY()
+	ULevelSequencePlayer* SequencePlayer;
+
+	UPROPERTY()
+	FTimerHandle SequenceTimerHandle;
 	
 	virtual void BeginPlay() override;
 	
@@ -47,4 +55,11 @@ public:
 	UFUNCTION(Client, Reliable)
 	void Client_RequestVehicleSpawn();
 	void Client_RequestVehicleSpawn_Implementation();
+
+	void PlayLevelIntroSequence(ULevelSequence* Sequence);
+	void OnLevelIntroSequenceEnd();
+
+	UFUNCTION(Client, Reliable)
+	void Client_PlayLevelIntroSequence(ULevelSequence* Sequence);
+	void Client_PlayLevelIntroSequence_Implementation(ULevelSequence* Sequence);
 };
