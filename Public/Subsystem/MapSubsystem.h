@@ -27,7 +27,7 @@ public:
 	UDataTable* MapDataTable;
 
 	UPROPERTY()
-	FString CurrentMap;
+	FName CurrentMap;
 
 	FName GetMapPath(FString MapName) const;
 
