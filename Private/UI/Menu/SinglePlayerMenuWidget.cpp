@@ -5,6 +5,7 @@
 
 #include "Framework/PolyRacingSessionSubsystem.h"
 #include "Kismet/GameplayStatics.h"
+#include "Subsystem/MapSubsystem.h"
 #include "UI/Style/GlobalMenuStyle.h"
 #include "UI/Menu/MainMenuWidget.h"
 #include "UI/MenuHUD.h"
@@ -121,20 +122,26 @@ FReply SSinglePlayerMenuWidget::OnRaceClicked() const
 
 FReply SSinglePlayerMenuWidget::OnTimeTrialClicked() const
 {
-	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_TimeTrialGamemode.BP_TimeTrialGamemode_C"));
-	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/Docks", true, LevelOptions);
+	UMapSubsystem* MapSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UMapSubsystem>();
 	
+	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_TimeTrialGamemode.BP_TimeTrialGamemode_C"));
+	
+	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), MapSubsystem->GetMapPath(FString("Docks")), true, LevelOptions);
+
 	return FReply::Handled();
 }
 
 FReply SSinglePlayerMenuWidget::OnFreeRoamClicked() const
 {
+	UMapSubsystem* MapSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UMapSubsystem>();
+	
 	// UPolyRacingSessionSubsystem* SessionSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UPolyRacingSessionSubsystem>();
 	// SessionSubsystem->CreateSession(1, true, FreeRoam);
 	// SessionSubsystem->StartSession();
 	
 	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_FreeRoamGamemode.BP_FreeRoamGamemode_C"));
-	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/Docks", true, LevelOptions);
+	
+	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), MapSubsystem->GetMapPath(FString("Docks")), true, LevelOptions);
 	
 	return FReply::Handled();
 }

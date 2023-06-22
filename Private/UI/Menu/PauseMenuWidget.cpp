@@ -4,6 +4,7 @@
 #include "UI/Menu/PauseMenuWidget.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "Subsystem/MapSubsystem.h"
 #include "UI/InGameHUD.h"
 #include "UI/Style/GlobalMenuStyle.h"
 #include "UI/MenuHUD.h"
@@ -82,9 +83,11 @@ FReply SPauseMenuWidget::OnSettingsClicked() const
 
 FReply SPauseMenuWidget::OnLeaveClicked() const
 {
+	UMapSubsystem* MapSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UMapSubsystem>();
+	
 	FString const LevelOptions = FString(TEXT("game=/Game/GameModes/BP_MainMenuGamemode.BP_MainMenuGamemode_C"));
 	
-	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/MainMenuScene", true, LevelOptions);
+	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), MapSubsystem->GetMapPath(FString("MainMenu")), true, LevelOptions);
 	
 	return FReply::Handled();
 }

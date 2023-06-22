@@ -6,6 +6,7 @@
 #include "Controller/LobbyPlayerController.h"
 #include "Framework/PolyRacingSessionSubsystem.h"
 #include "Kismet/GameplayStatics.h"
+#include "Subsystem/MapSubsystem.h"
 #include "UI/Style/GlobalMenuStyle.h"
 #include "UI/Menu/MainMenuWidget.h"
 #include "UI/MenuHUD.h"
@@ -156,12 +157,14 @@ FReply SLobbyMenuWidget::OnVetoMapClicked() const
 FReply SLobbyMenuWidget::OnBackClicked() const
 {
 	// TODO: Add "are you sure" prompt
+
+	UMapSubsystem* MapSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UMapSubsystem>();
 	
 	UPolyRacingSessionSubsystem* SessionSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UPolyRacingSessionSubsystem>();
 	SessionSubsystem->DestroySession();
 	
 	FString const LevelOptions = FString(TEXT("-game=/Game/GameModes/BP_MainMenuGamemode.BP_MainMenuGamemode_C"));
-	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), "/Game/Scenes/MainMenuScene", true, LevelOptions);
+	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), MapSubsystem->GetMapPath(FString("MainMenu")), true, LevelOptions);
 	
 	return FReply::Handled();
 }
