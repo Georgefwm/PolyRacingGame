@@ -6,7 +6,10 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "MapSubsystem.generated.h"
 
+class ULevelSequence;
 class UDataTable;
+
+
 /**
  * 
  */
@@ -28,5 +31,7 @@ public:
 
 	FName GetMapPath(FString MapName) const;
 
-	
+	void SetCurrentMap(const FString& MapName);
+
+	ULevelSequence* UMapSubsystem::GetCurrentLevelSequence();
 };
