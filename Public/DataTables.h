@@ -8,6 +8,7 @@
 #include "DataTables.generated.h"
 
 
+class ULevelSequence;
 class APolyRacingWheeledVehiclePawn;
 
 USTRUCT(BlueprintType)
@@ -64,6 +65,26 @@ public:
 
 	UPROPERTY()
 	int MaxPlayers = 8;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Path;
+};
+
+USTRUCT(BlueprintType)
+struct FMapTableRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString MapName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString DisplayName;
+
+	UPROPERTY()
+	ULevelSequence* LevelSequence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Path;
