@@ -11,6 +11,7 @@
 class ULevelSequence;
 class APolyRacingWheeledVehiclePawn;
 
+
 USTRUCT(BlueprintType)
 struct FVehicleSlotOptions : public FTableRowBase
 {
@@ -83,11 +84,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString DisplayName;
 
-	UPROPERTY()
-	ULevelSequence* LevelSequence;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSoftObjectPtr<ULevelSequence> LevelSequence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString Path;
+	FName Path;
 };
 
 // Old system
