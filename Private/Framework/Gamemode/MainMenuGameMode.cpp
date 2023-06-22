@@ -72,6 +72,8 @@ void AMainMenuGameMode::HandleStartingNewPlayer_Implementation(APlayerController
 		NewPlayer->SetViewTarget(StaticCast<ACameraActor*>(Cameras[0]));
 	else
 		UE_LOG(LogTemp, Warning, TEXT("MAINMENUGAMEMODE: Camera not found"))
+
+	NewPlayer->PlayerCameraManager->StartCameraFade(1.f, 0.f, 3, FColor::Black, true);
 }
 
 void AMainMenuGameMode::InitializeHUDForPlayer_Implementation(APlayerController* NewPlayer)
