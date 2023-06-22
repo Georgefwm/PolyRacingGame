@@ -59,6 +59,13 @@ void APolyRacingWheeledVehiclePawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void APolyRacingWheeledVehiclePawn::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	SetupInputMappingContext();
+}
+
 void APolyRacingWheeledVehiclePawn::SetupInputMappingContext()
 {
 	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))

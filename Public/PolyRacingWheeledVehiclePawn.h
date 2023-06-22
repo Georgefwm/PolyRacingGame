@@ -57,6 +57,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input Actions")
 	UInputAction* ToggleInGameMenuAction;
+
+	virtual void PossessedBy(AController* NewController) override;
 	
 	void SetupInputMappingContext();
 	

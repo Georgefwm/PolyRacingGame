@@ -81,10 +81,9 @@ void APolyRacingPlayerController::SpawnVehicleForPlayer(const FPresetVehicleConf
 			Rotation,
 			SpawnParameters);
 		
+		PlayerController->UnPossess();
 		PlayerController->Possess(NewVehicle);
 		PlayerController->VehiclePawn = NewVehicle;
-
-		PlayerController->PlayerCameraManager->StartCameraFade(1.f, 0.f, 3, FColor::Black, true);
 
 		NewVehicle->VehicleCustomisationComponent->CurrentPrimaryColor = DesiredConfiguration.PrimaryColor;
 		NewVehicle->VehicleCustomisationComponent->OnRep_PrimaryColorChanged();
@@ -126,7 +125,7 @@ void APolyRacingPlayerController::PlayLevelIntroSequence(ULevelSequence* Sequenc
 		GetWorldTimerManager().SetTimer(SequenceTimerHandle,
 			this,
 			&APolyRacingPlayerController::OnLevelIntroSequenceEnd,
-			SequencePlayer->GetEndTime().AsSeconds());
+			SequencePlayer->GetEndTime().AsSeconds() - 0.01);
 
 		SequencePlayer->Play();
 	}
@@ -140,6 +139,8 @@ void APolyRacingPlayerController::PlayLevelIntroSequence(ULevelSequence* Sequenc
 
 void APolyRacingPlayerController::OnLevelIntroSequenceEnd()
 {
+	PlayerCameraManager->StartCameraFade(1.f, 0.f, 3, FColor::Black, true);
+	
 	Client_RequestVehicleSpawn();
 }
 
