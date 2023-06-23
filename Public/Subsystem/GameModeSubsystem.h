@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
-#include "MapSubsystem.generated.h"
+#include "GameModeSubsystem.generated.h"
 
 class ULevelSequence;
 class UDataTable;

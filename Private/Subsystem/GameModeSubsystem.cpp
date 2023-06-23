@@ -53,13 +53,11 @@ FName UGameModeSubsystem::GetCurrentGameModeDisplayName() const
 
 void UGameModeSubsystem::SetCurrentGameMode(const FString& GameModeName)
 {
-	UE_LOG(LogTemp, Warning, TEXT("LoadingMapString: %s"), *GameModeName)
-	
 	for (const FName& RowName : GameModeDataTable->GetRowNames())
 	{
-		FMapTableRow* GameModeTableRow = GameModeDataTable->FindRow<FMapTableRow>(RowName, "");
+		FGameModeTableRow* GameModeTableRow = GameModeDataTable->FindRow<FGameModeTableRow>(RowName, "");
 
-		if (GameModeTableRow->Path.ToString() == GameModeName)
+		if (GameModeTableRow->Path == GameModeName)
 		{
 			CurrentGameMode = RowName;
 			return;
