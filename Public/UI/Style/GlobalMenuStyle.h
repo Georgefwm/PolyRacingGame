@@ -24,7 +24,7 @@ struct FGlobalStyle : public FSlateWidgetStyle
         
 	// Allows us to set default values for our various styles. 
 	static const FGlobalStyle& GetDefault();
-
+	
 	// Style that defines the text for our menu title. 
 	UPROPERTY(EditAnywhere, Category = MenuTitle)
 	FTextBlockStyle MenuTitleStyle;
@@ -99,6 +99,21 @@ struct FGlobalStyle : public FSlateWidgetStyle
 
 	UPROPERTY(EditAnywhere, Category = LobbyPlayerList)
 	FMargin LobbyPlayerTextMargin;
+
+	UPROPERTY(EditAnywhere, Category = LoadingScreen)
+	FMargin LoadingScreenTitleMargin;
+
+	UPROPERTY(EditAnywhere, Category = LoadingScreen)
+	FTextBlockStyle LoadingScreenTitleTextStyle;
+
+	UPROPERTY(EditAnywhere, Category = LoadingScreen)
+	FMargin LoadingScreenMapNameMargin;
+
+	UPROPERTY(EditAnywhere, Category = LoadingScreen)
+	FTextBlockStyle LoadingScreenMapTextStyle;
+
+	UPROPERTY(EditAnywhere, Category = LoadingScreen)
+	FMargin LoadingScreenThrobberMargin;
 };
 
 // Provides a widget style container to allow us to edit properties in-editor
