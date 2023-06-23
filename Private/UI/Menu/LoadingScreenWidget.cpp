@@ -39,22 +39,20 @@ void SLoadingScreenWidget::Construct(const FArguments& InArgs)
 		+ SOverlay::Slot()
 		.HAlign(HAlign_Left)
 		.VAlign(VAlign_Top)
-		.Padding(FMargin(0.f, 100.f, 0.f, 0.f))
+		.Padding(Style->LoadingScreenTitleMargin)
 		[
-			// TitleText
 			SNew(STextBlock)
-			.TextStyle(&Style->MenuTitleStyle)
+			.TextStyle(&Style->LoadingScreenTitleTextStyle)
 			.Text(TitleText)
 		]
 
 		+ SOverlay::Slot()
 		.HAlign(HAlign_Left)
 		.VAlign(VAlign_Top)
-		.Padding(FMargin(0.f, 200.f, 0.f, 0.f))
+		.Padding(Style->LoadingScreenMapNameMargin)
 		[
-			// TitleText
 			SNew(STextBlock)
-			.TextStyle(&Style->MenuTitleStyle)
+			.TextStyle(&Style->LoadingScreenMapTextStyle)
 			.Text(MapName)
 		]
 		
@@ -62,7 +60,7 @@ void SLoadingScreenWidget::Construct(const FArguments& InArgs)
 		+ SOverlay::Slot()
 		.HAlign(HAlign_Right)
 		.VAlign(VAlign_Bottom)
-		.Padding(FMargin(0.f, 0.f, 100.f, 100.f))
+		.Padding(Style->LoadingScreenThrobberMargin)
 		[
 			SNew(SThrobber)
 			.Animate(SThrobber::All)
@@ -85,12 +83,12 @@ const FSlateBrush* SLoadingScreenWidget::GetBackgroundImage() const
 	return BackgroundImageSlateBrush;
 }
 
-FName SLoadingScreenWidget::GetMapDisplayName() const
+FText SLoadingScreenWidget::GetMapDisplayName() const
 {
 	if (!MapSubsystem.IsValid())
-		return FName("");
+		return FText::FromString("");
 
-	return MapSubsystem->GetCurrentMapDisplayName();
+	return FText::FromName(MapSubsystem->GetCurrentMapDisplayName());
 }
 
 #undef LOCTEXT_NAMESPACE

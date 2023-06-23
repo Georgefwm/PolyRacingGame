@@ -28,8 +28,8 @@ public:
 	TAttribute<const FSlateBrush*> BackgroundImage;
 	const FSlateBrush* GetBackgroundImage() const;
 
-	TAttribute<FName> MapName;
-	FName GetMapDisplayName() const;
+	TAttribute<FText> MapName;
+	FText GetMapDisplayName() const;
 
 	virtual bool SupportsKeyboardFocus() const override { return true; }
 };
