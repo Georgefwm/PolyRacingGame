@@ -5,14 +5,13 @@
 
 #include "Online.h"
 #include "PolyRacingSpectatorPawn.h"
-#include "Camera/CameraActor.h"
 #include "Controller/LobbyPlayerController.h"
 #include "Framework/LobbyGameState.h"
 #include "OnlineSessionSettings.h"
 #include "Framework/PolyRacingPlayerState.h"
 #include "Framework/PolyRacingSessionSubsystem.h"
-#include "GameFramework/PlayerStart.h"
-#include "Kismet/GameplayStatics.h"
+#include "Subsystem/MapSubsystem.h"
+#include "Subsystem/GameModeSubsystem.h"
 #include "UI/MenuHUD.h"
 
 
@@ -212,18 +211,12 @@ void ALobbyGameMode::StartGameFromLobby()
 
 	FString GameModeName;
 	SessionSubsystem->LastSessionSettings->Get(SETTING_GAMEMODE, GameModeName);
+
+	UMapSubsystem* MapSubsystem = GetGameInstance()->GetSubsystem<UMapSubsystem>();
+	UGameModeSubsystem* GameModeSubsystem = GetGameInstance()->GetSubsystem<UGameModeSubsystem>();
 	
-	const FGameModeTableRow* GameMode = SessionSubsystem->GameModes->FindRow<FGameModeTableRow>(FName(GameModeName), "", false);
-	if (!GameMode)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("GameMode not found... cant start game"))
-		return;
-	}
-	
-	FString const LevelOptions = FString(TEXT("?game=" + GameMode->Path));
-	FString TravelPath = FString(NextMap + LevelOptions);
-	
-	UE_LOG(LogTemp, Warning, TEXT("TravelPath: %s"), *TravelPath)
+	FString const LevelOptions = FString("?listen game=" + GameModeSubsystem->GetGameModePath(GameModeName).ToString());
+	FString const TravelPath = FString(MapSubsystem->GetMapPath("MainMenu").ToString() + LevelOptions);
 	
 	GetWorld()->ServerTravel(TravelPath);
 }

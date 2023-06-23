@@ -2,6 +2,8 @@
 
 #include "Framework/PolyRacingSessionSubsystem.h"
 #include "OnlineSubsystemUtils.h"
+#include "Subsystem/MapSubsystem.h"
+#include "Subsystem/GameModeSubsystem.h"
 #include "UI/MenuHUD.h"
 
 
@@ -14,15 +16,6 @@ UPolyRacingSessionSubsystem::UPolyRacingSessionSubsystem()
 	, FindSessionsCompleteDelegate(		FOnFindSessionsCompleteDelegate::CreateUObject(		this, &ThisClass::OnFindSessionsCompleted))
 	, JoinSessionCompleteDelegate(		FOnJoinSessionCompleteDelegate::CreateUObject(		this, &ThisClass::OnJoinSessionCompleted))
 {
-	FString const GameModeDataTablePath = TEXT("/Script/Engine.DataTable'/Game/GameModes/DT_GameModeTable.DT_GameModeTable'");
-	
-	GameModes = Cast<UDataTable>(FSoftObjectPath(*GameModeDataTablePath).ResolveObject());
-	if (!GameModes) GameModes = Cast<UDataTable>(FSoftObjectPath(*GameModeDataTablePath).TryLoad());
-	
-	if (!GameModes)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("SessionSubsystem: GameMode data found!"))
-	}
 }
 
 void UPolyRacingSessionSubsystem::CreateSession(int32 NumPublicConnections, bool IsLANMatch, const FString& DesiredGameMode)
@@ -217,13 +210,15 @@ void UPolyRacingSessionSubsystem::OnCreateSessionCompleted(FName SessionName, bo
 
 	if (Successful)
 	{
-		FString const LevelOptions = FString(TEXT("?listen game=/Game/GameModes/BP_LobbyGamemode.BP_LobbyGamemode_C"));
-
-		// GetWorld()->GetFirstPlayerController()->GetHUD<AMenuHUD>()->RemoveMenu();
+		UMapSubsystem* MapSubsystem = GetGameInstance()->GetSubsystem<UMapSubsystem>();
+		UGameModeSubsystem* GameModeSubsystem = GetGameInstance()->GetSubsystem<UGameModeSubsystem>();
 
 		GetWorld()->GetGameInstance()->EnableListenServer(true, 7779);
 
-		FString TravelPath = FString("/Game/Scenes/MainMenuScene" + LevelOptions);
+		//FString const LevelOptions = FString(TEXT("?listen game=/Game/GameModes/BP_LobbyGamemode.BP_LobbyGamemode_C"));
+		
+		FString const LevelOptions = FString("?listen game=" + GameModeSubsystem->GetGameModePath("Lobby").ToString());
+		FString const TravelPath = FString(MapSubsystem->GetMapPath("MainMenu").ToString() + LevelOptions);
 	
 		UE_LOG(LogTemp, Warning, TEXT("TravelPath: %s"), *TravelPath)
 		
@@ -358,7 +353,6 @@ bool UPolyRacingSessionSubsystem::TryTravelToCurrentSession()
 
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	UE_LOG(LogTemp, Warning, TEXT("Connect string: %s"), *ConnectString)
-	//GetGameInstance()->ClientTravelToSession(PlayerController->GetUniqueID(), NAME_GameSession);
 	
 	PlayerController->ClientTravel(ConnectString, TRAVEL_Absolute);
 	return true;
