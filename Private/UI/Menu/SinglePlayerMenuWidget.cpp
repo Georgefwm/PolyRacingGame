@@ -125,6 +125,8 @@ FReply SSinglePlayerMenuWidget::OnTimeTrialClicked() const
 	UMapSubsystem* MapSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UMapSubsystem>();
 	
 	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_TimeTrialGamemode.BP_TimeTrialGamemode_C"));
+
+	MapSubsystem->SetCurrentMap(FString("Docks"));
 	
 	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), MapSubsystem->GetMapPath(FString("Docks")), true, LevelOptions);
 
@@ -140,6 +142,8 @@ FReply SSinglePlayerMenuWidget::OnFreeRoamClicked() const
 	// SessionSubsystem->StartSession();
 	
 	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_FreeRoamGamemode.BP_FreeRoamGamemode_C"));
+
+	MapSubsystem->SetCurrentMap(FString("Docks"));
 	
 	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), MapSubsystem->GetMapPath(FString("Docks")), true, LevelOptions);
 	

@@ -16,6 +16,8 @@ class POLYRACINGGAME_API UPolyRacingGameInstance : public UGameInstance
 
 	virtual void Init() override;
 
+	TSharedPtr<SWidget> LoadingScreenWidget;
+
 	UFUNCTION()
 	virtual void BeginLoadingScreen(const FString& MapName);
 	

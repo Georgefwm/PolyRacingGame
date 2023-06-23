@@ -4,6 +4,7 @@
 
 #include "SlateBasics.h"
 #include "SlateExtras.h"
+#include "Subsystem/MapSubsystem.h"
 
 /**
  * 
@@ -14,14 +15,21 @@ public:
 
 	SLATE_BEGIN_ARGS(SLoadingScreenWidget) {}
 
-	SLATE_ARGUMENT(TWeakObjectPtr<class AMenuHUD>, OwningHUD)
+	SLATE_ARGUMENT(TWeakObjectPtr<class UMapSubsystem>, MapSubsystem)
 
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
 
-	TWeakObjectPtr<class AMenuHUD> OwningHUD;
+	TWeakObjectPtr<UMapSubsystem> MapSubsystem;
+	
 	const struct FGlobalStyle* Style;
+
+	TAttribute<const FSlateBrush*> BackgroundImage;
+	const FSlateBrush* GetBackgroundImage() const;
+
+	TAttribute<FName> MapName;
+	FName GetMapDisplayName() const;
 
 	virtual bool SupportsKeyboardFocus() const override { return true; }
 };

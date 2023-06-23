@@ -30,6 +30,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UCameraComponent* CameraComponent;
+
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI")
+	// TSubclassOf<UUserWidget> VehicleHUD;
 	
 
 protected:

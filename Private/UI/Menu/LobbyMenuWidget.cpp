@@ -162,6 +162,8 @@ FReply SLobbyMenuWidget::OnBackClicked() const
 	
 	UPolyRacingSessionSubsystem* SessionSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UPolyRacingSessionSubsystem>();
 	SessionSubsystem->DestroySession();
+
+	MapSubsystem->SetCurrentMap(FString("MainMenu"));
 	
 	FString const LevelOptions = FString(TEXT("-game=/Game/GameModes/BP_MainMenuGamemode.BP_MainMenuGamemode_C"));
 	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), MapSubsystem->GetMapPath(FString("MainMenu")), true, LevelOptions);

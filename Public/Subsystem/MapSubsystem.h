@@ -29,7 +29,14 @@ public:
 	UPROPERTY()
 	FName CurrentMap;
 
+	UPROPERTY()
+	UTexture* CurrentMapImage;
+
 	FName GetMapPath(FString MapName) const;
+
+	UTexture* GetCurrentMapLoadingScreenImage() const;
+
+	FName GetCurrentMapDisplayName() const;
 
 	void SetCurrentMap(const FString& MapName);
 

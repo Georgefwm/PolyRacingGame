@@ -89,6 +89,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName Path;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture* PreviewImage;
 };
 
 // Old system

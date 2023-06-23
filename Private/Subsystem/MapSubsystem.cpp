@@ -17,6 +17,8 @@ void UMapSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	if (!MapDataTable)
 		MapDataTable = Cast<UDataTable>(FSoftObjectPath(*MapDataTablePath).TryLoad());
 
+	SetCurrentMap(FString("Docks"));
+
 	if (MapDataTable)
 		UE_LOG(LogTemp, Display, TEXT("UMapSubsystem initialised successfully"))
 }
@@ -39,6 +41,26 @@ FName UMapSubsystem::GetMapPath(FString MapName) const
 	return MapTableRow->Path;
 }
 
+UTexture* UMapSubsystem::GetCurrentMapLoadingScreenImage() const
+{
+	//FMapTableRow* MapTableRow = MapDataTable->FindRow<FMapTableRow>(FName("Docks"), "");
+
+	return CurrentMapImage;
+	//return nullptr;
+	
+	//return MapTableRow->PreviewImage.LoadSynchronous();
+}
+
+FName UMapSubsystem::GetCurrentMapDisplayName() const
+{
+	FMapTableRow* MapTableRow = MapDataTable->FindRow<FMapTableRow>(CurrentMap, "");
+
+	if (!MapTableRow)
+		return FName("");
+	
+	return FName(MapTableRow->DisplayName);
+}
+
 void UMapSubsystem::SetCurrentMap(const FString& MapName)
 {
 	UE_LOG(LogTemp, Warning, TEXT("LoadingMapString: %s"), *MapName)
@@ -50,6 +72,7 @@ void UMapSubsystem::SetCurrentMap(const FString& MapName)
 		if (MapTableRow->Path.ToString() == MapName)
 		{
 			CurrentMap = RowName;
+			CurrentMapImage = MapTableRow->PreviewImage;
 			return;
 		}
 	}

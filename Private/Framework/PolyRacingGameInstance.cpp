@@ -5,6 +5,7 @@
 
 #include "MoviePlayer.h"
 #include "Subsystem/MapSubsystem.h"
+#include "UI/Menu/LoadingScreenWidget.h"
 
 void UPolyRacingGameInstance::Init()
 {
@@ -18,24 +19,25 @@ void UPolyRacingGameInstance::EndLoadingScreen(UWorld* InLoadedWorld)
 {
 	UE_LOG(LogTemp, Warning, TEXT("MAP END LOADING"))
 	
-	if (!IsRunningDedicatedServer())
-	{
-		FLoadingScreenAttributes LoadingScreen;
-		LoadingScreen.bAutoCompleteWhenLoadingCompletes = true;
-		LoadingScreen.WidgetLoadingScreen = FLoadingScreenAttributes::NewTestLoadingScreenWidget();
+	if (IsRunningDedicatedServer())
+		return;
 	
-		GetMoviePlayer()->SetupLoadingScreen(LoadingScreen);
-	}
+	FLoadingScreenAttributes LoadingScreen;
+	LoadingScreen.bAutoCompleteWhenLoadingCompletes = true;
+	LoadingScreen.MinimumLoadingScreenDisplayTime = 5;
+
+	UMapSubsystem* MapSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UMapSubsystem>();
 	
-	// if (ALobbyPlayerController* PlayerController = Cast<ALobbyPlayerController>(GetFirstLocalPlayerController()))
-	// 	PlayerController->OnFinishedLoad();
+	LoadingScreen.WidgetLoadingScreen = SAssignNew(LoadingScreenWidget, SLoadingScreenWidget).MapSubsystem(MapSubsystem);
+
+	GetMoviePlayer()->SetupLoadingScreen(LoadingScreen);
 }
 
 void UPolyRacingGameInstance::BeginLoadingScreen(const FString& MapName)
 {
 	UE_LOG(LogTemp, Warning, TEXT("MAP START LOADING"))
-	//GetFirstLocalPlayerController()->GetHUD();
 
 	UMapSubsystem* MapSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UMapSubsystem>();
 	MapSubsystem->SetCurrentMap(MapName);
+	
 }
