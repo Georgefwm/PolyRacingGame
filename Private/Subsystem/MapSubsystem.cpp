@@ -72,7 +72,7 @@ void UMapSubsystem::SetCurrentMap(const FString& MapName)
 		if (MapTableRow->Path.ToString() == MapName)
 		{
 			CurrentMap = RowName;
-			CurrentMapImage = MapTableRow->PreviewImage;
+			CurrentMapImage = MapTableRow->PreviewImage.LoadSynchronous();
 			return;
 		}
 	}

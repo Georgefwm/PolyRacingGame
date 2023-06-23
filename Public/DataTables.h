@@ -91,7 +91,7 @@ public:
 	FName Path;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UTexture* PreviewImage;
+	TSoftObjectPtr<UTexture> PreviewImage;
 };
 
 // Old system
