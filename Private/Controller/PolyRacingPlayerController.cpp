@@ -31,10 +31,20 @@ void APolyRacingPlayerController::BeginPlay()
 
 void APolyRacingPlayerController::SetupHUD()
 {
-	if (AInGameHUD* HUD = GetHUD<AInGameHUD>())
+	AInGameHUD* HUD = GetHUD<AInGameHUD>();
+	
+	if (!HUD)
+		return;
+
+	APolyRacingWheeledVehiclePawn* PolyRacingPawn = GetPawn<APolyRacingWheeledVehiclePawn>();
+	if (!PolyRacingPawn)
 	{
-		HUD->ShowPlayerHUD();
+		UE_LOG(LogTemp, Warning, TEXT("Pawn is null"))
+		return;
 	}
+	
+	HUD->Init(PolyRacingPawn, nullptr);
+	HUD->ShowPlayerHUD();
 }
 
 void APolyRacingPlayerController::Client_SetupHUD_Implementation()
@@ -85,6 +95,8 @@ void APolyRacingPlayerController::SpawnVehicleForPlayer(const FPresetVehicleConf
 		PlayerController->Possess(NewVehicle);
 		PlayerController->VehiclePawn = NewVehicle;
 
+		SetupHUD();
+		
 		NewVehicle->VehicleCustomisationComponent->CurrentPrimaryColor = DesiredConfiguration.PrimaryColor;
 		NewVehicle->VehicleCustomisationComponent->OnRep_PrimaryColorChanged();
 		
