@@ -5,6 +5,9 @@
 #include "Blueprint/UserWidget.h"
 #include "VehiclePawnWidget.generated.h"
 
+class UTextBlock;
+class UProgressBar;
+class UChaosVehicleMovementComponent;
 
 /**
  * 
@@ -18,4 +21,17 @@ public:
 	
 	virtual void NativeConstruct() override;
 
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, meta=(BindWidget))
+	UTextBlock* SpeedText;
+
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, meta=(BindWidget))
+	UTextBlock* GearText;
+
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, meta=(BindWidget))
+	UProgressBar* TachometerProgressBar;
+
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+	UChaosVehicleMovementComponent* MovementComponent;
 };
