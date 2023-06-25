@@ -30,7 +30,7 @@ void UGameModeSubsystem::Deinitialize()
 
 FName UGameModeSubsystem::GetGameModePath(FString GameModeName) const
 {	
-	FMapTableRow* GameModeTableRow = GameModeDataTable->FindRow<FMapTableRow>(FName(GameModeName), "");
+	FGameModeTableRow* GameModeTableRow = GameModeDataTable->FindRow<FGameModeTableRow>(FName(GameModeName), "");
 
 	if (!GameModeTableRow)
 	{
@@ -38,17 +38,27 @@ FName UGameModeSubsystem::GetGameModePath(FString GameModeName) const
 		return FName("");
 	}
 	
-	return GameModeTableRow->Path;
+	return FName(GameModeTableRow->Path);
 }
 
 FName UGameModeSubsystem::GetCurrentGameModeDisplayName() const
 {
-	FMapTableRow* GameModeTableRow = GameModeDataTable->FindRow<FMapTableRow>(CurrentGameMode, "");
+	FGameModeTableRow* GameModeTableRow = GameModeDataTable->FindRow<FGameModeTableRow>(CurrentGameMode, "");
 
 	if (!GameModeTableRow)
 		return FName("");
 	
 	return FName(GameModeTableRow->DisplayName);
+}
+
+TSubclassOf<UUserWidget> UGameModeSubsystem::GetCurrentGameModeWidget()
+{
+	FGameModeTableRow* GameModeTableRow = GameModeDataTable->FindRow<FGameModeTableRow>(CurrentGameMode, "");
+
+	if (!GameModeTableRow)
+		return nullptr;
+	
+	return GameModeTableRow->Widget;
 }
 
 void UGameModeSubsystem::SetCurrentGameMode(const FString& GameModeName)
@@ -64,5 +74,5 @@ void UGameModeSubsystem::SetCurrentGameMode(const FString& GameModeName)
 		}
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("UGameModeSubsystem: Map loading map not found in map table!"))
+	UE_LOG(LogTemp, Warning, TEXT("UGameModeSubsystem: GameMode '%s' not found"), *GameModeName)
 }
