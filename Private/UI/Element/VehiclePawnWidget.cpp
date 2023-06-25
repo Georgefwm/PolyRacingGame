@@ -4,6 +4,8 @@
 #include "UI/Element/VehiclePawnWidget.h"
 
 #include "ChaosVehicleMovementComponent.h"
+#include "ChaosWheeledVehicleMovementComponent.h"
+#include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 
 
@@ -17,8 +19,13 @@ void UVehiclePawnWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 	Super::NativeTick(MyGeometry, InDeltaTime);
 	
 	if (!SpeedText || !GearText || !MovementComponent)
-		return;	
+		return;
 
+	UChaosWheeledVehicleMovementComponent* CastMovementComponent = Cast<UChaosWheeledVehicleMovementComponent>(MovementComponent);
+	
+	if (CastMovementComponent)
+		TachometerProgressBar->SetPercent(
+			CastMovementComponent->GetEngineRotationSpeed() / CastMovementComponent->GetEngineMaxRotationSpeed());
 	
 	SpeedText->SetText(FText::FromString(FString::FromInt(
 		FMath::RoundHalfFromZero(MovementComponent->GetForwardSpeedMPH() * 1.609))));
