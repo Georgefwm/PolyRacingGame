@@ -6,10 +6,12 @@
 #include "InputActionValue.h"
 #include "WheeledVehiclePawn.h"
 #include "Camera/CameraComponent.h"
+#include "Blueprint/UserWidget.h"
 #include "Customisation/VehicleCustomisationComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "PolyRacingWheeledVehiclePawn.generated.h"
 
+class UVehiclePawnWidget;
 class UInputMappingContext;
 class UInputAction;
 
@@ -31,8 +33,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UCameraComponent* CameraComponent;
 
-	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI")
-	// TSubclassOf<UUserWidget> VehicleHUD;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI")
+	TSubclassOf<UUserWidget> VehicleHUD;
 	
 
 protected:
