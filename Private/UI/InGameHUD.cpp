@@ -3,10 +3,15 @@
 
 #include "UI/InGameHUD.h"
 
+#include "AITypes.h"
+#include "ChaosVehicleMovementComponent.h"
+#include "PolyRacingWheeledVehiclePawn.h"
+#include "Blueprint/UserWidget.h"
 #include "Widgets/SWeakWidget.h"
 #include "Engine/Engine.h"
-#include "UI/PolyRacingInGameWidgetBase.h"
-#include "UI/Menu/LobbyMenuWidget.h"
+#include "Subsystem/GameModeSubsystem.h"
+#include "UI/Element/GameModeWidget.h"
+#include "UI/Element/VehiclePawnWidget.h"
 #include "UI/Menu/PauseMenuWidget.h"
 
 void AInGameHUD::BeginPlay()
@@ -26,8 +31,11 @@ void AInGameHUD::ShowPlayerHUD()
 {
 	if (GEngine && GEngine->GameViewport)
 	{
-		InGameWidget = SNew(SPolyRacingInGameWidgetBase).OwningHUD(this);
-		GEngine->GameViewport->AddViewportWidgetContent(SAssignNew(WidgetContainer, SWeakWidget).PossiblyNullContent(InGameWidget.ToSharedRef()));
+		if (VehicleWidget)
+			VehicleWidget->AddToViewport();
+
+		if (GameModeWidget)
+			GameModeWidget->AddToViewport();
 
 		if (PlayerOwner)
 		{
@@ -46,7 +54,7 @@ void AInGameHUD::TogglePauseMenu()
 	if (!PauseMenuActive)
 	{
 		PauseMenuWidget = SNew(SPauseMenuWidget).OwningHUD(this);
-		GEngine->GameViewport->AddViewportWidgetContent(SAssignNew(WidgetContainer, SWeakWidget).PossiblyNullContent(PauseMenuWidget.ToSharedRef()));
+		GEngine->GameViewport->AddViewportWidgetContent(SAssignNew(PauseMenuWidgetContainer, SWeakWidget).PossiblyNullContent(PauseMenuWidget.ToSharedRef()));
 
 		if (PlayerOwner)
 		{
@@ -57,16 +65,27 @@ void AInGameHUD::TogglePauseMenu()
 		PauseMenuActive = true;
 		return;
 	}
-	
+
 	// Switch back to game UI
-	if (!InGameWidget)
+	GEngine->GameViewport->RemoveAllViewportWidgets();
+	
+	if (!VehicleWidget)
 	{
-		InGameWidget = SNew(SPolyRacingInGameWidgetBase).OwningHUD(this);
-		GEngine->GameViewport->RemoveAllViewportWidgets();
-		GEngine->GameViewport->AddViewportWidgetContent(SAssignNew(WidgetContainer, SWeakWidget).PossiblyNullContent(InGameWidget.ToSharedRef()));
+		if (APolyRacingWheeledVehiclePawn* VehiclePawn = GetOwningPlayerController()->GetPawn<APolyRacingWheeledVehiclePawn>())	
+			VehicleWidget = CreateWidget<UVehiclePawnWidget>(GetGameInstance(), VehiclePawn->VehicleHUD);
 	}
-	else
-		WidgetContainer.Get()->SetContent(InGameWidget.ToSharedRef());
+	
+	if (!GameModeWidget)
+	{
+		if (UGameModeSubsystem* GameModeSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameModeSubsystem>())
+			GameModeWidget = CreateWidget<UGameModeWidget>(GetGameInstance(), GameModeSubsystem->GetCurrentGameModeWidget());
+	}
+
+	if (VehicleWidget)
+		VehicleWidget->AddToViewport();
+
+	if (GameModeWidget)
+		GameModeWidget->AddToViewport();
 
 	if (PlayerOwner)
 	{
@@ -79,16 +98,32 @@ void AInGameHUD::TogglePauseMenu()
 
 void AInGameHUD::HidePlayerHUD()
 {
-	if (GEngine && GEngine->GameViewport && WidgetContainer.IsValid())
+	if (!GEngine || !GEngine->GameViewport)
+		return;
+	
+	GEngine->GameViewport->RemoveAllViewportWidgets();
+	
+	if (PlayerOwner)
 	{
-		GEngine->GameViewport->RemoveViewportWidgetContent(WidgetContainer.ToSharedRef());
-		
-		if (PlayerOwner)
-		{
-			PlayerOwner->bShowMouseCursor = false;
-			PlayerOwner->SetInputMode(FInputModeGameOnly());
-		}
+		PlayerOwner->bShowMouseCursor = false;
+		PlayerOwner->SetInputMode(FInputModeGameOnly());
 	}
+}
+
+void AInGameHUD::Init(APolyRacingWheeledVehiclePawn* NewPawn, TSubclassOf<UUserWidget> NewGameModeWidget)
+{
+	if (NewPawn)
+	{
+		VehicleWidget = CreateWidget<UVehiclePawnWidget>(GetGameInstance(), NewPawn->VehicleHUD);
+		
+		VehicleWidget->MovementComponent = NewPawn->GetVehicleMovementComponent();
+	}
+		
+
+	if (NewGameModeWidget)
+		GameModeWidget = CreateWidget<UGameModeWidget>(GetGameInstance(), NewGameModeWidget);
+
+	UE_LOG(LogTemp, Warning, TEXT("Hud is init"))
 }
 
 void AInGameHUD::OnBeginLoading()

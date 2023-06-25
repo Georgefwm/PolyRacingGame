@@ -23,9 +23,14 @@ public:
 	
 	// Not initialised by default, on first usage
 	TSharedPtr<class SPauseMenuWidget> PauseMenuWidget;
-	TSharedPtr<class SPolyRacingInGameWidgetBase> InGameWidget;
+
+	UPROPERTY()
+	class UGameModeWidget* GameModeWidget;
+
+	UPROPERTY()
+	class UVehiclePawnWidget* VehicleWidget;
 	
-	TSharedPtr<class SWeakWidget> WidgetContainer;
+	TSharedPtr<class SWeakWidget> PauseMenuWidgetContainer;
 
 	UPROPERTY()
 	UVehicleCustomiser* VehicleCustomiser;
@@ -35,6 +40,8 @@ public:
 public:
 	void ShowPlayerHUD();
 	void HidePlayerHUD();
+
+	void Init(APolyRacingWheeledVehiclePawn* NewPawn, TSubclassOf<UUserWidget> NewGameModeWidget);
 
 	void TogglePauseMenu();
 
