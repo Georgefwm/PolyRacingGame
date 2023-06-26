@@ -216,11 +216,15 @@ void UPolyRacingSessionSubsystem::OnCreateSessionCompleted(FName SessionName, bo
 		GetWorld()->GetGameInstance()->EnableListenServer(true, 7779);
 
 		//FString const LevelOptions = FString(TEXT("?listen game=/Game/GameModes/BP_LobbyGamemode.BP_LobbyGamemode_C"));
+
+		FString const GameModeName = FString("Lobby");
 		
-		FString const LevelOptions = FString("?listen game=" + GameModeSubsystem->GetGameModePath("Lobby").ToString());
+		FString const LevelOptions = FString("?listen game=" + GameModeSubsystem->GetGameModePath(GameModeName).ToString());
 		FString const TravelPath = FString(MapSubsystem->GetMapPath("MainMenu").ToString() + LevelOptions);
 	
 		UE_LOG(LogTemp, Warning, TEXT("TravelPath: %s"), *TravelPath)
+		
+		GameModeSubsystem->SetCurrentGameMode(GameModeName);
 		
 		GetWorld()->ServerTravel(TravelPath);
 
