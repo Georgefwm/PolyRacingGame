@@ -3,8 +3,6 @@
 
 #include "UI/InGameHUD.h"
 
-#include "AITypes.h"
-#include "ChaosVehicleMovementComponent.h"
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "Blueprint/UserWidget.h"
 #include "Widgets/SWeakWidget.h"
@@ -13,6 +11,14 @@
 #include "UI/Element/GameModeWidget.h"
 #include "UI/Element/VehiclePawnWidget.h"
 #include "UI/Menu/PauseMenuWidget.h"
+
+AInGameHUD::AInGameHUD()
+{
+	static ConstructorHelpers::FClassFinder<UUserWidget> CountDownWidgetFinder(TEXT("/Game/UI/WidgetBlueprints/WBP_CountDown"));
+	CountDownWidgetClass = CountDownWidgetFinder.Class;
+	if (!CountDownWidgetClass)
+		UE_LOG(LogTemp, Warning, TEXT("CountDownWidget not found!"))
+}
 
 void AInGameHUD::BeginPlay()
 {
@@ -118,12 +124,24 @@ void AInGameHUD::Init(APolyRacingWheeledVehiclePawn* NewPawn, TSubclassOf<UUserW
 		
 		VehicleWidget->MovementComponent = NewPawn->GetVehicleMovementComponent();
 	}
-		
 
 	if (NewGameModeWidget)
 		GameModeWidget = CreateWidget<UGameModeWidget>(GetGameInstance(), NewGameModeWidget);
 
 	UE_LOG(LogTemp, Warning, TEXT("Hud is init"))
+}
+
+void AInGameHUD::PlayCountDown()
+{
+	if (!CountDownWidgetClass)
+		return;
+
+	if (CountDownWidget)
+		CountDownWidget->RemoveFromParent();
+
+	// Count down widget is set/assumed to start upon creation and remove itself on completion
+	CountDownWidget = CreateWidget<UUserWidget>(GetGameInstance(), CountDownWidgetClass);
+	CountDownWidget->AddToViewport();
 }
 
 void AInGameHUD::OnBeginLoading()

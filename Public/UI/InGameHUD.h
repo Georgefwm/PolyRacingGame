@@ -18,6 +18,8 @@ class POLYRACINGGAME_API AInGameHUD : public AHUD
 	
 public:
 
+	AInGameHUD();
+
 	UPROPERTY()
 	bool PauseMenuActive = false;
 	
@@ -35,13 +37,20 @@ public:
 	UPROPERTY()
 	UVehicleCustomiser* VehicleCustomiser;
 
-	virtual void BeginPlay() override;
+	UPROPERTY()
+	TSubclassOf<UUserWidget> CountDownWidgetClass;
+	
+	UPROPERTY()
+	UUserWidget* CountDownWidget;
 
-public:
+	virtual void BeginPlay() override;
+	
 	void ShowPlayerHUD();
 	void HidePlayerHUD();
 
 	void Init(APolyRacingWheeledVehiclePawn* NewPawn, TSubclassOf<UUserWidget> NewGameModeWidget);
+
+	void PlayCountDown();
 
 	void TogglePauseMenu();
 

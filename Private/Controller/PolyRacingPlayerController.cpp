@@ -7,6 +7,8 @@
 #include "LevelSequencePlayer.h"
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "StartPositionActor.h"
+#include "Framework/PolyRacingPlayerState.h"
+#include "Framework/GameMode/PolyRacingGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "UI/InGameHUD.h"
@@ -95,6 +97,8 @@ void APolyRacingPlayerController::SpawnVehicleForPlayer(const FPresetVehicleConf
 		PlayerController->Possess(NewVehicle);
 		PlayerController->VehiclePawn = NewVehicle;
 
+		NewVehicle->DisableInput(PlayerController);
+		
 		SetupHUD();
 		
 		NewVehicle->VehicleCustomisationComponent->CurrentPrimaryColor = DesiredConfiguration.PrimaryColor;
@@ -102,6 +106,9 @@ void APolyRacingPlayerController::SpawnVehicleForPlayer(const FPresetVehicleConf
 		
 		NewVehicle->VehicleCustomisationComponent->CurrentAccentColor = DesiredConfiguration.AccentColor;
 		NewVehicle->VehicleCustomisationComponent->OnRep_AccentColorChanged();
+
+		GetPlayerState<APolyRacingPlayerState>()->bIsReady = true;
+		Server_NotifyReadyToStart();
 	}
 }
 
@@ -160,3 +167,25 @@ void APolyRacingPlayerController::Client_PlayLevelIntroSequence_Implementation(U
 {
 	PlayLevelIntroSequence(Sequence);
 }
+
+void APolyRacingPlayerController::NotifyReadyToStart()
+{
+	GetWorld()->GetAuthGameMode<APolyRacingGameModeBase>()->CheckIfShouldStart();
+}
+
+void APolyRacingPlayerController::Server_NotifyReadyToStart_Implementation()
+{
+	NotifyReadyToStart();
+}
+
+void APolyRacingPlayerController::PlayCountDown()
+{
+	GetHUD<AInGameHUD>()->PlayCountDown();
+}
+
+void APolyRacingPlayerController::Client_PlayCountDown_Implementation()
+{
+	PlayCountDown();
+}
+
+

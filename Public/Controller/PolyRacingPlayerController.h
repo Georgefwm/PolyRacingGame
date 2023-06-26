@@ -55,11 +55,28 @@ public:
 	UFUNCTION(Client, Reliable)
 	void Client_RequestVehicleSpawn();
 	void Client_RequestVehicleSpawn_Implementation();
+	
 
-	void PlayLevelIntroSequence(ULevelSequence* Sequence);
 	void OnLevelIntroSequenceEnd();
+	void PlayLevelIntroSequence(ULevelSequence* Sequence);
 
 	UFUNCTION(Client, Reliable)
 	void Client_PlayLevelIntroSequence(ULevelSequence* Sequence);
 	void Client_PlayLevelIntroSequence_Implementation(ULevelSequence* Sequence);
+
+	
+	void NotifyReadyToStart();
+	
+	UFUNCTION(Server, Reliable)
+	void Server_NotifyReadyToStart();
+	void Server_NotifyReadyToStart_Implementation();
+
+	
+	void PlayCountDown();
+
+	UFUNCTION(Client, Reliable)
+	void Client_PlayCountDown();
+	void Client_PlayCountDown_Implementation();
+
+	
 };

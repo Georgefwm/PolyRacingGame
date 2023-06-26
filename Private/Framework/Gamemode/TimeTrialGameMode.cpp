@@ -4,10 +4,8 @@
 #include "Framework/GameMode/TimeTrialGameMode.h"
 
 #include "LevelSequence.h"
-#include "MovieSceneSequencePlaybackSettings.h"
 #include "Controller/PolyRacingPlayerController.h"
 #include "Framework/PolyRacingPlayerState.h"
-#include "String/Join.h"
 #include "Subsystem/MapSubsystem.h"
 #include "UI/InGameHUD.h"
 
@@ -39,6 +37,16 @@ void ATimeTrialGameMode::HandleMatchIsWaitingToStart()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Starting defered player now"))
 		HandleStartingNewPlayer_Implementation(PlayerController);
+	}
+}
+
+void ATimeTrialGameMode::HandleMatchHasStarted()
+{
+	Super::HandleMatchHasStarted();
+
+	for (APolyRacingPlayerController* Player : ConnectedPlayers)
+	{
+		EnableInput(Player);
 	}
 }
 
@@ -75,27 +83,6 @@ void ATimeTrialGameMode::RestartPlayer(AController* NewPlayer)
 	
 }
 
-void ATimeTrialGameMode::PostLogin(APlayerController* NewPlayer)
-{
-	Super::PostLogin(NewPlayer);
-
-	APolyRacingPlayerController* JoiningPlayer = Cast<APolyRacingPlayerController>(NewPlayer);
-	if (!JoiningPlayer)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("GAMEMODE: invalid player tried to join the lobby"))
-		return;
-	}
-	
-	ConnectedPlayers.Add(JoiningPlayer);
-
-	
-}
-
-void ATimeTrialGameMode::Logout(AController* Exiting)
-{
-	Super::Logout(Exiting);
-}
-
 void ATimeTrialGameMode::AddCheckpoints(TArray<ACheckpointActor*>& Checkpoints)
 {
 	CheckpointActors = Checkpoints;
@@ -103,5 +90,10 @@ void ATimeTrialGameMode::AddCheckpoints(TArray<ACheckpointActor*>& Checkpoints)
 	CheckpointActors.Sort([](const ACheckpointActor& CpA, const ACheckpointActor& CpB) {
 		return  CpA.CheckpointNumber < CpB.CheckpointNumber;
 	});	
+}
+
+void ATimeTrialGameMode::BeginCountDownSequence()
+{
+	Super::BeginCountDownSequence();
 }
 
