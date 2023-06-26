@@ -45,25 +45,6 @@ void ARaceGameMode::RestartPlayer(AController* NewPlayer)
 	
 }
 
-void ARaceGameMode::PostLogin(APlayerController* NewPlayer)
-{
-	Super::PostLogin(NewPlayer);
-
-	APolyRacingPlayerController* JoiningPlayer = Cast<APolyRacingPlayerController>(NewPlayer);
-	if (!JoiningPlayer)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("GAMEMODE: invalid player tried to join the lobby"))
-		return;
-	}
-	
-	ConnectedPlayers.Add(JoiningPlayer);
-}
-
-void ARaceGameMode::Logout(AController* Exiting)
-{
-	Super::Logout(Exiting);
-}
-
 void ARaceGameMode::AddCheckpoints(TArray<ACheckpointActor*>& Checkpoints)
 {
 	CheckpointActors = Checkpoints;
@@ -72,4 +53,5 @@ void ARaceGameMode::AddCheckpoints(TArray<ACheckpointActor*>& Checkpoints)
 		return  CpA.CheckpointNumber < CpB.CheckpointNumber;
 	});	
 }
+
 
