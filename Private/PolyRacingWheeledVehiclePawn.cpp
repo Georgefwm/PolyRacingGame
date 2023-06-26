@@ -43,6 +43,9 @@ APolyRacingWheeledVehiclePawn::APolyRacingWheeledVehiclePawn(const FObjectInitia
 
 	// Camera default settings
 	CameraComponent->FieldOfView = 90.f;
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> DefaultVehicleWidgetFinder(TEXT("/Game/UI/WidgetBlueprints/WPB_VehiclePawn"));
+	VehicleHUD = DefaultVehicleWidgetFinder.Class;
 }
 
 // Called when the game starts or when spawned
