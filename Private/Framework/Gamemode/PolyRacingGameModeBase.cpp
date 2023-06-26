@@ -77,16 +77,11 @@ bool APolyRacingGameModeBase::ReadyToStartMatch_Implementation()
 
 void APolyRacingGameModeBase::CheckIfShouldStart()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Checking if game should start"))
-
 	if (MatchState == MatchState::InProgress)
 		return;
 	
 	if (ReadyToStartMatch())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Players are ready, starting game"))
 		StartMatch();
-	}
 }
 
 void APolyRacingGameModeBase::BeginCountDownSequence()
@@ -100,13 +95,13 @@ void APolyRacingGameModeBase::BeginCountDownSequence()
 	}
 
 	// @ASSUMPTION : Count down animation sequence is 4 seconds long
-	GetWorldTimerManager().SetTimer(CountDownTimerHandle, this, &APolyRacingGameModeBase::OnCountDownSequenceEnd, 4.f, false);
+	float constexpr CountDownAnimationDuration = 4.0f;
+	GetWorldTimerManager().SetTimer(CountDownTimerHandle, this, &APolyRacingGameModeBase::OnCountDownSequenceEnd,
+		CountDownAnimationDuration, false);
 }
 
 void APolyRacingGameModeBase::OnCountDownSequenceEnd()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Enabling player input"))
-
 	for (APolyRacingPlayerController* Player : ConnectedPlayers)
 	{
 		if (APolyRacingWheeledVehiclePawn* VehiclePawn = Player->GetPawn<APolyRacingWheeledVehiclePawn>())

@@ -121,14 +121,11 @@ void AInGameHUD::Init(APolyRacingWheeledVehiclePawn* NewPawn, TSubclassOf<UUserW
 	if (NewPawn)
 	{
 		VehicleWidget = CreateWidget<UVehiclePawnWidget>(GetGameInstance(), NewPawn->VehicleHUD);
-		
 		VehicleWidget->MovementComponent = NewPawn->GetVehicleMovementComponent();
 	}
 
 	if (NewGameModeWidget)
 		GameModeWidget = CreateWidget<UGameModeWidget>(GetGameInstance(), NewGameModeWidget);
-
-	UE_LOG(LogTemp, Warning, TEXT("Hud is init"))
 }
 
 void AInGameHUD::PlayCountDown()
