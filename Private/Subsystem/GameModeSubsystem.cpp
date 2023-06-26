@@ -67,7 +67,7 @@ void UGameModeSubsystem::SetCurrentGameMode(const FString& GameModeName)
 	{
 		FGameModeTableRow* GameModeTableRow = GameModeDataTable->FindRow<FGameModeTableRow>(RowName, "");
 
-		if (GameModeTableRow->Path == GameModeName)
+		if (GameModeTableRow->GameModeName == GameModeName)
 		{
 			CurrentGameMode = RowName;
 			return;
