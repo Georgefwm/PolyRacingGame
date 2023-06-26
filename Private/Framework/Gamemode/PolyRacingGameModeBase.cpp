@@ -6,6 +6,7 @@
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "Controller/PolyRacingPlayerController.h"
 #include "Framework/PolyRacingPlayerState.h"
+#include "Subsystem/GameModeSubsystem.h"
 #include "UI/InGameHUD.h"
 
 // Sets default values
@@ -47,7 +48,17 @@ void APolyRacingGameModeBase::PostLogin(APlayerController* NewPlayer)
 	}
 	
 	ConnectedPlayers.Add(JoiningPlayer);
+	
 	JoiningPlayer->GetPlayerState<APolyRacingPlayerState>()->bIsReady = false;
+
+	
+	
+	UGameModeSubsystem* GameModeSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameModeSubsystem>();
+	if (!GameModeSubsystem)
+		return;
+	
+	JoiningPlayer->Client_SetGameMode(GameModeSubsystem->CurrentGameMode.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("Setting player gamemode: %s"), *GameModeSubsystem->CurrentGameMode.ToString())
 }
 
 void APolyRacingGameModeBase::Logout(AController* Exiting)
@@ -103,9 +114,7 @@ void APolyRacingGameModeBase::BeginCountDownSequence()
 void APolyRacingGameModeBase::OnCountDownSequenceEnd()
 {
 	for (APolyRacingPlayerController* Player : ConnectedPlayers)
-	{
-		if (APolyRacingWheeledVehiclePawn* VehiclePawn = Player->GetPawn<APolyRacingWheeledVehiclePawn>())
-			VehiclePawn->EnableInput(Player);
-	}
+		Player->Client_OnCountDownSequenceEnd();
+	
 }
 

@@ -78,5 +78,15 @@ public:
 	void Client_PlayCountDown();
 	void Client_PlayCountDown_Implementation();
 
-	
+	void OnCountDownSequenceEnd();
+
+	UFUNCTION(Client, Reliable)
+	void Client_OnCountDownSequenceEnd();
+	void Client_OnCountDownSequenceEnd_Implementation();
+
+	void SetGameMode(const FString& GameModeName);
+
+	UFUNCTION(Client, Reliable)
+	void Client_SetGameMode(const FString& GameModeName);
+	void Client_SetGameMode_Implementation(const FString& GameModeName);
 };

@@ -7,10 +7,12 @@
 #include "LevelSequencePlayer.h"
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "StartPositionActor.h"
+#include "Framework/PolyRacingGameInstance.h"
 #include "Framework/PolyRacingPlayerState.h"
 #include "Framework/GameMode/PolyRacingGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Subsystem/GameModeSubsystem.h"
 #include "UI/InGameHUD.h"
 
 APolyRacingPlayerController::APolyRacingPlayerController()
@@ -44,8 +46,10 @@ void APolyRacingPlayerController::SetupHUD()
 		UE_LOG(LogTemp, Warning, TEXT("Pawn is null"))
 		return;
 	}
+
+	UGameModeSubsystem* GameModeSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameModeSubsystem>();
 	
-	HUD->Init(PolyRacingPawn, nullptr);
+	HUD->Init(PolyRacingPawn, GameModeSubsystem->GetCurrentGameModeWidget());
 	HUD->ShowPlayerHUD();
 }
 
@@ -186,6 +190,42 @@ void APolyRacingPlayerController::PlayCountDown()
 void APolyRacingPlayerController::Client_PlayCountDown_Implementation()
 {
 	PlayCountDown();
+}
+
+void APolyRacingPlayerController::OnCountDownSequenceEnd()
+{
+	APolyRacingPlayerState* PolyRacingPlayerState = GetPlayerState<APolyRacingPlayerState>();
+
+	double const CurrentTimeStamp = GetWorld()->GetTimeSeconds();
+	
+	PolyRacingPlayerState->EventStartTime = CurrentTimeStamp;
+	PolyRacingPlayerState->LastLapStartTime = CurrentTimeStamp;
+	
+	VehiclePawn->EnableInput(this);
+}
+
+void APolyRacingPlayerController::Client_OnCountDownSequenceEnd_Implementation()
+{
+	OnCountDownSequenceEnd();
+}
+
+void APolyRacingPlayerController::SetGameMode(const FString& GameModeName)
+{
+	if (HasAuthority())
+		return;
+
+	UGameModeSubsystem* GameModeSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameModeSubsystem>();
+	if (!GameModeSubsystem)
+		return;
+	
+	GameModeSubsystem->SetCurrentGameMode(GameModeName);
+	
+	UE_LOG(LogTemp, Warning, TEXT("Current GameMode: %s"), *GameModeSubsystem->CurrentGameMode.ToString())
+}
+
+void APolyRacingPlayerController::Client_SetGameMode_Implementation(const FString& GameModeName)
+{
+	SetGameMode(GameModeName);
 }
 
 
