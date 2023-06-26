@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "CheckpointGameMode.h"
 #include "PolyRacingGameModeBase.h"
-#include "GameFramework/GameMode.h"
 #include "TimeTrialGameMode.generated.h"
 
 /**
@@ -22,12 +21,6 @@ public:
 
 	UPROPERTY()
 	TArray<class ACheckpointActor*> CheckpointActors;
-
-	UPROPERTY()
-	TArray<float> LapTimes;
-
-	UPROPERTY()
-	float TotalTime;
 
 protected:
 	// Called when the game starts or when spawned
