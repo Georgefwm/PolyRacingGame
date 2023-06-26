@@ -22,7 +22,8 @@ void UTimeTrialWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 		return;
 
 	double const CurrentTime = GetWorld()->GetTimeSeconds();
-
+	
+	// TODO: Format text in style: MIN:SEC:MILLIS
 	TotalTimeValueTextBlock->SetText(FText::FromString(FString::SanitizeFloat(CurrentTime - PlayerState->EventStartTime, 2)));
 	CurrentLapTimeValueTextBlock->SetText(FText::FromString(FString::SanitizeFloat(CurrentTime - PlayerState->LastLapStartTime, 2)));
 }
