@@ -5,6 +5,7 @@
 
 #include "Framework/PolyRacingSessionSubsystem.h"
 #include "Kismet/GameplayStatics.h"
+#include "Subsystem/GameModeSubsystem.h"
 #include "Subsystem/MapSubsystem.h"
 #include "UI/Style/GlobalMenuStyle.h"
 #include "UI/Menu/MainMenuWidget.h"
@@ -123,12 +124,16 @@ FReply SSinglePlayerMenuWidget::OnRaceClicked() const
 FReply SSinglePlayerMenuWidget::OnTimeTrialClicked() const
 {
 	UMapSubsystem* MapSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UMapSubsystem>();
+	UGameModeSubsystem* GameModeSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UGameModeSubsystem>();
 	
-	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_TimeTrialGamemode.BP_TimeTrialGamemode_C"));
-
-	MapSubsystem->SetCurrentMap(FString("Docks"));
+	FString const GameModeName = FString("TimeTrial");
+	FString const MapName = FString("Docks");
+	FString const LevelOptions = FString("?listen game=" + GameModeSubsystem->GetGameModePath(GameModeName).ToString());
 	
-	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), MapSubsystem->GetMapPath(FString("Docks")), true, LevelOptions);
+	GameModeSubsystem->SetCurrentGameMode(GameModeName);
+	MapSubsystem->SetCurrentMap(MapName);
+	
+	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), MapSubsystem->GetMapPath(MapName), true, LevelOptions);
 
 	return FReply::Handled();
 }
@@ -136,17 +141,17 @@ FReply SSinglePlayerMenuWidget::OnTimeTrialClicked() const
 FReply SSinglePlayerMenuWidget::OnFreeRoamClicked() const
 {
 	UMapSubsystem* MapSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UMapSubsystem>();
+	UGameModeSubsystem* GameModeSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UGameModeSubsystem>();
 	
-	// UPolyRacingSessionSubsystem* SessionSubsystem = OwningHUD->GetGameInstance()->GetSubsystem<UPolyRacingSessionSubsystem>();
-	// SessionSubsystem->CreateSession(1, true, FreeRoam);
-	// SessionSubsystem->StartSession();
+	FString const GameModeName = FString("FreeRoam");
+	FString const MapName = FString("Docks");
+	FString const LevelOptions = FString("?listen game=" + GameModeSubsystem->GetGameModePath(GameModeName).ToString());
 	
-	FString const LevelOptions = FString(TEXT("listen -game=/Game/GameModes/BP_FreeRoamGamemode.BP_FreeRoamGamemode_C"));
+	GameModeSubsystem->SetCurrentGameMode(GameModeName);
+	MapSubsystem->SetCurrentMap(MapName);
+	
+	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), MapSubsystem->GetMapPath(MapName), true, LevelOptions);
 
-	MapSubsystem->SetCurrentMap(FString("Docks"));
-	
-	UGameplayStatics::OpenLevel(OwningHUD->GetWorld(), MapSubsystem->GetMapPath(FString("Docks")), true, LevelOptions);
-	
 	return FReply::Handled();
 }
 
