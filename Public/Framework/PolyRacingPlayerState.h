@@ -24,6 +24,21 @@ public:
 	UPROPERTY()
 	int Lap = 0;
 
+	// timestamps using UWorld::GetTimeSeconds
+	UPROPERTY()
+	TArray<double> LapTimes;
+
+	// timestamp using UWorld::GetTimeSeconds
+	UPROPERTY()
+	double LastLapStartTime;
+
+	/*
+	 * Timestamp using UWorld::GetTimeSeconds
+	 * Use this for timing instead of StartTime which is derived from AGameMode
+	 */ 
+	UPROPERTY()
+	double EventStartTime = 0;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
