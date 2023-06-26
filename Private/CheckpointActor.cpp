@@ -59,12 +59,17 @@ void ACheckpointActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	
 	PlayerState->LastCheckpoint = CheckpointNumber;
 
-	if (CheckpointNumber == 0)
+	if (CheckpointNumber == 0)  // New Lap
 	{
 		// TODO: Check for final lap and end game
 		
 		PlayerState->Lap++;
 		PlayerState->LastCheckpoint = CheckpointNumber;
+
+		double const CurrentTime = GetWorld()->GetTimeSeconds();
+
+		PlayerState->LapTimes.Add(CurrentTime - PlayerState->LastLapStartTime);
+		PlayerState->LastLapStartTime = CurrentTime;
 	}
 
 	// TODO: Convert FX logic into NetMulticast RPC
