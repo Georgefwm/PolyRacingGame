@@ -5,6 +5,7 @@
 #include "Blueprint/UserWidget.h"
 #include "GameModeWidget.generated.h"
 
+class APolyRacingPlayerState;
 /**
  * 
  */
@@ -14,7 +15,9 @@ class UGameModeWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+
+	UPROPERTY()
+	APolyRacingPlayerState* PlayerState;
 	
 	virtual void NativeConstruct() override;
-
 };

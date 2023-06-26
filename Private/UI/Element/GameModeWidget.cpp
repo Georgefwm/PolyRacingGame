@@ -7,4 +7,6 @@
 void UGameModeWidget::NativeConstruct()
 {
 	UUserWidget::NativeConstruct();
+
+	PlayerState = GetWorld()->GetFirstPlayerController()->GetPlayerState<APolyRacingPlayerState>();
 }
