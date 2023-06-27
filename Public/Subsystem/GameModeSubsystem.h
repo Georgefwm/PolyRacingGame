@@ -33,6 +33,8 @@ public:
 
 	FName GetCurrentGameModeDisplayName() const;
 
+	int GetCurrentGameModeLapCount();
+
 	TSubclassOf<class UUserWidget> GetCurrentGameModeWidget();
 
 	void SetCurrentGameMode(const FString& GameModeName);

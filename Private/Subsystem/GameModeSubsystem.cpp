@@ -51,6 +51,16 @@ FName UGameModeSubsystem::GetCurrentGameModeDisplayName() const
 	return FName(GameModeTableRow->DisplayName);
 }
 
+int UGameModeSubsystem::GetCurrentGameModeLapCount()
+{
+	FGameModeTableRow* GameModeTableRow = GameModeDataTable->FindRow<FGameModeTableRow>(CurrentGameMode, "");
+
+	if (!GameModeTableRow)
+		return 3;
+	
+	return GameModeTableRow->LapsToFinish;
+}
+
 TSubclassOf<UUserWidget> UGameModeSubsystem::GetCurrentGameModeWidget()
 {
 	FGameModeTableRow* GameModeTableRow = GameModeDataTable->FindRow<FGameModeTableRow>(CurrentGameMode, "");

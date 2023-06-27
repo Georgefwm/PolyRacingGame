@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/GameMode.h"
 #include "GameFramework/GameState.h"
 #include "PolyRacingGameState.generated.h"
 
@@ -16,7 +17,7 @@ public:
 	APolyRacingGameState();
 
 	UPROPERTY()
-	int LapCount = 3;
+	int LapCount = 2;
 
 protected:
 	// Called when the game starts or when spawned

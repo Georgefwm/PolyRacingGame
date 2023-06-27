@@ -15,7 +15,8 @@ APolyRacingGameState::APolyRacingGameState()
 void APolyRacingGameState::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+
 }
 
 // Called every frame
