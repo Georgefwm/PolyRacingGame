@@ -5,6 +5,8 @@
 
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "Components/BoxComponent.h"
+#include "Controller/PolyRacingPlayerController.h"
+#include "Framework/PolyRacingGameState.h"
 #include "Framework/PolyRacingPlayerState.h"
 #include "Framework/GameMode/TimeTrialGameMode.h"
 #include "Kismet/GameplayStatics.h"
@@ -43,17 +45,24 @@ void ACheckpointActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	APolyRacingWheeledVehiclePawn* Vehicle = Cast<APolyRacingWheeledVehiclePawn>(OtherActor);
-	if (!OtherActor)
+	if (!Vehicle)
 		return;
 	
 	APolyRacingPlayerState* PlayerState = Vehicle->GetPlayerState<APolyRacingPlayerState>();
 	if (!PlayerState)
 		return;
 	
+	APolyRacingPlayerController* PlayerController = Vehicle->GetController<APolyRacingPlayerController>();
+	if (!PlayerController)
+		return;
 
+	if (!PlayerController->IsLocalPlayerController())
+		return;
+
+	
 	if (PlayerState->LastCheckpoint + 1 != CheckpointNumber)
 	{
-		if (PlayerState->LastCheckpoint != CheckpointCount - 1) // Don't add lap when starting behind first checkpoint
+		if (PlayerState->LastCheckpoint != CheckpointCount - 1) // Don't add lap when crossing the start line
 			return;
 	}
 	
@@ -61,8 +70,6 @@ void ACheckpointActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 
 	if (CheckpointNumber == 0)  // New Lap
 	{
-		// TODO: Check for final lap and end game
-		
 		PlayerState->Lap++;
 		PlayerState->LastCheckpoint = CheckpointNumber;
 
@@ -70,26 +77,20 @@ void ACheckpointActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 
 		PlayerState->LapTimes.Add(CurrentTime - PlayerState->LastLapStartTime);
 		PlayerState->LastLapStartTime = CurrentTime;
+
+		APolyRacingGameState* GameState = GetWorld()->GetGameState<APolyRacingGameState>();
+		
+		if (PlayerState->Lap == GameState->LapCount) // game over cond
+		{
+			PlayerState->EventEndTime = CurrentTime;
+			PlayerState->LastLapStartTime = PlayerState->LapTimes.Last();
+			
+			PlayerController->Server_NotifyFinishedRace(PlayerController);
+		}
 	}
 
-	// TODO: Convert FX logic into NetMulticast RPC
-	if (CheckpointPassedEffect) {
-		UNiagaraFunctionLibrary::SpawnSystemAttached(CheckpointPassedEffect,
-			LeftSign,
-			NAME_None,
-			FVector(0.f, 0.f, 210),
-			FRotator(0.f),
-			EAttachLocation::Type::KeepRelativeOffset,
-			true);
-
-		UNiagaraFunctionLibrary::SpawnSystemAttached(CheckpointPassedEffect,
-			RightSign,
-			NAME_None,
-			FVector(0.f, 0.f, 210),
-			FRotator(0.f),
-			EAttachLocation::Type::KeepRelativeOffset,
-			true);
-	}
+	if (PlayerController->IsLocalPlayerController())
+		Server_RequestPlayEffects();
 }
 
 void ACheckpointActor::BeginPlay()
@@ -142,4 +143,47 @@ void ACheckpointActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyCha
 		RightSign->SetRelativeLocation(FVector(0.f, CheckpointWidth, 0.f));
 	}
 }
+
+void ACheckpointActor::RequestPlayEffects()
+{
+	if (!HasAuthority())
+		return;
+	
+	NetMulti_PlayEffects_Implementation();
+}
+
+void ACheckpointActor::Server_RequestPlayEffects_Implementation()
+{
+	RequestPlayEffects();
+}
+
+void ACheckpointActor::PlayEffects()
+{
+	if (!CheckpointPassedEffect)
+		return;
+
+	// TODO: Add and play sound fx
+	
+	UNiagaraFunctionLibrary::SpawnSystemAttached(CheckpointPassedEffect,
+		LeftSign,
+		NAME_None,
+		FVector(0.f, 0.f, 210),
+		FRotator(0.f),
+		EAttachLocation::Type::KeepRelativeOffset,
+		true);
+
+	UNiagaraFunctionLibrary::SpawnSystemAttached(CheckpointPassedEffect,
+		RightSign,
+		NAME_None,
+		FVector(0.f, 0.f, 210),
+		FRotator(0.f),
+		EAttachLocation::Type::KeepRelativeOffset,
+		true);
+}
+
+void ACheckpointActor::NetMulti_PlayEffects_Implementation()
+{
+	PlayEffects();
+}
+
 
