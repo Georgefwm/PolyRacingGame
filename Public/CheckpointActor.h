@@ -54,5 +54,19 @@ public:
 
 	// Updates elements automatically when CheckpointWidth is change in editor
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+
+	// Ask server to play this actors fx
+	void RequestPlayEffects();
+	
+	UFUNCTION(Server, Unreliable)
+	void Server_RequestPlayEffects();
+	void Server_RequestPlayEffects_Implementation();
+
+	// Server tells all clients to play fx
+	void PlayEffects();
+	
+	UFUNCTION(NetMulticast, Unreliable)
+	void NetMulti_PlayEffects();
+	void NetMulti_PlayEffects_Implementation();
 	
 };
