@@ -2,7 +2,7 @@
 
 
 #include "UI/Element/TimeTrialWidget.h"
-
+#include "PolyRacingStaticUtils.h"
 #include "Components/TextBlock.h"
 #include "Framework/PolyRacingPlayerState.h"
 
@@ -24,6 +24,6 @@ void UTimeTrialWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 	double const CurrentTime = GetWorld()->GetTimeSeconds();
 	
 	// TODO: Format text in style: MIN:SEC:MILLIS
-	TotalTimeValueTextBlock->SetText(FText::FromString(FString::SanitizeFloat(CurrentTime - PlayerState->EventStartTime, 2)));
-	CurrentLapTimeValueTextBlock->SetText(FText::FromString(FString::SanitizeFloat(CurrentTime - PlayerState->LastLapStartTime, 2)));
+	TotalTimeValueTextBlock->SetText(FPolyRacingStaticUtils::GetFormatTimeText(CurrentTime - PlayerState->EventStartTime));
+	CurrentLapTimeValueTextBlock->SetText(FPolyRacingStaticUtils::GetFormatTimeText(CurrentTime - PlayerState->LastLapStartTime));
 }

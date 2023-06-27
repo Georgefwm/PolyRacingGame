@@ -2,16 +2,16 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "PolyRacingStaticUtils.h"
+#include "CoreMinimal.h"
 
 
-static FString GetFloatAsStringWithPrecision(float TheFloat, int32 Precision, bool IncludeLeadingZero)
+FString FPolyRacingStaticUtils::GetFloatAsStringWithPrecision(float TheFloat, int32 Precision, bool IncludeLeadingZero)
 {
-	//Round to integral if have something like 1.9999 within precision
+	// Round to integral if have something like 1.9999 within precision
 	float Rounded = roundf(TheFloat);
 	
-	if(FMath::Abs(TheFloat - Rounded) < FMath::Pow(10,-1 * Precision))
+	if(FMath::Abs(TheFloat - Rounded) < FMath::Pow(10.f,-1.f * Precision))
 	{       
 		TheFloat = Rounded;
 	}
@@ -25,12 +25,12 @@ static FString GetFloatAsStringWithPrecision(float TheFloat, int32 Precision, bo
 	return FText::AsNumber(TheFloat, &NumberFormat).ToString(); 
 }
 
-static FText GetFloatAsTextWithPrecision(float TheFloat, int32 Precision, bool IncludeLeadingZero)
+FText FPolyRacingStaticUtils::GetFloatAsTextWithPrecision(float TheFloat, int32 Precision, bool IncludeLeadingZero)
 {
-	//Round to integral if have something like 1.9999 within precision
+	// Round to integral if have something like 1.9999 within precision
 	float Rounded = roundf(TheFloat);
 	
-	if(FMath::Abs(TheFloat - Rounded) < FMath::Pow(10,-1 * Precision))
+	if(FMath::Abs(TheFloat - Rounded) < FMath::Pow(10.f,-1.f * Precision))
 	{       
 		TheFloat = Rounded;
 	}
@@ -42,4 +42,18 @@ static FText GetFloatAsTextWithPrecision(float TheFloat, int32 Precision, bool I
 	NumberFormat.MaximumFractionalDigits = Precision;
 	
 	return FText::AsNumber(TheFloat, &NumberFormat); 
+}
+
+FText FPolyRacingStaticUtils::GetFormatTimeText(float TimeStampSeconds)
+{
+	FNumberFormattingOptions BaseFormat;
+	BaseFormat.MinimumIntegralDigits = 2;
+
+	FNumberFormattingOptions MillisFormat;
+	MillisFormat.MinimumIntegralDigits = 3;
+	
+	return FText::Format(FText::FromString(TEXT("{0}:{1}:{2}")),
+		FText::AsNumber(FMath::FloorToInt(TimeStampSeconds / 60.0f), &BaseFormat),
+		FText::AsNumber(FMath::FloorToInt(FMath::Fmod(TimeStampSeconds, 60.0f)), &BaseFormat),
+		FText::AsNumber(FMath::FloorToInt(FMath::Fmod(TimeStampSeconds * 1000.0f, 1000.0f)), &MillisFormat));
 }
