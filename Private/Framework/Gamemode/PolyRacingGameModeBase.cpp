@@ -5,6 +5,7 @@
 
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "Controller/PolyRacingPlayerController.h"
+#include "Framework/PolyRacingGameState.h"
 #include "Framework/PolyRacingPlayerState.h"
 #include "Subsystem/GameModeSubsystem.h"
 #include "UI/InGameHUD.h"
@@ -12,8 +13,14 @@
 // Sets default values
 APolyRacingGameModeBase::APolyRacingGameModeBase()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+	bUseSeamlessTravel = false;
+	
+	PlayerControllerClass	= APolyRacingPlayerController::StaticClass();
+	HUDClass				= AInGameHUD::StaticClass();
+
+	PlayerStateClass		= APolyRacingPlayerState::StaticClass();
+	GameStateClass			= APolyRacingGameState::StaticClass();
 }
 
 // Called when the game starts or when spawned
@@ -21,12 +28,6 @@ void APolyRacingGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
-}
-
-// Called every frame
-void APolyRacingGameModeBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 void APolyRacingGameModeBase::StartMatch()
@@ -105,8 +106,8 @@ void APolyRacingGameModeBase::BeginCountDownSequence()
 			VehiclePawn->DisableInput(Player);
 	}
 
-	// @ASSUMPTION : Count down animation sequence is 4 seconds long
-	float constexpr CountDownAnimationDuration = 4.0f;
+	// @ASSUMPTION : Count down animation sequence is 3 seconds long
+	float constexpr CountDownAnimationDuration = 3.0f;
 	GetWorldTimerManager().SetTimer(CountDownTimerHandle, this, &APolyRacingGameModeBase::OnCountDownSequenceEnd,
 		CountDownAnimationDuration, false);
 }
@@ -115,6 +116,5 @@ void APolyRacingGameModeBase::OnCountDownSequenceEnd()
 {
 	for (APolyRacingPlayerController* Player : ConnectedPlayers)
 		Player->Client_OnCountDownSequenceEnd();
-	
 }
 
