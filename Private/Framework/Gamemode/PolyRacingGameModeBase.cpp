@@ -3,11 +3,13 @@
 
 #include "Framework/GameMode/PolyRacingGameModeBase.h"
 
+#include "PolyRacingSpectatorPawn.h"
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "Controller/PolyRacingPlayerController.h"
 #include "Framework/PolyRacingGameState.h"
 #include "Framework/PolyRacingPlayerState.h"
 #include "Subsystem/GameModeSubsystem.h"
+#include "Subsystem/MapSubsystem.h"
 #include "UI/InGameHUD.h"
 
 // Sets default values
@@ -30,6 +32,8 @@ void APolyRacingGameModeBase::BeginPlay()
 	
 }
 
+
+
 void APolyRacingGameModeBase::StartMatch()
 {
 	Super::StartMatch();
@@ -51,8 +55,6 @@ void APolyRacingGameModeBase::PostLogin(APlayerController* NewPlayer)
 	ConnectedPlayers.Add(JoiningPlayer);
 	
 	JoiningPlayer->GetPlayerState<APolyRacingPlayerState>()->bIsReady = false;
-
-	
 	
 	UGameModeSubsystem* GameModeSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameModeSubsystem>();
 	if (!GameModeSubsystem)
@@ -60,6 +62,10 @@ void APolyRacingGameModeBase::PostLogin(APlayerController* NewPlayer)
 	
 	JoiningPlayer->Client_SetGameMode(GameModeSubsystem->CurrentGameMode.ToString());
 	UE_LOG(LogTemp, Warning, TEXT("Setting player gamemode: %s"), *GameModeSubsystem->CurrentGameMode.ToString())
+
+	// TODO: Make not 'hacky'
+	if (HasAuthority())
+		GetGameState<APolyRacingGameState>()->LapCount = GameModeSubsystem->GetCurrentGameModeLapCount();
 }
 
 void APolyRacingGameModeBase::Logout(AController* Exiting)
@@ -116,5 +122,24 @@ void APolyRacingGameModeBase::OnCountDownSequenceEnd()
 {
 	for (APolyRacingPlayerController* Player : ConnectedPlayers)
 		Player->Client_OnCountDownSequenceEnd();
+}
+
+void APolyRacingGameModeBase::HandlePlayerHasFinishedEvent(APolyRacingPlayerController* PlayerController)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Player has finished race"))
+	
+	// TODO: Set view target as camera watching car go through last checkpoint
+
+	APolyRacingWheeledVehiclePawn* PlayerPawn = PlayerController->GetPawn<APolyRacingWheeledVehiclePawn>();
+	if (!PlayerPawn)
+		return;
+
+	PlayerController->UnPossess();
+
+	UMapSubsystem* MapSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UMapSubsystem>();
+	 
+	if (ULevelSequence* Sequence = MapSubsystem->GetCurrentLevelOutroSequence())
+		PlayerController->Client_PlayLevelOutroSequence(Sequence);
+	
 }
 

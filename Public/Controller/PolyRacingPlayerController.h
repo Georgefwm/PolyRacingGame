@@ -65,6 +65,14 @@ public:
 	void Client_PlayLevelIntroSequence_Implementation(ULevelSequence* Sequence);
 
 	
+	void OnLevelOutroSequenceEnd();
+	void PlayLevelOutroSequence(ULevelSequence* Sequence);
+
+	UFUNCTION(Client, Reliable)
+	void Client_PlayLevelOutroSequence(ULevelSequence* Sequence);
+	void Client_PlayLevelOutroSequence_Implementation(ULevelSequence* Sequence);
+
+	
 	void NotifyReadyToStart();
 	
 	UFUNCTION(Server, Reliable)
@@ -78,15 +86,24 @@ public:
 	void Client_PlayCountDown();
 	void Client_PlayCountDown_Implementation();
 
+	
 	void OnCountDownSequenceEnd();
 
 	UFUNCTION(Client, Reliable)
 	void Client_OnCountDownSequenceEnd();
 	void Client_OnCountDownSequenceEnd_Implementation();
 
+	
 	void SetGameMode(const FString& GameModeName);
 
 	UFUNCTION(Client, Reliable)
 	void Client_SetGameMode(const FString& GameModeName);
 	void Client_SetGameMode_Implementation(const FString& GameModeName);
+
+	
+	void NotifyFinishedRace(APolyRacingPlayerController* PlayerController);
+	
+	UFUNCTION(Server, Reliable)
+	void Server_NotifyFinishedRace(APolyRacingPlayerController* PlayerController);
+	void Server_NotifyFinishedRace_Implementation(APolyRacingPlayerController* PlayerController);
 };

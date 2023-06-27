@@ -12,7 +12,7 @@ class POLYRACINGGAME_API APolyRacingGameModeBase : public AGameMode
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
+
 	APolyRacingGameModeBase();
 
 	UPROPERTY()
@@ -24,13 +24,11 @@ public:
 	FTimerHandle CountDownTimerHandle;
 
 protected:
-	// Called when the game starts or when spawned
+	
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	
 	virtual void StartMatch() override;
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
@@ -44,4 +42,7 @@ public:
 	virtual void BeginCountDownSequence();
 
 	virtual void OnCountDownSequenceEnd();
+
+	virtual void HandlePlayerHasFinishedEvent(APolyRacingPlayerController* PlayerController);
+	
 };

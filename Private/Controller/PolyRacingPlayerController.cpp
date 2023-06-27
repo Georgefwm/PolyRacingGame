@@ -7,6 +7,7 @@
 #include "LevelSequencePlayer.h"
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "StartPositionActor.h"
+#include "Camera/CameraActor.h"
 #include "Framework/PolyRacingGameInstance.h"
 #include "Framework/PolyRacingPlayerState.h"
 #include "Framework/GameMode/PolyRacingGameModeBase.h"
@@ -172,6 +173,55 @@ void APolyRacingPlayerController::Client_PlayLevelIntroSequence_Implementation(U
 	PlayLevelIntroSequence(Sequence);
 }
 
+void APolyRacingPlayerController::OnLevelOutroSequenceEnd()
+{
+	PlayerCameraManager->StartCameraFade(1.f, 0.f, 3, FColor::Black, true);
+	
+	TArray<AActor*> Cameras;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), Cameras);
+	
+	if (Cameras.IsEmpty())
+		return;
+	
+	for (AActor* Actor : Cameras)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Camera name: %s"), *Actor->GetActorNameOrLabel())
+		
+		if (Actor->GetActorNameOrLabel() == FString("EndCamera"))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Setting end camera"))
+			
+			SetViewTarget(Actor);  // TODO: Find out why tf this isn't working
+			
+			return;
+		}
+	}
+}
+
+void APolyRacingPlayerController::PlayLevelOutroSequence(ULevelSequence* Sequence)
+{
+	ALevelSequenceActor* LevelSequenceActor;
+	ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), Sequence, FMovieSceneSequencePlaybackSettings(), LevelSequenceActor);
+
+	SequencePlayer = LevelSequenceActor->GetSequencePlayer();
+	
+	if (LevelSequenceActor)
+	{
+		// We can't use the ULevelSequence.OnStop event, so we just use a timer
+		GetWorldTimerManager().SetTimer(SequenceTimerHandle,
+			this,
+			&APolyRacingPlayerController::OnLevelOutroSequenceEnd,
+			SequencePlayer->GetEndTime().AsSeconds() - 0.01);
+
+		SequencePlayer->Play();
+	}
+}
+
+void APolyRacingPlayerController::Client_PlayLevelOutroSequence_Implementation(ULevelSequence* Sequence)
+{
+	PlayLevelOutroSequence(Sequence);
+}
+
 void APolyRacingPlayerController::NotifyReadyToStart()
 {
 	GetWorld()->GetAuthGameMode<APolyRacingGameModeBase>()->CheckIfShouldStart();
@@ -228,4 +278,13 @@ void APolyRacingPlayerController::Client_SetGameMode_Implementation(const FStrin
 	SetGameMode(GameModeName);
 }
 
+void APolyRacingPlayerController::NotifyFinishedRace(APolyRacingPlayerController* PlayerController)
+{
+	GetWorld()->GetAuthGameMode<APolyRacingGameModeBase>()->HandlePlayerHasFinishedEvent(PlayerController);
+}
+
+void APolyRacingPlayerController::Server_NotifyFinishedRace_Implementation(APolyRacingPlayerController* PlayerController)
+{
+	NotifyFinishedRace(PlayerController);
+}
 
