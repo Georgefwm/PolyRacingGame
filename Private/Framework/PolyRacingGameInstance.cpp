@@ -38,6 +38,6 @@ void UPolyRacingGameInstance::BeginLoadingScreen(const FString& MapName)
 	UE_LOG(LogTemp, Warning, TEXT("MAP START LOADING"))
 
 	UMapSubsystem* MapSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UMapSubsystem>();
-	MapSubsystem->SetCurrentMap(MapName);
+	MapSubsystem->SetCurrentMapFromPath(MapName);
 	
 }
