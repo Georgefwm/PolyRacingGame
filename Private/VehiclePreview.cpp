@@ -1,9 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "VehiclePreview.h"
-
 #include "DataTables.h"
+
 
 // Sets default values
 AVehiclePreview::AVehiclePreview()

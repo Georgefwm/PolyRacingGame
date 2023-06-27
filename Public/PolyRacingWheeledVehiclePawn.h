@@ -2,18 +2,18 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "InputActionValue.h"
 #include "WheeledVehiclePawn.h"
-#include "Camera/CameraComponent.h"
-#include "Blueprint/UserWidget.h"
-#include "Customisation/VehicleCustomisationComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "PolyRacingWheeledVehiclePawn.generated.h"
 
-class UVehiclePawnWidget;
+class UVehicleCustomisationComponent;
+class USpringArmComponent;
+class UCameraComponent;
+class UUserWidget;
 class UInputMappingContext;
 class UInputAction;
+
+struct FInputActionValue;
+
 
 UCLASS()
 class POLYRACINGGAME_API APolyRacingWheeledVehiclePawn : public AWheeledVehiclePawn
@@ -21,7 +21,7 @@ class POLYRACINGGAME_API APolyRacingWheeledVehiclePawn : public AWheeledVehicleP
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
+
 	APolyRacingWheeledVehiclePawn(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY()

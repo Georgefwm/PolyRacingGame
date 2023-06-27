@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "SlateBasics.h"
-#include "SlateExtras.h"
+class AInGameHUD;
+
 
 /**
  * 
@@ -14,7 +14,7 @@ public:
 
 	SLATE_BEGIN_ARGS(SPauseMenuWidget) {}
 
-	SLATE_ARGUMENT(TWeakObjectPtr<class AInGameHUD>, OwningHUD)
+	SLATE_ARGUMENT(TWeakObjectPtr<AInGameHUD>, OwningHUD)
 
 	SLATE_END_ARGS()
 
@@ -26,7 +26,7 @@ public:
 	FReply OnSettingsClicked() const;
 	FReply OnLeaveClicked() const;
 
-	TWeakObjectPtr<class AInGameHUD> OwningHUD;
+	TWeakObjectPtr<AInGameHUD> OwningHUD;
 	const struct FGlobalStyle* Style;
 
 	virtual bool SupportsKeyboardFocus() const override { return true; }

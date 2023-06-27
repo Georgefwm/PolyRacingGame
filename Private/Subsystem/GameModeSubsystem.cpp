@@ -1,10 +1,10 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Subsystem/GameModeSubsystem.h"
 
 #include "DataTables.h"
 #include "Engine/DataTable.h"
+
 
 void UGameModeSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {

@@ -1,9 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Framework/GameMode/PolyRacingGameModeBase.h"
-
-#include "PolyRacingSpectatorPawn.h"
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "Controller/PolyRacingPlayerController.h"
 #include "Framework/PolyRacingGameState.h"
@@ -11,6 +8,7 @@
 #include "Subsystem/GameModeSubsystem.h"
 #include "Subsystem/MapSubsystem.h"
 #include "UI/InGameHUD.h"
+
 
 // Sets default values
 APolyRacingGameModeBase::APolyRacingGameModeBase()

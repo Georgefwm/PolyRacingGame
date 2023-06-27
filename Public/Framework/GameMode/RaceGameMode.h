@@ -2,11 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "CheckpointGameMode.h"
 #include "PolyRacingGameModeBase.h"
-#include "GameFramework/GameMode.h"
 #include "RaceGameMode.generated.h"
+
 
 /**
  * For now this GameMode is assumed to be single-player only

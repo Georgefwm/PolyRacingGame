@@ -1,8 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "UI/InGameHUD.h"
-
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "Blueprint/UserWidget.h"
 #include "Widgets/SWeakWidget.h"
@@ -11,6 +9,7 @@
 #include "UI/Element/GameModeWidget.h"
 #include "UI/Element/VehiclePawnWidget.h"
 #include "UI/Menu/PauseMenuWidget.h"
+
 
 AInGameHUD::AInGameHUD()
 {

@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "LobbyPlayerController.generated.h"
 
 struct FLobbyPlayerInfo;
+
 
 UCLASS()
 class POLYRACINGGAME_API ALobbyPlayerController : public APlayerController

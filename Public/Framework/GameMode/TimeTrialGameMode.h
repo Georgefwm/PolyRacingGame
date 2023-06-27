@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "CheckpointGameMode.h"
 #include "PolyRacingGameModeBase.h"
 #include "TimeTrialGameMode.generated.h"
 
+
 /**
- * @ASSUMPTION : Single player only game mode
+ * 
  */
 UCLASS()
 class POLYRACINGGAME_API ATimeTrialGameMode : public APolyRacingGameModeBase, public ICheckpointGameMode

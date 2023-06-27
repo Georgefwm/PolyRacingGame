@@ -2,9 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Components/ArrowComponent.h"
 #include "StartPositionActor.generated.h"
+
+class UArrowComponent;
+
 
 /**
  * 

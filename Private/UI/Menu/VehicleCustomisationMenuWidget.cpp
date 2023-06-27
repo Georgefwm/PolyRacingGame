@@ -1,13 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "UI/Menu/VehicleCustomisationMenuWidget.h"
-
-#include "UI/Menu/GarageMenuWidget.h"
 #include "UI/Style/GlobalMenuStyle.h"
 #include "UI/MenuHUD.h"
 #include "UI/Element/OptionSelectionWidget.h"
 #include "UI/Style/UiStyles.h"
+
 
 #define LOCTEXT_NAMESPACE "vehiclecustomisationmenu"
 

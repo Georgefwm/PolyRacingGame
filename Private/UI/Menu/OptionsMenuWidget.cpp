@@ -1,12 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "UI/Menu/OptionsMenuWidget.h"
-
 #include "UI/Style/GlobalMenuStyle.h"
-#include "UI/Menu/MainMenuWidget.h"
 #include "UI/MenuHUD.h"
 #include "UI/Style/UiStyles.h"
+
 
 #define LOCTEXT_NAMESPACE "optionsmenu"
 

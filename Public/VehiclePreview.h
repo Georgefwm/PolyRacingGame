@@ -2,12 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 #include "VehiclePreview.generated.h"
 
-
 struct FVehicleType;
+
 
 UCLASS()
 class POLYRACINGGAME_API AVehiclePreview : public AActor

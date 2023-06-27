@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "DataTables.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "PolyRacingSessionSubsystem.generated.h"
@@ -16,6 +14,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPROnDestroySessionComplete,	bool, S
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FPROnFindSessionsComplete, const TArray<FOnlineSessionSearchResult>& SessionResults, bool Successful);
 DECLARE_MULTICAST_DELEGATE_OneParam(FPROnJoinSessionComplete, EOnJoinSessionCompleteResult::Type Result);
+
 
 /**
  * 

@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "UI/Element/OptionSelectionWidget.h"
-
+#include "Customisation/VehicleCustomiser.h"
 #include "UI/Style/GlobalMenuStyle.h"
 #include "UI/Style/UiStyles.h"
+
 
 #define LOCTEXT_NAMESPACE "optionslelect"
 
@@ -81,6 +81,11 @@ void SOptionSelectionWidget::Construct(const FArguments& InArgs)
 			]
 		]
 	];
+}
+
+FText SOptionSelectionWidget::GetOptionIndex() const
+{
+	return Customiser->GetOptionSlotCurrentIndex(OptionSlotNameString);
 }
 
 FReply SOptionSelectionWidget::OnNextClicked()

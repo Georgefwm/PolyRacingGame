@@ -1,13 +1,11 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Framework/GameMode/TimeTrialGameMode.h"
-
 #include "LevelSequence.h"
 #include "Controller/PolyRacingPlayerController.h"
 #include "Framework/PolyRacingPlayerState.h"
 #include "Subsystem/MapSubsystem.h"
-#include "UI/InGameHUD.h"
+
 
 ATimeTrialGameMode::ATimeTrialGameMode()
 	: APolyRacingGameModeBase()

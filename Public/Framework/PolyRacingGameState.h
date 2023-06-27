@@ -2,10 +2,9 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "GameFramework/GameMode.h"
 #include "GameFramework/GameState.h"
 #include "PolyRacingGameState.generated.h"
+
 
 UCLASS()
 class POLYRACINGGAME_API APolyRacingGameState : public AGameState

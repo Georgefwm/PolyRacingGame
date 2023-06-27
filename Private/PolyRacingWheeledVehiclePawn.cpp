@@ -1,11 +1,13 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Camera/CameraComponent.h"
 #include "ChaosVehicles/Public/ChaosVehicleMovementComponent.h"
 #include "Controller/PolyRacingPlayerController.h"
+#include "Customisation/VehicleCustomisationComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "UI/InGameHUD.h"
 
 
@@ -101,6 +103,7 @@ void APolyRacingWheeledVehiclePawn::SetupPlayerInputComponent(UInputComponent* P
 	{
 		if (AInGameHUD* HUD = Cast<AInGameHUD>(PlayerController->GetHUD()))
 		{
+			// TODO: Move this so it isn't a binding between the vehicle and controller
 			EnhancedInputComponent->BindAction(ToggleInGameMenuAction, ETriggerEvent::Started, HUD, &AInGameHUD::TogglePauseMenu);
 		}
 	}
@@ -128,7 +131,7 @@ void APolyRacingWheeledVehiclePawn::OnHandBrakePressed()
 
 void APolyRacingWheeledVehiclePawn::OnHandBrakeReleased()
 {
-GetVehicleMovementComponent()->SetHandbrakeInput(false);
+	GetVehicleMovementComponent()->SetHandbrakeInput(false);
 }
 
 void APolyRacingWheeledVehiclePawn::UpdateInAirControl(float DeltaTime)

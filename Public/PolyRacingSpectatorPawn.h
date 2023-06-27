@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/SpectatorPawn.h"
 #include "PolyRacingSpectatorPawn.generated.h"
+
 
 UCLASS()
 class POLYRACINGGAME_API APolyRacingSpectatorPawn : public ASpectatorPawn

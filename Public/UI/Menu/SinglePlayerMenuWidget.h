@@ -2,10 +2,8 @@
 
 #pragma once
 
-#include "SlateBasics.h"
-#include "SlateExtras.h"
-#include "Customisation/VehicleCustomiser.h"
-
+class AMenuHUD;
+class SCompoundWidget;
 
 /**
  * 
@@ -16,8 +14,8 @@ public:
 
 	SLATE_BEGIN_ARGS(SSinglePlayerMenuWidget) {}
 
-	SLATE_ARGUMENT(TWeakObjectPtr<class AMenuHUD>, OwningHUD)
-	SLATE_ARGUMENT(TSharedPtr<class SCompoundWidget>, PreviousMenu)
+	SLATE_ARGUMENT(TWeakObjectPtr<AMenuHUD>, OwningHUD)
+	SLATE_ARGUMENT(TSharedPtr<SCompoundWidget>, PreviousMenu)
 
 	SLATE_END_ARGS()
 
@@ -30,7 +28,7 @@ public:
 
 	TSharedPtr<SCompoundWidget> PreviousMenu;
 	
-	TWeakObjectPtr<class AMenuHUD> OwningHUD;
+	TWeakObjectPtr<AMenuHUD> OwningHUD;
 	const struct FGlobalStyle* Style;
 
 	virtual bool SupportsKeyboardFocus() const override { return true; }

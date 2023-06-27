@@ -1,7 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "StartPositionActor.h"
+#include "Components/ArrowComponent.h"
 #include "Net/UnrealNetwork.h"
+
 
 AStartPositionActor::AStartPositionActor()
 {

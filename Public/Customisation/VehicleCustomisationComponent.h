@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "DataTables.h"
 #include "Components/ActorComponent.h"
 #include "VehicleCustomisationComponent.generated.h"
 

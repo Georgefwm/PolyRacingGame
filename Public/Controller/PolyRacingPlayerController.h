@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "DataTables.h"
 #include "GameFramework/PlayerController.h"
 #include "PolyRacingPlayerController.generated.h"
 
 class ULevelSequencePlayer;
+
 
 /**
  * 

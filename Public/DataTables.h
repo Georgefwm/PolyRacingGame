@@ -2,12 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Engine/DataTable.h"
-#include "Engine/SkeletalMesh.h"
 #include "DataTables.generated.h"
 
-
+class USkeletalMesh;
 class ULevelSequence;
 class APolyRacingWheeledVehiclePawn;
 

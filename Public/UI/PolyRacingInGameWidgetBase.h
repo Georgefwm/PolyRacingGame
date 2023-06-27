@@ -2,9 +2,6 @@
 
 #pragma once
 
-#include "SlateBasics.h"
-#include "SlateExtras.h"
-
 
 /**
  * 

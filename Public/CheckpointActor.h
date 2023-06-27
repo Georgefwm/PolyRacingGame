@@ -2,12 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "NiagaraFunctionLibrary.h"
 #include "CheckpointActor.generated.h"
 
+class USceneComponent;
 class UBoxComponent;
+class UStaticMeshComponent;
+class UNiagaraSystem;
+
 
 UCLASS()
 class POLYRACINGGAME_API ACheckpointActor : public AActor

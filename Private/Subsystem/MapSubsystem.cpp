@@ -1,10 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Subsystem/MapSubsystem.h"
-
 #include "DataTables.h"
 #include "Engine/DataTable.h"
+
 
 void UMapSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {

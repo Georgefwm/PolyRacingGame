@@ -2,11 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
-#include "Customisation/VehicleCustomiser.h"
 #include "MenuHUD.generated.h"
 
+class UVehicleCustomiser;
 
 /**
  * 

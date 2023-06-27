@@ -2,9 +2,9 @@
 
 
 #include "UI/PolyRacingInGameWidgetBase.h"
-
 #include "UI/Style/GlobalMenuStyle.h"
 #include "UI/Style/UiStyles.h"
+
 
 #define LOCTEXT_NAMESPACE "ingamewidgetbase"
 

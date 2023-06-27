@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "CheckpointActor.h"
 #include "UObject/Interface.h"
 #include "CheckpointGameMode.generated.h"
+
+class ACheckpointActor;
+
 
 // This class does not need to be modified.
 UINTERFACE()

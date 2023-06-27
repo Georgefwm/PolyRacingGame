@@ -1,8 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Framework/GameMode/LobbyGameMode.h"
-
 #include "Online.h"
 #include "PolyRacingSpectatorPawn.h"
 #include "Controller/LobbyPlayerController.h"

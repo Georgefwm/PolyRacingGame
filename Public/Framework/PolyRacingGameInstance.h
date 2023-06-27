@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "PolyRacingGameInstance.generated.h"
+
 
 /**
  * 

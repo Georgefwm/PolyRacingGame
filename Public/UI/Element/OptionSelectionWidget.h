@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include "SlateBasics.h"
-#include "SlateExtras.h"
-#include "Customisation/VehicleCustomiser.h"
-
+class UVehicleCustomiser;
 
 /**
  * 
@@ -31,7 +28,7 @@ public:
 	FText OptionSlotName;
 
 	TAttribute<FText> OptionIndex;
-	FText GetOptionIndex() const { return Customiser->GetOptionSlotCurrentIndex(OptionSlotNameString); }
+	FText GetOptionIndex() const;
 
 	FReply OnNextClicked();
 	FReply OnPreviousClicked();

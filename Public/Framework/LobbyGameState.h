@@ -2,12 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/GameStateBase.h"
 #include "LobbyGameState.generated.h"
 
-struct FLobbyPlayerInfo;
 class ALobbyPlayerController;
+
+struct FLobbyPlayerInfo;
+
 
 UCLASS()
 class POLYRACINGGAME_API ALobbyGameState : public AGameStateBase

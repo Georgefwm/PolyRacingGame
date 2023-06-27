@@ -2,9 +2,7 @@
 
 #pragma once
 
-#include "SlateBasics.h"
-#include "SlateExtras.h"
-#include "Subsystem/MapSubsystem.h"
+class UMapSubsystem;
 
 /**
  * 
@@ -15,7 +13,7 @@ public:
 
 	SLATE_BEGIN_ARGS(SLoadingScreenWidget) {}
 
-	SLATE_ARGUMENT(TWeakObjectPtr<class UMapSubsystem>, MapSubsystem)
+	SLATE_ARGUMENT(TWeakObjectPtr<UMapSubsystem>, MapSubsystem)
 
 	SLATE_END_ARGS()
 
