@@ -30,7 +30,7 @@ public:
 
 	// timestamp using UWorld::GetTimeSeconds
 	UPROPERTY()
-	double LastLapStartTime;
+	double LastLapStartTime = 0;
 
 	/*
 	 * Timestamp using UWorld::GetTimeSeconds
@@ -38,6 +38,9 @@ public:
 	 */ 
 	UPROPERTY()
 	double EventStartTime = 0;
+
+	UPROPERTY()
+	double EventEndTime = 0;
 
 protected:
 	// Called when the game starts or when spawned
