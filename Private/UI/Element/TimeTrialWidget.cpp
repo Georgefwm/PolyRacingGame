@@ -4,7 +4,9 @@
 #include "UI/Element/TimeTrialWidget.h"
 #include "PolyRacingStaticUtils.h"
 #include "Components/TextBlock.h"
+#include "Framework/PolyRacingGameState.h"
 #include "Framework/PolyRacingPlayerState.h"
+#include "GameFramework/GameStateBase.h"
 
 
 void UTimeTrialWidget::NativeConstruct()
@@ -21,9 +23,23 @@ void UTimeTrialWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 	if (!PlayerState)
 		return;
 
+	
+	if (PlayerState->EventEndTime > 0.01)  // TODO: Make less 'hacky'
+	{
+		TotalTimeValueTextBlock->SetText(FPolyRacingStaticUtils::GetFormatTimeText(PlayerState->EventEndTime - PlayerState->EventStartTime));
+		CurrentLapTimeValueTextBlock->SetText(FPolyRacingStaticUtils::GetFormatTimeText(PlayerState->EventEndTime - PlayerState->LastLapStartTime));
+		return;
+	}
+	
+	if (PlayerState->EventStartTime < 0.01)  // TODO: Make less 'hacky'
+	{
+		TotalTimeValueTextBlock->SetText(FText::FromString(TEXT("00:00:00")));
+		CurrentLapTimeValueTextBlock->SetText(FText::FromString(TEXT("00:00:00")));
+		return;
+	}
+
 	double const CurrentTime = GetWorld()->GetTimeSeconds();
 	
-	// TODO: Format text in style: MIN:SEC:MILLIS
 	TotalTimeValueTextBlock->SetText(FPolyRacingStaticUtils::GetFormatTimeText(CurrentTime - PlayerState->EventStartTime));
 	CurrentLapTimeValueTextBlock->SetText(FPolyRacingStaticUtils::GetFormatTimeText(CurrentTime - PlayerState->LastLapStartTime));
 }
