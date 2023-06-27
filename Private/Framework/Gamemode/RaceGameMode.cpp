@@ -8,14 +8,8 @@
 #include "UI/InGameHUD.h"
 
 ARaceGameMode::ARaceGameMode()
+	: APolyRacingGameModeBase()
 {
-	PrimaryActorTick.bCanEverTick = false;
-	bUseSeamlessTravel = false;
-	
-	PlayerControllerClass = APolyRacingPlayerController::StaticClass();
-	HUDClass = AInGameHUD::StaticClass();
-
-	PlayerStateClass = APolyRacingPlayerState::StaticClass();
 }
 
 void ARaceGameMode::BeginPlay()

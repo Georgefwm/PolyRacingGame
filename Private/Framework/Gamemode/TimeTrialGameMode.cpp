@@ -10,14 +10,8 @@
 #include "UI/InGameHUD.h"
 
 ATimeTrialGameMode::ATimeTrialGameMode()
+	: APolyRacingGameModeBase()
 {
-	PrimaryActorTick.bCanEverTick = false;
-	bUseSeamlessTravel = false;
-	
-	PlayerControllerClass = APolyRacingPlayerController::StaticClass();
-	HUDClass = AInGameHUD::StaticClass();
-
-	PlayerStateClass = APolyRacingPlayerState::StaticClass();
 }
 
 void ATimeTrialGameMode::BeginPlay()
@@ -66,7 +60,7 @@ void ATimeTrialGameMode::HandleStartingNewPlayer_Implementation(APlayerControlle
 
 	UMapSubsystem* MapSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UMapSubsystem>();
 	 
-	if (ULevelSequence* Sequence = MapSubsystem->GetCurrentLevelSequence())
+	if (ULevelSequence* Sequence = MapSubsystem->GetCurrentLevelIntroSequence())
 		JoiningPlayer->Client_PlayLevelIntroSequence(Sequence);  // Play intro sequence if one is set,
 	else
 		JoiningPlayer->Client_RequestVehicleSpawn();  // Just spawn the players vehicle if no sequence found

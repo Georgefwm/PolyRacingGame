@@ -10,14 +10,8 @@
 
 // Sets default values
 AFreeRoamGameMode::AFreeRoamGameMode()
+	: APolyRacingGameModeBase()
 {
-	PrimaryActorTick.bCanEverTick = false;
-	bUseSeamlessTravel = false;
-	
-	PlayerControllerClass = APolyRacingPlayerController::StaticClass();
-	HUDClass = AInGameHUD::StaticClass();
-
-	PlayerStateClass = APolyRacingPlayerState::StaticClass();
 }
 
 void AFreeRoamGameMode::BeginPlay()
