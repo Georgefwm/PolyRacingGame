@@ -64,8 +64,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString DisplayName;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int MaxPlayers = 8;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int LapsToFinish = 3;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Path;
@@ -88,7 +91,10 @@ public:
 	FString DisplayName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSoftObjectPtr<ULevelSequence> LevelSequence;
+	TSoftObjectPtr<ULevelSequence> IntroSequence;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSoftObjectPtr<ULevelSequence> OutroSequence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName Path;
