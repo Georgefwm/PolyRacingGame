@@ -69,7 +69,7 @@ void UMapSubsystem::SetCurrentMap(const FString& MapName)
 	{
 		FMapTableRow* MapTableRow = MapDataTable->FindRow<FMapTableRow>(RowName, "");
 
-		if (MapTableRow->Path.ToString() == MapName)
+		if (MapTableRow->MapName == MapName)
 		{
 			CurrentMap = RowName;
 			CurrentMapImage = MapTableRow->PreviewImage.LoadSynchronous();
@@ -77,7 +77,7 @@ void UMapSubsystem::SetCurrentMap(const FString& MapName)
 		}
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("UMapSubsystem: Map loading map not found in map table!"))
+	UE_LOG(LogTemp, Warning, TEXT("UMapSubsystem: loading map not found in map table!"))
 }
 
 ULevelSequence* UMapSubsystem::GetCurrentLevelSequence()
