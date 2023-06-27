@@ -39,6 +39,10 @@ public:
 	FName GetCurrentMapDisplayName() const;
 
 	void SetCurrentMap(const FString& MapName);
+	
+	void SetCurrentMapFromPath(const FString& MapPath);
 
-	ULevelSequence* UMapSubsystem::GetCurrentLevelSequence();
+	ULevelSequence* UMapSubsystem::GetCurrentLevelIntroSequence();
+	
+	ULevelSequence* UMapSubsystem::GetCurrentLevelOutroSequence();
 };

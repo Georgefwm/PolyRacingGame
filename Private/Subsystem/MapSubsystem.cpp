@@ -63,8 +63,6 @@ FName UMapSubsystem::GetCurrentMapDisplayName() const
 
 void UMapSubsystem::SetCurrentMap(const FString& MapName)
 {
-	UE_LOG(LogTemp, Warning, TEXT("LoadingMapString: %s"), *MapName)
-	
 	for (const FName& RowName : MapDataTable->GetRowNames())
 	{
 		FMapTableRow* MapTableRow = MapDataTable->FindRow<FMapTableRow>(RowName, "");
@@ -80,7 +78,24 @@ void UMapSubsystem::SetCurrentMap(const FString& MapName)
 	UE_LOG(LogTemp, Warning, TEXT("UMapSubsystem: loading map not found in map table!"))
 }
 
-ULevelSequence* UMapSubsystem::GetCurrentLevelSequence()
+void UMapSubsystem::SetCurrentMapFromPath(const FString& MapPath)
+{
+	for (const FName& RowName : MapDataTable->GetRowNames())
+	{
+		FMapTableRow* MapTableRow = MapDataTable->FindRow<FMapTableRow>(RowName, "");
+
+		if (MapTableRow->Path.ToString() == MapPath)
+		{
+			CurrentMap = RowName;
+			CurrentMapImage = MapTableRow->PreviewImage.LoadSynchronous();
+			return;
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("UMapSubsystem: loading map not found in map table!"))
+}
+
+ULevelSequence* UMapSubsystem::GetCurrentLevelIntroSequence()
 {
 	FMapTableRow* MapTableRow = MapDataTable->FindRow<FMapTableRow>(CurrentMap, "");
 
@@ -90,5 +105,18 @@ ULevelSequence* UMapSubsystem::GetCurrentLevelSequence()
 		return nullptr;
 	}
 	
-	return MapTableRow->LevelSequence.LoadSynchronous();
+	return MapTableRow->IntroSequence.LoadSynchronous();
+}
+
+ULevelSequence* UMapSubsystem::GetCurrentLevelOutroSequence()
+{
+	FMapTableRow* MapTableRow = MapDataTable->FindRow<FMapTableRow>(CurrentMap, "");
+
+	if (!MapTableRow)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Level Sequence not found"))
+		return nullptr;
+	}
+	
+	return MapTableRow->OutroSequence.LoadSynchronous();
 }
