@@ -7,6 +7,7 @@
 #include "Engine/Engine.h"
 #include "Subsystem/GameModeSubsystem.h"
 #include "UI/Element/GameModeWidget.h"
+#include "UI/Element/ResultTableWidget.h"
 #include "UI/Element/VehiclePawnWidget.h"
 #include "UI/Menu/PauseMenuWidget.h"
 
@@ -138,6 +139,15 @@ void AInGameHUD::PlayCountDown()
 	// Count down widget is set/assumed to start upon creation and remove itself on completion
 	CountDownWidget = CreateWidget<UUserWidget>(GetGameInstance(), CountDownWidgetClass);
 	CountDownWidget->AddToViewport();
+}
+
+void AInGameHUD::ShowEventResults(TSubclassOf<UUserWidget> ResultWidget)
+{
+	HidePlayerHUD();
+
+	double const TranistionTime = 5.f;
+
+	UUserWidget* ResultNumberWidget = CreateWidget<UUserWidget>(GetGameInstance(), ResultWidget);
 }
 
 void AInGameHUD::OnBeginLoading()

@@ -54,6 +54,8 @@ public:
 
 	void PlayCountDown();
 
+	void ShowEventResults(TSubclassOf<UUserWidget> ResultWidget);
+
 	void TogglePauseMenu();
 
 	void OnBeginLoading();

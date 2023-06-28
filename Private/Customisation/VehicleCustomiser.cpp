@@ -3,6 +3,7 @@
 #include "DataTables.h"
 #include "CoreMinimal.h"
 #include "PolyRacingWheeledVehiclePawn.h"
+#include "Customisation/VehicleCustomisationComponent.h"
 #include "Engine/DataTable.h"
 #include "Engine/StreamableManager.h"
 
