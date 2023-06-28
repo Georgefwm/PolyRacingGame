@@ -37,5 +37,6 @@ protected:
 	virtual void AddCheckpoints(TArray<ACheckpointActor*>& Checkpoints) override;
 
 	virtual void BeginCountDownSequence() override;
-	
+
+	virtual void HandlePlayerHasFinishedEvent(APolyRacingPlayerController* PlayerController) override;
 };
