@@ -5,7 +5,9 @@
 #include "GameFramework/HUD.h"
 #include "InGameHUD.generated.h"
 
+class SWeakWidget;
 class UVehicleCustomiser;
+class APolyRacingWheeledVehiclePawn;
 
 
 /**
@@ -32,7 +34,7 @@ public:
 	UPROPERTY()
 	class UVehiclePawnWidget* VehicleWidget;
 	
-	TSharedPtr<class SWeakWidget> PauseMenuWidgetContainer;
+	TSharedPtr<SWeakWidget> PauseMenuWidgetContainer;
 
 	UPROPERTY()
 	UVehicleCustomiser* VehicleCustomiser;
