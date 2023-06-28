@@ -2,6 +2,7 @@
 
 #include "Controller/PolyRacingPlayerController.h"
 
+#include "ChaosWheeledVehicleMovementComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
@@ -28,9 +29,6 @@ APolyRacingPlayerController::APolyRacingPlayerController()
 
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContextFinder(TEXT("/Game/Input/IMC_UI"));
 	InputMappingContext = InputMappingContextFinder.Object;
-	
-	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionFinder(TEXT("/Game/Input/InputActions/IA_ToggleInGameMenu"));
-	ToggleInGameMenuAction = InputActionFinder.Object;
 }
 
 void APolyRacingPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -200,6 +198,9 @@ void APolyRacingPlayerController::PlayLevelIntroSequence(ULevelSequence* Sequenc
 
 void APolyRacingPlayerController::OnLevelIntroSequenceEnd()
 {
+	if (SequencePlayer->IsPlaying())
+		SequencePlayer->Stop();
+	
 	PlayerCameraManager->StartCameraFade(1.f, 0.f, 3, FColor::Black, true);
 	
 	Client_RequestVehicleSpawn();
@@ -213,6 +214,9 @@ void APolyRacingPlayerController::Client_PlayLevelIntroSequence_Implementation(U
 void APolyRacingPlayerController::OnLevelOutroSequenceEnd()
 {
 	PlayerCameraManager->StartCameraFade(1.f, 0.f, 3, FColor::Black, true);
+
+	if (SequencePlayer->IsPlaying())
+		SequencePlayer->Stop();
 	
 	TArray<AActor*> Cameras;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), Cameras);
@@ -221,16 +225,12 @@ void APolyRacingPlayerController::OnLevelOutroSequenceEnd()
 		return;
 	
 	for (AActor* Actor : Cameras)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Camera name: %s"), *Actor->GetActorNameOrLabel())
-		
+	{		
 		if (Actor->GetActorNameOrLabel() == FString("EndCamera"))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Setting end camera"))
+			SetViewTarget(Actor);
 			
-			SetViewTarget(Actor);  // TODO: Find out why tf this isn't working
-			
-			return;
+			break;
 		}
 	}
 }
@@ -239,6 +239,8 @@ void APolyRacingPlayerController::PlayLevelOutroSequence(ULevelSequence* Sequenc
 {
 	ALevelSequenceActor* LevelSequenceActor;
 	ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), Sequence, FMovieSceneSequencePlaybackSettings(), LevelSequenceActor);
+
+	GetHUD<AInGameHUD>()->HidePlayerHUD();
 
 	SequencePlayer = LevelSequenceActor->GetSequencePlayer();
 	

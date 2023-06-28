@@ -30,8 +30,6 @@ void APolyRacingGameModeBase::BeginPlay()
 	
 }
 
-
-
 void APolyRacingGameModeBase::StartMatch()
 {
 	Super::StartMatch();
@@ -132,12 +130,12 @@ void APolyRacingGameModeBase::HandlePlayerHasFinishedEvent(APolyRacingPlayerCont
 	if (!PlayerPawn)
 		return;
 
-	PlayerController->UnPossess();
+	PlayerController->GetPawn()->DisableInput(PlayerController);
 
-	UMapSubsystem* MapSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UMapSubsystem>();
-	 
-	if (ULevelSequence* Sequence = MapSubsystem->GetCurrentLevelOutroSequence())
-		PlayerController->Client_PlayLevelOutroSequence(Sequence);
+	// UMapSubsystem* MapSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UMapSubsystem>();
+	//  
+	// if (ULevelSequence* Sequence = MapSubsystem->GetCurrentLevelOutroSequence())
+	// 	PlayerController->Client_PlayLevelOutroSequence(Sequence);
 	
 }
 
