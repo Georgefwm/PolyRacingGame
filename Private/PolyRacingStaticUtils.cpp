@@ -46,9 +46,11 @@ FText FPolyRacingStaticUtils::GetFormatTimeText(float TimeStampSeconds)
 {
 	FNumberFormattingOptions BaseFormat;
 	BaseFormat.MinimumIntegralDigits = 2;
+	BaseFormat.MaximumFractionalDigits = 2;
 
 	FNumberFormattingOptions MillisFormat;
-	MillisFormat.MinimumIntegralDigits = 2;
+	MillisFormat.MinimumIntegralDigits = 3;
+	MillisFormat.MaximumFractionalDigits = 3;
 	
 	return FText::Format(FText::FromString(TEXT("{0}:{1}:{2}")),
 		FText::AsNumber(FMath::FloorToInt(TimeStampSeconds / 60.0f), &BaseFormat),
