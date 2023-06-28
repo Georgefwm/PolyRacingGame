@@ -23,7 +23,7 @@ void UPolyRacingGameInstance::EndLoadingScreen(UWorld* InLoadedWorld)
 	
 	FLoadingScreenAttributes LoadingScreen;
 	LoadingScreen.bAutoCompleteWhenLoadingCompletes = true;
-	LoadingScreen.MinimumLoadingScreenDisplayTime = 5;
+	LoadingScreen.MinimumLoadingScreenDisplayTime = 1;
 
 	UMapSubsystem* MapSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UMapSubsystem>();
 	
