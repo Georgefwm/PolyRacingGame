@@ -1,11 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Controller/PolyRacingPlayerController.h"
+
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
+#include "InputMappingContext.h"
+#include "InputTriggers.h"
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "StartPositionActor.h"
 #include "Camera/CameraActor.h"
+#include "Customisation/VehicleCustomisationComponent.h"
+#include "Customisation/VehicleCustomiser.h"
 #include "Framework/PolyRacingPlayerState.h"
 #include "Framework/GameMode/PolyRacingGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
@@ -18,6 +25,12 @@ APolyRacingPlayerController::APolyRacingPlayerController()
 	: Super()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContextFinder(TEXT("/Game/Input/IMC_UI"));
+	InputMappingContext = InputMappingContextFinder.Object;
+	
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionFinder(TEXT("/Game/Input/InputActions/IA_ToggleInGameMenu"));
+	ToggleInGameMenuAction = InputActionFinder.Object;
 }
 
 void APolyRacingPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -30,6 +43,32 @@ void APolyRacingPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimePro
 void APolyRacingPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	SetupInputComponent();
+}
+
+void APolyRacingPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	AInGameHUD* HUD = GetHUD<AInGameHUD>();
+	if (!HUD)
+		return;
+
+	SetupInputMappingContext();
+
+	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+	
+	EnhancedInputComponent->BindAction(InputMappingContext->GetMapping(0).Action, ETriggerEvent::Started, HUD, &AInGameHUD::TogglePauseMenu);
+}
+
+void APolyRacingPlayerController::SetupInputMappingContext()
+{
+	UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+	if (!InputSubsystem)
+		return;
+
+	InputSubsystem->AddMappingContext(InputMappingContext, 0);
 }
 
 void APolyRacingPlayerController::SetupHUD()

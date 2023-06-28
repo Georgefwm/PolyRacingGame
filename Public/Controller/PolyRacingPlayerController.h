@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "PolyRacingPlayerController.generated.h"
 
+class UInputAction;
+class UInputMappingContext;
 class ULevelSequencePlayer;
 
 
@@ -34,7 +36,13 @@ public:
 	FTimerHandle SequenceTimerHandle;
 	
 	virtual void BeginPlay() override;
-	
+
+	virtual void SetupInputComponent() override;
+
+	void SetupInputMappingContext();
+
+	UPROPERTY()
+	UInputMappingContext* InputMappingContext;
 
 	void SetupHUD();
 

@@ -73,12 +73,15 @@ void APolyRacingWheeledVehiclePawn::PossessedBy(AController* NewController)
 
 void APolyRacingWheeledVehiclePawn::SetupInputMappingContext()
 {
-	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
-	{
-		UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-		InputSubsystem->ClearAllMappings();
-		InputSubsystem->AddMappingContext(InputMappingContext, 0);
-	}
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (!PlayerController)
+		return;
+	
+	UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	if (!InputSubsystem)
+		return;
+
+	InputSubsystem->AddMappingContext(InputMappingContext, 0);
 }
 
 // Called to bind functionality to input
@@ -98,15 +101,6 @@ void APolyRacingWheeledVehiclePawn::SetupPlayerInputComponent(UInputComponent* P
 	
 	EnhancedInputComponent->BindAction(HandbrakeAction, ETriggerEvent::Triggered, this, &APolyRacingWheeledVehiclePawn::OnHandBrakePressed);
 	EnhancedInputComponent->BindAction(HandbrakeAction, ETriggerEvent::Completed, this, &APolyRacingWheeledVehiclePawn::OnHandBrakeReleased);
-	
-	if (APolyRacingPlayerController* PlayerController = Cast<APolyRacingPlayerController>(GetController()))
-	{
-		if (AInGameHUD* HUD = Cast<AInGameHUD>(PlayerController->GetHUD()))
-		{
-			// TODO: Move this so it isn't a binding between the vehicle and controller
-			EnhancedInputComponent->BindAction(ToggleInGameMenuAction, ETriggerEvent::Started, HUD, &AInGameHUD::TogglePauseMenu);
-		}
-	}
 }	
 
 void APolyRacingWheeledVehiclePawn::ApplyThrottle(const FInputActionValue& Value)
