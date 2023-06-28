@@ -5,6 +5,7 @@
 #include "WheeledVehiclePawn.h"
 #include "PolyRacingWheeledVehiclePawn.generated.h"
 
+class UChaosWheeledVehicleMovementComponent;
 class UVehicleCustomisationComponent;
 class USpringArmComponent;
 class UCameraComponent;
@@ -63,6 +64,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input Actions")
 	UInputAction* ToggleInGameMenuAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="FX")
+	UMaterialInterface* SkidMarkMaterial;
+
 	virtual void PossessedBy(AController* NewController) override;
 	
 	void SetupInputMappingContext();
@@ -79,4 +83,7 @@ public:
 	void OnHandBrakeReleased();
 
 	void UpdateInAirControl(float DeltaTime);
+
+	// Use this to avoid casting to UChaosWheeledVehicleMovementComponent* every time
+	UChaosWheeledVehicleMovementComponent* GetChaosVehicleMovementComponent();
 };

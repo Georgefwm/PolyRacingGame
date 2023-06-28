@@ -1,14 +1,15 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PolyRacingWheeledVehiclePawn.h"
+#include "ChaosWheeledVehicleMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "ChaosVehicles/Public/ChaosVehicleMovementComponent.h"
-#include "Controller/PolyRacingPlayerController.h"
+#include "Components/DecalComponent.h"
 #include "Customisation/VehicleCustomisationComponent.h"
+#include "Engine/DecalActor.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "UI/InGameHUD.h"
 
 
 // Sets default values
@@ -48,6 +49,9 @@ APolyRacingWheeledVehiclePawn::APolyRacingWheeledVehiclePawn(const FObjectInitia
 
 	static ConstructorHelpers::FClassFinder<UUserWidget> DefaultVehicleWidgetFinder(TEXT("/Game/UI/WidgetBlueprints/WPB_VehiclePawn"));
 	VehicleHUD = DefaultVehicleWidgetFinder.Class;
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> SkidMarkMaterialFinder(TEXT("/Game/Materials/Mat_GreySquare"));
+	SkidMarkMaterial = SkidMarkMaterialFinder.Object;
 }
 
 // Called when the game starts or when spawned
@@ -62,6 +66,41 @@ void APolyRacingWheeledVehiclePawn::BeginPlay()
 void APolyRacingWheeledVehiclePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (!SkidMarkMaterial)
+		return;
+
+	for (int WheelIndex = 0; WheelIndex < GetChaosVehicleMovementComponent()->GetNumWheels(); WheelIndex++)
+	{
+		 FWheelStatus WheelStatus = GetChaosVehicleMovementComponent()->GetWheelState(WheelIndex);
+
+		if (!WheelStatus.bInContact)
+			continue;
+
+		if (!WheelStatus.bIsSkidding)
+			continue;
+
+		
+		FVector LinearVelocity = GetMesh()->GetPhysicsLinearVelocity();
+		
+		FRotator DesiredDecalRotation = LinearVelocity.Rotation();
+		
+		FVector DesiredDecalSize = FVector(11.f, 11.f, 11.f);
+		
+		// apply scaler to decal length
+		DesiredDecalSize.Z = FMath::GetMappedRangeValueClamped(
+			FVector2D(0, 200),
+			FVector2D(0, 8),
+			LinearVelocity.Length());
+		
+		if (ADecalActor* SkidMarkDecal = GetWorld()->SpawnActor<ADecalActor>(WheelStatus.ContactPoint, DesiredDecalRotation))
+		{
+			SkidMarkDecal->SetDecalMaterial(SkidMarkMaterial);
+			SkidMarkDecal->SetLifeSpan(10.0f);
+			SkidMarkDecal->GetDecal()->DecalSize = DesiredDecalSize;
+		}
+	}
+	
 }
 
 void APolyRacingWheeledVehiclePawn::PossessedBy(AController* NewController)
@@ -130,5 +169,10 @@ void APolyRacingWheeledVehiclePawn::OnHandBrakeReleased()
 
 void APolyRacingWheeledVehiclePawn::UpdateInAirControl(float DeltaTime)
 {
+}
+
+UChaosWheeledVehicleMovementComponent* APolyRacingWheeledVehiclePawn::GetChaosVehicleMovementComponent()
+{
+	return Cast<UChaosWheeledVehicleMovementComponent>(GetMovementComponent());
 }
 
