@@ -4,11 +4,11 @@
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Camera/CameraComponent.h"
 #include "ChaosVehicles/Public/ChaosVehicleMovementComponent.h"
-#include "Components/DecalComponent.h"
 #include "Customisation/VehicleCustomisationComponent.h"
-#include "Engine/DecalActor.h"
 #include "GameFramework/SpringArmComponent.h"
 
 
@@ -50,8 +50,24 @@ APolyRacingWheeledVehiclePawn::APolyRacingWheeledVehiclePawn(const FObjectInitia
 	static ConstructorHelpers::FClassFinder<UUserWidget> DefaultVehicleWidgetFinder(TEXT("/Game/UI/WidgetBlueprints/WPB_VehiclePawn"));
 	VehicleHUD = DefaultVehicleWidgetFinder.Class;
 
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface> SkidMarkMaterialFinder(TEXT("/Game/Materials/Mat_GreySquare"));
-	SkidMarkMaterial = SkidMarkMaterialFinder.Object;
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> WheelNiagaraSystemFinder(TEXT("/Game/FX/NS_SkidMark"));
+	WheelNiagaraSystem = WheelNiagaraSystemFinder.Object;
+
+	Fl_WheelAttachment = CreateDefaultSubobject<USceneComponent>("Fl_WheelAttachment");
+	Fr_WheelAttachment = CreateDefaultSubobject<USceneComponent>("Fr_WheelAttachment");
+	Rl_WheelAttachment = CreateDefaultSubobject<USceneComponent>("Rl_WheelAttachment");
+	Rr_WheelAttachment = CreateDefaultSubobject<USceneComponent>("Rr_WheelAttachment");
+
+	Fl_WheelAttachment->SetupAttachment(MeshComponent);
+	Fr_WheelAttachment->SetupAttachment(MeshComponent);
+	Rl_WheelAttachment->SetupAttachment(MeshComponent);
+	Rr_WheelAttachment->SetupAttachment(MeshComponent);
+
+	// These have to be in order based on WheelSetup in VehicleMovementComponent : ( FL -> FR -> RL -> RR )
+	WheelAttachments.Add(Fl_WheelAttachment);
+	WheelAttachments.Add(Fr_WheelAttachment);
+	WheelAttachments.Add(Rl_WheelAttachment);
+	WheelAttachments.Add(Rr_WheelAttachment);
 }
 
 // Called when the game starts or when spawned
@@ -60,6 +76,22 @@ void APolyRacingWheeledVehiclePawn::BeginPlay()
 	Super::BeginPlay();
 
 	SetupInputMappingContext();
+
+	if (WheelNiagaraSystem)
+	{
+		for (int WheelIndex = 0; WheelIndex < GetChaosVehicleMovementComponent()->GetNumWheels(); WheelIndex++)
+		{
+			WheelNiagaraComponents.Add(UNiagaraFunctionLibrary::SpawnSystemAttached(WheelNiagaraSystem,
+				WheelAttachments.GetData()[WheelIndex],
+				NAME_None,
+				FVector(0.f),
+				FRotator(0.f),
+				EAttachLocation::Type::SnapToTarget,
+				false));
+			
+			WheelNiagaraComponents.GetData()[WheelIndex]->SetPaused(true);
+		}
+	}
 }
 
 // Called every frame
@@ -67,40 +99,31 @@ void APolyRacingWheeledVehiclePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!SkidMarkMaterial)
+	if (!WheelNiagaraSystem)
 		return;
 
 	for (int WheelIndex = 0; WheelIndex < GetChaosVehicleMovementComponent()->GetNumWheels(); WheelIndex++)
 	{
-		 FWheelStatus WheelStatus = GetChaosVehicleMovementComponent()->GetWheelState(WheelIndex);
-
-		if (!WheelStatus.bInContact)
-			continue;
-
-		if (!WheelStatus.bIsSkidding)
-			continue;
+		FWheelStatus WheelStatus = GetChaosVehicleMovementComponent()->GetWheelState(WheelIndex);
+		UNiagaraComponent* WheelNiagaraComponent = WheelNiagaraComponents.GetData()[WheelIndex];
 
 		
-		FVector LinearVelocity = GetMesh()->GetPhysicsLinearVelocity();
-		
-		FRotator DesiredDecalRotation = LinearVelocity.Rotation();
-		
-		FVector DesiredDecalSize = FVector(11.f, 11.f, 11.f);
-		
-		// apply scaler to decal length
-		DesiredDecalSize.Z = FMath::GetMappedRangeValueClamped(
-			FVector2D(0, 200),
-			FVector2D(0, 8),
-			LinearVelocity.Length());
-		
-		if (ADecalActor* SkidMarkDecal = GetWorld()->SpawnActor<ADecalActor>(WheelStatus.ContactPoint, DesiredDecalRotation))
+		// If we arent skidding then stop the effect
+		if (!WheelStatus.bIsSkidding && !WheelStatus.bIsSlipping)
 		{
-			SkidMarkDecal->SetDecalMaterial(SkidMarkMaterial);
-			SkidMarkDecal->SetLifeSpan(10.0f);
-			SkidMarkDecal->GetDecal()->DecalSize = DesiredDecalSize;
+			if (!WheelNiagaraComponent->IsPaused())
+				WheelNiagaraComponent->SetPaused(true);
+		
+			continue;
+		}
+		
+		// If we arent skidding already, reset and start the effect
+		if (WheelNiagaraComponent->IsPaused())
+		{
+			WheelNiagaraComponent->SetPaused(false);
+			WheelNiagaraComponent->ReinitializeSystem();  // Reset the system so previous ribbons don't merge
 		}
 	}
-	
 }
 
 void APolyRacingWheeledVehiclePawn::PossessedBy(AController* NewController)

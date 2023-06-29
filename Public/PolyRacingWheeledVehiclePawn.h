@@ -5,6 +5,8 @@
 #include "WheeledVehiclePawn.h"
 #include "PolyRacingWheeledVehiclePawn.generated.h"
 
+class UNiagaraSystem;
+class UNiagaraComponent;
 class UChaosWheeledVehicleMovementComponent;
 class UVehicleCustomisationComponent;
 class USpringArmComponent;
@@ -36,6 +38,28 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI")
 	TSubclassOf<UUserWidget> VehicleHUD;
+
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="FX")
+	UNiagaraSystem* WheelNiagaraSystem;
+
+	UPROPERTY()
+	TArray<UNiagaraComponent*> WheelNiagaraComponents;
+
+	UPROPERTY()
+	TArray<USceneComponent*> WheelAttachments;
+
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+	USceneComponent* Fl_WheelAttachment;
+
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+	USceneComponent* Fr_WheelAttachment;
+
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+	USceneComponent* Rl_WheelAttachment;
+
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+	USceneComponent* Rr_WheelAttachment;
 	
 
 protected:
