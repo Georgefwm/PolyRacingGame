@@ -11,6 +11,7 @@
 #include "LevelSequencePlayer.h"
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "StartPositionActor.h"
+#include "Blueprint/UserWidget.h"
 #include "Camera/CameraActor.h"
 #include "Customisation/VehicleCustomisationComponent.h"
 #include "Customisation/VehicleCustomiser.h"
@@ -326,4 +327,16 @@ void APolyRacingPlayerController::Server_NotifyFinishedRace_Implementation(APoly
 {
 	NotifyFinishedRace(PlayerController);
 }
+
+void APolyRacingPlayerController::AddWidgetToScreen(TSubclassOf<UUserWidget> Widget)
+{
+	UUserWidget* NewWidget = CreateWidget(GetHUD<AInGameHUD>(), Widget);
+	NewWidget->AddToViewport();
+}
+
+void APolyRacingPlayerController::Client_AddWidgetToScreen_Implementation(TSubclassOf<UUserWidget> Widget)
+{
+	AddWidgetToScreen(Widget);
+}
+
 

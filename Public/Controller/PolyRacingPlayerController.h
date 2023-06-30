@@ -114,4 +114,10 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_NotifyFinishedRace(APolyRacingPlayerController* PlayerController);
 	void Server_NotifyFinishedRace_Implementation(APolyRacingPlayerController* PlayerController);
+
+	void AddWidgetToScreen(TSubclassOf<UUserWidget> Widget);
+
+	UFUNCTION(Client, Reliable)
+	void Client_AddWidgetToScreen(TSubclassOf<UUserWidget> Widget);
+	void Client_AddWidgetToScreen_Implementation(TSubclassOf<UUserWidget> Widget);
 };
