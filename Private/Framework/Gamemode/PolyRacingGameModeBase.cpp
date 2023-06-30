@@ -2,6 +2,7 @@
 
 #include "Framework/GameMode/PolyRacingGameModeBase.h"
 #include "PolyRacingWheeledVehiclePawn.h"
+#include "Blueprint/UserWidget.h"
 #include "Controller/PolyRacingPlayerController.h"
 #include "Framework/PolyRacingGameState.h"
 #include "Framework/PolyRacingPlayerState.h"
@@ -123,19 +124,19 @@ void APolyRacingGameModeBase::OnCountDownSequenceEnd()
 void APolyRacingGameModeBase::HandlePlayerHasFinishedEvent(APolyRacingPlayerController* PlayerController)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Player has finished race"))
-	
-	// TODO: Set view target as camera watching car go through last checkpoint
 
 	APolyRacingWheeledVehiclePawn* PlayerPawn = PlayerController->GetPawn<APolyRacingWheeledVehiclePawn>();
 	if (!PlayerPawn)
 		return;
 
 	PlayerController->GetPawn()->DisableInput(PlayerController);
+	
+	if (EndEventWidget)
+		PlayerController->AddWidgetToScreen(EndEventWidget);
 
 	// UMapSubsystem* MapSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UMapSubsystem>();
 	//  
 	// if (ULevelSequence* Sequence = MapSubsystem->GetCurrentLevelOutroSequence())
 	// 	PlayerController->Client_PlayLevelOutroSequence(Sequence);
-	
 }
 

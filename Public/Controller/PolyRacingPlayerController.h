@@ -7,6 +7,7 @@
 #include "PolyRacingPlayerController.generated.h"
 
 class UInputAction;
+class UUserWidget;
 class UInputMappingContext;
 class ULevelSequencePlayer;
 

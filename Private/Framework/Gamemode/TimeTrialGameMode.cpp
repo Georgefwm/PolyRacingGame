@@ -12,6 +12,8 @@
 ATimeTrialGameMode::ATimeTrialGameMode()
 	: APolyRacingGameModeBase()
 {
+	static ConstructorHelpers::FClassFinder<UUserWidget> EndEventWidgetFinder(TEXT("/Game/UI/WidgetBlueprints/WBP_ResultTime"));
+	EndEventWidget = EndEventWidgetFinder.Class;
 }
 
 void ATimeTrialGameMode::BeginPlay()
