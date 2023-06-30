@@ -330,7 +330,10 @@ void APolyRacingPlayerController::Server_NotifyFinishedRace_Implementation(APoly
 
 void APolyRacingPlayerController::AddWidgetToScreen(TSubclassOf<UUserWidget> Widget)
 {
-	UUserWidget* NewWidget = CreateWidget(GetHUD<AInGameHUD>(), Widget);
+	// TODO: Remove as this is only called during end event
+	GEngine->GameViewport->RemoveAllViewportWidgets();
+	
+	UUserWidget* NewWidget = CreateWidget<UUserWidget>(GetGameInstance(), Widget);
 	NewWidget->AddToViewport();
 }
 

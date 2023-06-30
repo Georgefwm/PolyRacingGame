@@ -21,9 +21,14 @@ public:
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
 	TSubclassOf<UUserWidget> GameModeWidget;
 
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+	TSubclassOf<UUserWidget> EndEventWidget;
+	
 	FTimerHandle CountDownTimerHandle;
 
 protected:
+
+	
 	
 	virtual void BeginPlay() override;
 
