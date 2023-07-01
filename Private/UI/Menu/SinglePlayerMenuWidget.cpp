@@ -115,6 +115,7 @@ void SSinglePlayerMenuWidget::Construct(const FArguments& InArgs)
 
 FReply SSinglePlayerMenuWidget::OnRaceClicked() const
 {
+	OwningHUD->ShowNotImplementedWidget();
 
 	return FReply::Handled();
 }

@@ -101,6 +101,8 @@ void SMultiplayerMenuWidget::Construct(const FArguments& InArgs)
 
 FReply SMultiplayerMenuWidget::OnRaceClicked() const
 {
+	OwningHUD->ShowNotImplementedWidget();
+	
 	return FReply::Handled();
 }
 
