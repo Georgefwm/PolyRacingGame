@@ -42,12 +42,18 @@ public:
 
 	virtual bool ReadyToStartMatch_Implementation() override;
 	
+	virtual bool ReadyToEndMatch_Implementation() override;
+	
 	virtual void CheckIfShouldStart();
+
+	virtual void CheckIfShouldEnd();
 
 	virtual void BeginCountDownSequence();
 
 	virtual void OnCountDownSequenceEnd();
 
 	virtual void HandlePlayerHasFinishedEvent(APolyRacingPlayerController* PlayerController);
+
+	virtual void HandleMatchHasEnded() override;
 	
 };

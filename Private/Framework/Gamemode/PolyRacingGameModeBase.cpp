@@ -1,9 +1,12 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Framework/GameMode/PolyRacingGameModeBase.h"
+
+#include "PolyRacingStaticUtils.h"
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "Blueprint/UserWidget.h"
 #include "Controller/PolyRacingPlayerController.h"
+#include "EnvironmentQuery/EnvQueryTypes.h"
 #include "Framework/PolyRacingGameState.h"
 #include "Framework/PolyRacingPlayerState.h"
 #include "Subsystem/GameModeSubsystem.h"
@@ -90,6 +93,18 @@ bool APolyRacingGameModeBase::ReadyToStartMatch_Implementation()
 	return true;
 }
 
+bool APolyRacingGameModeBase::ReadyToEndMatch_Implementation()
+{
+	for (APolyRacingPlayerController* Player : ConnectedPlayers)
+	{
+		// Have all players completed the final lap?
+		if (Player->GetPlayerState<APolyRacingPlayerState>()->EventEndTime < 0.2f)
+			return false;
+	}
+
+	return true;
+}
+
 void APolyRacingGameModeBase::CheckIfShouldStart()
 {
 	if (MatchState == MatchState::InProgress)
@@ -97,6 +112,15 @@ void APolyRacingGameModeBase::CheckIfShouldStart()
 	
 	if (ReadyToStartMatch())
 		StartMatch();
+}
+
+void APolyRacingGameModeBase::CheckIfShouldEnd()
+{
+	if (MatchState != MatchState::InProgress)
+		return;
+	
+	if (ReadyToEndMatch())
+		EndMatch();
 }
 
 void APolyRacingGameModeBase::BeginCountDownSequence()
@@ -123,8 +147,6 @@ void APolyRacingGameModeBase::OnCountDownSequenceEnd()
 
 void APolyRacingGameModeBase::HandlePlayerHasFinishedEvent(APolyRacingPlayerController* PlayerController)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Player has finished race"))
-
 	APolyRacingWheeledVehiclePawn* PlayerPawn = PlayerController->GetPawn<APolyRacingWheeledVehiclePawn>();
 	if (!PlayerPawn)
 		return;
@@ -134,9 +156,29 @@ void APolyRacingGameModeBase::HandlePlayerHasFinishedEvent(APolyRacingPlayerCont
 	if (EndEventWidget)
 		PlayerController->AddWidgetToScreen(EndEventWidget);
 
+	CheckIfShouldEnd();
+
 	// UMapSubsystem* MapSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UMapSubsystem>();
 	//  
 	// if (ULevelSequence* Sequence = MapSubsystem->GetCurrentLevelOutroSequence())
 	// 	PlayerController->Client_PlayLevelOutroSequence(Sequence);
+}
+
+void APolyRacingGameModeBase::HandleMatchHasEnded()
+{
+	Super::HandleMatchHasEnded();
+
+	if (ConnectedPlayers.Num() <= 1)
+	{
+		for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
+		{
+			FTimerHandle LeaveGameTimerHandle = FTimerHandle();
+			GetWorld()->GetTimerManager().SetTimer(LeaveGameTimerHandle,
+				PlayerController,
+				&APolyRacingPlayerController::StartLeavingMatchSinglePlayer,
+				5.f,
+				false);
+		}
+	}
 }
 
