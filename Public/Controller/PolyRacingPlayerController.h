@@ -121,4 +121,16 @@ public:
 	UFUNCTION(Client, Reliable)
 	void Client_AddWidgetToScreen(TSubclassOf<UUserWidget> Widget);
 	void Client_AddWidgetToScreen_Implementation(TSubclassOf<UUserWidget> Widget);
+
+	// Fades camera to black then calls LeaveMatchSinglePlayer()
+	void StartLeavingMatchSinglePlayer();
+
+	// Instantly leave current single-player match
+	void LeaveMatchSinglePlayer();
+
+	// Fades camera to black then calls LeaveMatchMultiPlayer()
+	void StartLeavingMatchMultiPlayer();
+
+	// Instantly leave current multi-player match
+	void LeaveMatchMultiPlayer();
 };

@@ -20,6 +20,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Subsystem/GameModeSubsystem.h"
+#include "Subsystem/MapSubsystem.h"
 #include "UI/InGameHUD.h"
 
 
@@ -340,6 +341,43 @@ void APolyRacingPlayerController::AddWidgetToScreen(TSubclassOf<UUserWidget> Wid
 void APolyRacingPlayerController::Client_AddWidgetToScreen_Implementation(TSubclassOf<UUserWidget> Widget)
 {
 	AddWidgetToScreen(Widget);
+}
+
+void APolyRacingPlayerController::StartLeavingMatchSinglePlayer()
+{
+	float constexpr FadeDuration = 1.f;
+	
+	PlayerCameraManager->StartCameraFade(0.f, 1.f, FadeDuration - 0.1f, FColor::Black, true, true);	
+
+	FTimerHandle LeaveGameTimerHandle = FTimerHandle();
+	GetWorld()->GetTimerManager().SetTimer(LeaveGameTimerHandle,
+		this,
+		&APolyRacingPlayerController::LeaveMatchSinglePlayer,
+		FadeDuration,
+		false);
+}
+
+void APolyRacingPlayerController::LeaveMatchSinglePlayer()
+{	
+	UMapSubsystem* MapSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UMapSubsystem>();
+	UGameModeSubsystem* GameModeSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameModeSubsystem>();
+	
+	FString const GameModeName = FString("MainMenu");
+	FString const MapName = FString("MainMenu");
+	FString const LevelOptions = FString("?game=" + GameModeSubsystem->GetGameModePath(GameModeName).ToString());
+	
+	GameModeSubsystem->SetCurrentGameMode(GameModeName);
+	MapSubsystem->SetCurrentMap(MapName);
+	
+	UGameplayStatics::OpenLevel(GetWorld(), MapSubsystem->GetMapPath(MapName), true, LevelOptions);
+}
+
+void APolyRacingPlayerController::StartLeavingMatchMultiPlayer()
+{
+}
+
+void APolyRacingPlayerController::LeaveMatchMultiPlayer()
+{
 }
 
 
