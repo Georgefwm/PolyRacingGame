@@ -38,6 +38,8 @@ public:
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+
 	virtual void Logout(AController* Exiting) override;
 
 	virtual bool ReadyToStartMatch_Implementation() override;

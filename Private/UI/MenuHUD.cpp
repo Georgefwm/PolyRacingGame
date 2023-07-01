@@ -1,12 +1,22 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "UI/MenuHUD.h"
+
+#include "Blueprint/UserWidget.h"
 #include "Controller/LobbyPlayerController.h"
 #include "UI/Menu/MainMenuWidget.h"
 #include "Widgets/SWeakWidget.h"
 #include "Engine/Engine.h"
 #include "UI/Menu/LobbyMenuWidget.h"
 
+
+AMenuHUD::AMenuHUD()
+{
+	static ConstructorHelpers::FClassFinder<UUserWidget> NotImplementedWidgetFinder(TEXT("/Game/UI/WidgetBlueprints/WBP_NotImplentedYet"));
+	NotImplementedWidgetClass = NotImplementedWidgetFinder.Class;
+	if (!NotImplementedWidgetClass)
+		UE_LOG(LogTemp, Warning, TEXT("NotImplementedWidget not found!"))
+}
 
 void AMenuHUD::BeginPlay()
 {
@@ -81,6 +91,12 @@ void AMenuHUD::UpdateLobby()
 	}
 
 	LobbyWidget->ListViewWidget->RebuildList();
+}
+
+void AMenuHUD::ShowNotImplementedWidget()
+{
+	UUserWidget* NewWidget = CreateWidget<UUserWidget>(GetGameInstance(), NotImplementedWidgetClass);
+	NewWidget->AddToViewport();
 }
 
 void AMenuHUD::OnBeginLoading()

@@ -6,6 +6,7 @@
 #include "MenuHUD.generated.h"
 
 class UVehicleCustomiser;
+class UUserWidget;
 
 /**
  * 
@@ -16,6 +17,9 @@ class POLYRACINGGAME_API AMenuHUD : public AHUD
 	GENERATED_BODY()
 	
 public:
+
+	AMenuHUD();
+	
 	// Not initialised by default, on first usage
 	TSharedPtr<class SMainMenuWidget> MainMenuWidget;
 	TSharedPtr<class SSinglePlayerMenuWidget> SinglePlayerMenuWidget;
@@ -31,13 +35,17 @@ public:
 	UVehicleCustomiser* VehicleCustomiser;
 
 	virtual void BeginPlay() override;
-
-public:
+	
 	void ShowMainMenu();
 	void ShowLobbyMenu();
 	void RemoveMenu();
 
 	void UpdateLobby();
+
+	UPROPERTY()
+	TSubclassOf<UUserWidget> NotImplementedWidgetClass;
+
+	void ShowNotImplementedWidget();
 
 	void OnBeginLoading();
 	void OnEndLoading();

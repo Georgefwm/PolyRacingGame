@@ -45,6 +45,9 @@ public:
 	UPROPERTY()
 	UUserWidget* CountDownWidget;
 
+	UPROPERTY()
+	TSubclassOf<UUserWidget> NotImplementedWidgetClass;
+
 	virtual void BeginPlay() override;
 	
 	void ShowPlayerHUD();
@@ -53,6 +56,8 @@ public:
 	void Init(APolyRacingWheeledVehiclePawn* NewPawn, TSubclassOf<UUserWidget> NewGameModeWidget);
 
 	void PlayCountDown();
+
+	void ShowNotImplementedWidget();
 
 	void ShowEventResults(TSubclassOf<UUserWidget> ResultWidget);
 

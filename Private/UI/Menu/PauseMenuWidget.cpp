@@ -74,7 +74,7 @@ FReply SPauseMenuWidget::OnResumeClicked() const
 
 FReply SPauseMenuWidget::OnSettingsClicked() const
 {
-	UE_LOG(LogTemp, Warning, TEXT("Settings not implemented... yet"));
+	OwningHUD->ShowNotImplementedWidget();
 	
 	return FReply::Handled();
 }

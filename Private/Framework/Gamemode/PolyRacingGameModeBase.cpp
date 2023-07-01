@@ -1,16 +1,12 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Framework/GameMode/PolyRacingGameModeBase.h"
-
-#include "PolyRacingStaticUtils.h"
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "Blueprint/UserWidget.h"
 #include "Controller/PolyRacingPlayerController.h"
-#include "EnvironmentQuery/EnvQueryTypes.h"
 #include "Framework/PolyRacingGameState.h"
 #include "Framework/PolyRacingPlayerState.h"
 #include "Subsystem/GameModeSubsystem.h"
-#include "Subsystem/MapSubsystem.h"
 #include "UI/InGameHUD.h"
 
 
@@ -66,6 +62,11 @@ void APolyRacingGameModeBase::PostLogin(APlayerController* NewPlayer)
 	// TODO: Make not 'hacky'
 	if (HasAuthority())
 		GetGameState<APolyRacingGameState>()->LapCount = GameModeSubsystem->GetCurrentGameModeLapCount();
+}
+
+void APolyRacingGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 }
 
 void APolyRacingGameModeBase::Logout(AController* Exiting)

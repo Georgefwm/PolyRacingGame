@@ -7,7 +7,6 @@
 #include "Engine/Engine.h"
 #include "Subsystem/GameModeSubsystem.h"
 #include "UI/Element/GameModeWidget.h"
-#include "UI/Element/ResultTableWidget.h"
 #include "UI/Element/VehiclePawnWidget.h"
 #include "UI/Menu/PauseMenuWidget.h"
 
@@ -18,6 +17,11 @@ AInGameHUD::AInGameHUD()
 	CountDownWidgetClass = CountDownWidgetFinder.Class;
 	if (!CountDownWidgetClass)
 		UE_LOG(LogTemp, Warning, TEXT("CountDownWidget not found!"))
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> NotImplementedWidgetFinder(TEXT("/Game/UI/WidgetBlueprints/WBP_NotImplentedYet"));
+	NotImplementedWidgetClass = NotImplementedWidgetFinder.Class;
+	if (!NotImplementedWidgetClass)
+		UE_LOG(LogTemp, Warning, TEXT("NotImplementedWidget not found!"))
 }
 
 void AInGameHUD::BeginPlay()
@@ -139,6 +143,12 @@ void AInGameHUD::PlayCountDown()
 	// Count down widget is set/assumed to start upon creation and remove itself on completion
 	CountDownWidget = CreateWidget<UUserWidget>(GetGameInstance(), CountDownWidgetClass);
 	CountDownWidget->AddToViewport();
+}
+
+void AInGameHUD::ShowNotImplementedWidget()
+{
+	UUserWidget* NewWidget = CreateWidget<UUserWidget>(GetGameInstance(), NotImplementedWidgetClass);
+	NewWidget->AddToViewport();
 }
 
 void AInGameHUD::ShowEventResults(TSubclassOf<UUserWidget> ResultWidget)

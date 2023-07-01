@@ -135,7 +135,7 @@ FReply SMainMenuWidget::OnGarageClicked() const
 
 FReply SMainMenuWidget::OnSettingsClicked() const
 {
-	UE_LOG(LogTemp, Warning, TEXT("Settings not implemented... yet"));
+	OwningHUD->ShowNotImplementedWidget();
 	
 	return FReply::Handled();
 }
