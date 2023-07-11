@@ -5,6 +5,9 @@
 #include "GameFramework/GameModeBase.h"
 #include "MainMenuGameMode.generated.h"
 
+class USoundCue;
+class UAudioComponent;
+
 
 /**
  * 

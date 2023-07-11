@@ -1,8 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Framework/GameMode/MainMenuGameMode.h"
+
+#include "MenuCameraActor.h"
 #include "PolyRacingSpectatorPawn.h"
 #include "Camera/CameraActor.h"
+#include "Components/AudioComponent.h"
 #include "UI/MenuHUD.h"
 #include "Controller/MenuPlayerController.h"
 #include "Customisation/VehicleCustomiser.h"
@@ -44,35 +47,31 @@ void AMainMenuGameMode::BeginPlay()
 		
 		VehicleCustomiser->SpawnVehicle(GetWorld(), Location, Rotation, SpawnParameters);
 	}
-		
+	
 }
 
 void AMainMenuGameMode::StartPlay()
 {
 	Super::StartPlay();
-	
-	TArray<AActor*> Cameras;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), Cameras);
-	
-	if (!Cameras.IsEmpty())
-		GetWorld()->GetFirstPlayerController()->SetViewTarget(StaticCast<ACameraActor*>(Cameras[0]));
-	else
-		UE_LOG(LogTemp, Warning, TEXT("LOBBYGAMEMODE: Camera not found"))
+
+	HandleStartingNewPlayer_Implementation(GetWorld()->GetFirstPlayerController());
 }
 
 void AMainMenuGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
-	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
-
 	TArray<AActor*> Cameras;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), Cameras);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMenuCameraActor::StaticClass(), Cameras);
 	
 	if (!Cameras.IsEmpty())
-		NewPlayer->SetViewTarget(StaticCast<ACameraActor*>(Cameras[0]));
+	{
+		AMenuCameraActor* MenuCamera = Cast<AMenuCameraActor>(Cameras[0]);
+		
+		NewPlayer->SetViewTarget(MenuCamera);
+		MenuCamera->PossessedBy(NewPlayer);
+		NewPlayer->PlayerCameraManager->StartCameraFade(1.f, 0.f, 3, FColor::Black, true);
+	}
 	else
-		UE_LOG(LogTemp, Warning, TEXT("MAINMENUGAMEMODE: Camera not found"))
-
-	NewPlayer->PlayerCameraManager->StartCameraFade(1.f, 0.f, 3, FColor::Black, true);
+		UE_LOG(LogTemp, Warning, TEXT("MainMenuGameMode: Camera not found"))
 }
 
 void AMainMenuGameMode::InitializeHUDForPlayer_Implementation(APlayerController* NewPlayer)

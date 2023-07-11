@@ -1,6 +1,8 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Controller/LobbyPlayerController.h"
+
+#include "MenuCameraActor.h"
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "Camera/CameraActor.h"
 #include "Customisation/VehicleCustomiser.h"
@@ -196,13 +198,18 @@ void ALobbyPlayerController::SetCameraView()
 		return;
 
 	TArray<AActor*> Cameras;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), Cameras);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMenuCameraActor::StaticClass(), Cameras);
 	
 	if (!Cameras.IsEmpty())
-		SetViewTarget(StaticCast<ACameraActor*>(Cameras[0]));
+	{
+		AMenuCameraActor* MenuCamera = Cast<AMenuCameraActor>(Cameras[0]);
+		
+		SetViewTarget(MenuCamera);
+		MenuCamera->PossessedBy(this);
+		PlayerCameraManager->StartCameraFade(1.f, 0.f, 3, FColor::Black, true);
+	}
 	else
-		UE_LOG(LogTemp, Warning, TEXT("Camera not found"))
-	
+		UE_LOG(LogTemp, Warning, TEXT("LobbyPlayerController: Camera not found"))
 }
 
 void ALobbyPlayerController::Client_SetCameraView_Implementation()
