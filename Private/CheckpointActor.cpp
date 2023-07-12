@@ -9,6 +9,7 @@
 #include "Framework/GameMode/TimeTrialGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Components/ArrowComponent.h"
 
 
 ACheckpointActor::ACheckpointActor()
@@ -25,10 +26,13 @@ ACheckpointActor::ACheckpointActor()
 	
 	TriggerBox = CreateDefaultSubobject<UBoxComponent>("TriggerBox");
 	TriggerBox->SetupAttachment(TriggerBoxRoot);
-	TriggerBox->SetCollisionEnabled(ECollisionEnabled::ProbeOnly);
+	TriggerBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	TriggerBox->SetCollisionResponseToAllChannels(ECR_Overlap);
 	TriggerBox->SetBoxExtent(FVector(25.f, CheckpointWidth, CheckpointHeight));
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &ACheckpointActor::OnOverlap);
+
+	ArrowComponent = CreateDefaultSubobject<UArrowComponent>("DirectionArrow");
+	ArrowComponent->SetupAttachment(TriggerBoxRoot);
 
 	LeftSign = CreateDefaultSubobject<UStaticMeshComponent>("LeftSign");
 	LeftSign->SetupAttachment(SceneRoot);

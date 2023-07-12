@@ -4,6 +4,7 @@
 
 #include "CheckpointActor.generated.h"
 
+class UArrowComponent;
 class USceneComponent;
 class UBoxComponent;
 class UStaticMeshComponent;
@@ -30,6 +31,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UStaticMeshComponent* RightSign;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UArrowComponent* ArrowComponent;
 
 	UPROPERTY()
 	int CheckpointCount = 0;
