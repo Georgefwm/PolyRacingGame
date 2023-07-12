@@ -91,6 +91,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="FX")
 	UMaterialInterface* SkidMarkMaterial;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="FX")
+	UAudioComponent* TyreSoundComponent;
+
 	virtual void PossessedBy(AController* NewController) override;
 	
 	void SetupInputMappingContext();

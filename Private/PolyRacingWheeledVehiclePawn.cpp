@@ -8,6 +8,7 @@
 #include "NiagaraComponent.h"
 #include "Camera/CameraComponent.h"
 #include "ChaosVehicles/Public/ChaosVehicleMovementComponent.h"
+#include "Components/AudioComponent.h"
 #include "Customisation/VehicleCustomisationComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -68,6 +69,13 @@ APolyRacingWheeledVehiclePawn::APolyRacingWheeledVehiclePawn(const FObjectInitia
 	WheelAttachments.Add(Fr_WheelAttachment);
 	WheelAttachments.Add(Rl_WheelAttachment);
 	WheelAttachments.Add(Rr_WheelAttachment);
+
+	TyreSoundComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+	TyreSoundComponent->bAutoActivate = false;
+	TyreSoundComponent->SetupAttachment(GetRootComponent());
+
+	// Position a bit behind the rear axel
+	TyreSoundComponent->SetRelativeLocation(FVector(Rl_WheelAttachment->GetRelativeLocation().X - 20.0f, 0.f, 20.f));
 }
 
 // Called when the game starts or when spawned
@@ -104,25 +112,46 @@ void APolyRacingWheeledVehiclePawn::Tick(float DeltaTime)
 
 	for (int WheelIndex = 0; WheelIndex < GetChaosVehicleMovementComponent()->GetNumWheels(); WheelIndex++)
 	{
-		FWheelStatus WheelStatus = GetChaosVehicleMovementComponent()->GetWheelState(WheelIndex);
+		FWheelStatus const WheelStatus = GetChaosVehicleMovementComponent()->GetWheelState(WheelIndex);
 		UNiagaraComponent* WheelNiagaraComponent = WheelNiagaraComponents.GetData()[WheelIndex];
-
 		
 		// If we arent skidding then stop the effect
-		if (!WheelStatus.bIsSkidding && !WheelStatus.bIsSlipping)
+		if (!WheelStatus.bIsSkidding && !WheelStatus.bIsSlipping)  // Apparently WheelStatus.bInContact doesnt work
 		{
-			if (!WheelNiagaraComponent->IsPaused())
-				WheelNiagaraComponent->SetPaused(true);
-		
+			if (WheelNiagaraComponent)
+			{
+				FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, true);
+				WheelNiagaraComponent->DetachFromComponent(DetachmentTransformRules);
+				
+				WheelNiagaraComponent->SetActive(false);
+				
+				WheelNiagaraComponents[WheelIndex] = nullptr;
+			}
+
+			if (TyreSoundComponent->IsPlaying())
+				TyreSoundComponent->Stop(); // TODO: Fade out
+			
 			continue;
 		}
 		
 		// If we arent skidding already, reset and start the effect
-		if (WheelNiagaraComponent->IsPaused())
+		if (!WheelNiagaraComponent)
 		{
-			WheelNiagaraComponent->SetPaused(false);
-			WheelNiagaraComponent->ReinitializeSystem();  // Reset the system so previous ribbons don't merge
+			UE_LOG(LogTemp, Warning, TEXT("Spawning new system"))
+			
+			UNiagaraComponent* NewComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(WheelNiagaraSystem,
+				WheelAttachments.GetData()[WheelIndex],
+				NAME_None,
+				FVector(0.f),
+				FRotator(0.f),
+				EAttachLocation::Type::SnapToTarget,
+				true);
+
+			WheelNiagaraComponents[WheelIndex] = NewComponent;
 		}
+
+		if (TyreSoundComponent->GetSound() && !TyreSoundComponent->IsPlaying())
+			TyreSoundComponent->Play(); // TODO: Fade out
 	}
 }
 
