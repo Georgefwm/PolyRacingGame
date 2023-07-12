@@ -26,9 +26,11 @@ void UPolyRacingSessionSubsystem::CreateSession(int32 NumPublicConnections, bool
 		OnCreateSessionCompleteEvent.Broadcast(false);
 		return;
 	}
-
-	const FGameModeTableRow* GameMode = GameModes->FindRow<FGameModeTableRow>(FName(DesiredGameMode), "", false);
-	if (!GameMode)
+	
+	UGameModeSubsystem* GameModeSubsystem = GetGameInstance()->GetSubsystem<UGameModeSubsystem>();
+	const FGameModeTableRow* GameModeInfo = GameModeSubsystem->GetGameModeInfo(DesiredGameMode);
+	
+	if (!GameModeInfo)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("GameMode not found, aborting session creation..."))
 		OnCreateSessionCompleteEvent.Broadcast(false);
@@ -37,7 +39,7 @@ void UPolyRacingSessionSubsystem::CreateSession(int32 NumPublicConnections, bool
 	
 	LastSessionSettings = MakeShareable(new FOnlineSessionSettings());
 	LastSessionSettings->NumPrivateConnections = 0;
-	LastSessionSettings->NumPublicConnections = GameMode->MaxPlayers;
+	LastSessionSettings->NumPublicConnections = GameModeInfo->MaxPlayers;
 	LastSessionSettings->bAllowInvites = true;
 	LastSessionSettings->bAllowJoinInProgress = true;
 	LastSessionSettings->bAllowJoinViaPresence = true;
