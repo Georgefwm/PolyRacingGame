@@ -41,6 +41,22 @@ FName UGameModeSubsystem::GetGameModePath(FString GameModeName) const
 	return FName(GameModeTableRow->Path);
 }
 
+FGameModeTableRow* UGameModeSubsystem::GetGameModeInfo(FString GameModeName)
+{
+	for (const FName& RowName : GameModeDataTable->GetRowNames())
+	{
+		FGameModeTableRow* GameModeTableRow = GameModeDataTable->FindRow<FGameModeTableRow>(RowName, "");
+
+		if (GameModeTableRow->GameModeName == GameModeName)
+		{
+			return GameModeTableRow;
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("UGameModeSubsystem: GameMode '%s' not found"), *GameModeName)
+	return nullptr;
+}
+
 FName UGameModeSubsystem::GetCurrentGameModeDisplayName() const
 {
 	FGameModeTableRow* GameModeTableRow = GameModeDataTable->FindRow<FGameModeTableRow>(CurrentGameMode, "");

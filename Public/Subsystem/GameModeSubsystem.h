@@ -5,6 +5,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "GameModeSubsystem.generated.h"
 
+struct FGameModeTableRow;
 class ULevelSequence;
 class UDataTable;
 
@@ -29,6 +30,8 @@ public:
 	FName CurrentGameMode;
 
 	FName GetGameModePath(FString GameModeName) const;
+
+	FGameModeTableRow* GetGameModeInfo(FString GameModeName); 
 
 	FName GetCurrentGameModeDisplayName() const;
 
