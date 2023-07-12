@@ -106,12 +106,18 @@ void APolyRacingGameModeBase::RestartPlayerAtCheckpoint(APolyRacingPlayerControl
 		TeleportTransform = CheckpointActors[0]->GetTransform();
 	}
 
-	FVector TeleportLocationOffset = FVector(0.0f, 0.0f, 20.0f);
+	FVector TeleportLocationOffset = FVector(0.0f, 0.0f, 30.0f);
+
+	PlayerController->VehiclePawn->GetChaosVehicleMovementComponent()->StopMovementImmediately();
+
+	PlayerController->VehiclePawn->SetActorLocationAndRotation(
+		TeleportTransform.GetLocation() + TeleportLocationOffset,
+		TeleportTransform.GetRotation().Rotator(),
+		false,
+		nullptr,
+		ETeleportType::TeleportPhysics);
 	
-	PlayerController->VehiclePawn->TeleportTo(TeleportTransform.GetLocation() + TeleportLocationOffset,
-		TeleportTransform.GetRotation().Rotator());
-	
-	PlayerController->VehiclePawn->GetChaosVehicleMovementComponent()->ResetVehicleState();
+	PlayerController->VehiclePawn->GetChaosVehicleMovementComponent()->StopMovementImmediately();
 }
 
 bool APolyRacingGameModeBase::ReadyToStartMatch_Implementation()

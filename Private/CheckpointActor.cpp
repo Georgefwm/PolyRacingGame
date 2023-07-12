@@ -25,7 +25,7 @@ ACheckpointActor::ACheckpointActor()
 	
 	TriggerBox = CreateDefaultSubobject<UBoxComponent>("TriggerBox");
 	TriggerBox->SetupAttachment(TriggerBoxRoot);
-	TriggerBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	TriggerBox->SetCollisionEnabled(ECollisionEnabled::ProbeOnly);
 	TriggerBox->SetCollisionResponseToAllChannels(ECR_Overlap);
 	TriggerBox->SetBoxExtent(FVector(25.f, CheckpointWidth, CheckpointHeight));
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &ACheckpointActor::OnOverlap);

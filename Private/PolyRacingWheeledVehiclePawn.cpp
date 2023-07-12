@@ -128,7 +128,10 @@ void APolyRacingWheeledVehiclePawn::Tick(float DeltaTime)
 		UNiagaraComponent* WheelNiagaraComponent = WheelNiagaraComponents.GetData()[WheelIndex];
 
 		// Apparently FWheelStatus.bInContact doesnt work
-		bool WheelHasContact = GetChaosVehicleMovementComponent()->Wheels[WheelIndex]->IsInAir();
+		bool WheelHasContact = !GetChaosVehicleMovementComponent()->Wheels[WheelIndex]->IsInAir();
+
+		if (!WheelHasContact)
+			NoContactCount++;
 		
 		// If we arent skidding then stop the effect
 		if (!WheelStatus.bIsSkidding && !WheelStatus.bIsSlipping || !WheelHasContact) 
@@ -142,9 +145,6 @@ void APolyRacingWheeledVehiclePawn::Tick(float DeltaTime)
 				
 				WheelNiagaraComponents[WheelIndex] = nullptr;
 			}
-
-			if (!WheelHasContact)
-				NoContactCount++;
 			
 			continue;
 		}
@@ -165,17 +165,19 @@ void APolyRacingWheeledVehiclePawn::Tick(float DeltaTime)
 			WheelNiagaraComponents[WheelIndex] = NewComponent;
 		}
 	}
-
-	if (NoContactCount == 4)
+	
+	if (NoContactCount >= 3)
 	{
 		RollTimer += DeltaTime;
 
-		if (RollTimer > 10)
-			HandleVehicleReset();
+		if (RollTimer > 5)
+		{
+			// Prompt vehicle reset
+			// HandleVehicleReset();
+		}
 	}
 	else
 		RollTimer = 0;
-	
 
 	if (TyreSlippingCount > 0)
 	{
@@ -231,6 +233,8 @@ void APolyRacingWheeledVehiclePawn::SetupPlayerInputComponent(UInputComponent* P
 	
 	EnhancedInputComponent->BindAction(HandbrakeAction, ETriggerEvent::Triggered, this, &APolyRacingWheeledVehiclePawn::OnHandBrakePressed);
 	EnhancedInputComponent->BindAction(HandbrakeAction, ETriggerEvent::Completed, this, &APolyRacingWheeledVehiclePawn::OnHandBrakeReleased);
+
+	EnhancedInputComponent->BindAction(ResetAction, ETriggerEvent::Completed, this, &APolyRacingWheeledVehiclePawn::HandleVehicleReset);
 }	
 
 void APolyRacingWheeledVehiclePawn::ApplyThrottle(const FInputActionValue& Value)
@@ -253,7 +257,9 @@ void APolyRacingWheeledVehiclePawn::HandleVehicleReset()
 	APolyRacingPlayerController* PlayerController = GetController<APolyRacingPlayerController>();
 	if (!PlayerController)
 		return;
-		
+
+	UE_LOG(LogTemp, Warning, TEXT("Requested vehicle reset"))
+	
 	PlayerController->Server_RequestCheckpointRestart(PlayerController);
 }
 

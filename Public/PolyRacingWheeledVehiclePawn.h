@@ -86,7 +86,10 @@ public:
 	UInputAction* HandbrakeAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input Actions")
-	UInputAction* ToggleInGameMenuAction;
+	UInputAction* ResetAction;
+
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input Actions")
+	// UInputAction* ToggleInGameMenuAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="FX")
 	UMaterialInterface* SkidMarkMaterial;
