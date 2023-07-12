@@ -73,15 +73,22 @@ APolyRacingWheeledVehiclePawn::APolyRacingWheeledVehiclePawn(const FObjectInitia
 	TyreSoundComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 	TyreSoundComponent->bAutoActivate = false;
 	TyreSoundComponent->SetupAttachment(GetRootComponent());
+	TyreSoundComponent->VolumeMultiplier = 0.1;
+	BaseTyreSoundMultiplier = TyreSoundComponent->VolumeMultiplier;
 
 	// Position a bit behind the rear axel
 	TyreSoundComponent->SetRelativeLocation(FVector(Rl_WheelAttachment->GetRelativeLocation().X - 20.0f, 0.f, 20.f));
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> TyreSoundFinder(TEXT("/Game/Sounds/FX/C_TyreSqueelLoop"));
+	TyreSoundComponent->Sound = TyreSoundFinder.Object;
 }
 
 // Called when the game starts or when spawned
 void APolyRacingWheeledVehiclePawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	BaseTyreSoundMultiplier = TyreSoundComponent->VolumeMultiplier;
 
 	SetupInputMappingContext();
 
@@ -110,6 +117,8 @@ void APolyRacingWheeledVehiclePawn::Tick(float DeltaTime)
 	if (!WheelNiagaraSystem)
 		return;
 
+	int TyreSlippingCount = 0;
+
 	for (int WheelIndex = 0; WheelIndex < GetChaosVehicleMovementComponent()->GetNumWheels(); WheelIndex++)
 	{
 		FWheelStatus const WheelStatus = GetChaosVehicleMovementComponent()->GetWheelState(WheelIndex);
@@ -127,18 +136,15 @@ void APolyRacingWheeledVehiclePawn::Tick(float DeltaTime)
 				
 				WheelNiagaraComponents[WheelIndex] = nullptr;
 			}
-
-			if (TyreSoundComponent->IsPlaying())
-				TyreSoundComponent->Stop(); // TODO: Fade out
 			
 			continue;
 		}
+
+		TyreSlippingCount++;
 		
 		// If we arent skidding already, reset and start the effect
 		if (!WheelNiagaraComponent)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Spawning new system"))
-			
 			UNiagaraComponent* NewComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(WheelNiagaraSystem,
 				WheelAttachments.GetData()[WheelIndex],
 				NAME_None,
@@ -149,9 +155,22 @@ void APolyRacingWheeledVehiclePawn::Tick(float DeltaTime)
 
 			WheelNiagaraComponents[WheelIndex] = NewComponent;
 		}
+	}
 
-		if (TyreSoundComponent->GetSound() && !TyreSoundComponent->IsPlaying())
-			TyreSoundComponent->Play(); // TODO: Fade out
+	if (TyreSlippingCount > 0)
+	{
+		if (!TyreSoundComponent->GetSound())
+			return;
+		
+		TyreSoundComponent->SetVolumeMultiplier(BaseTyreSoundMultiplier * (TyreSlippingCount / 3));
+		
+		if (!TyreSoundComponent->IsPlaying())
+			TyreSoundComponent->FadeIn(0.3);
+	}
+	else
+	{
+		if (TyreSoundComponent->IsPlaying())
+			TyreSoundComponent->FadeOut(0.15, 0.0f); // TODO: Fade out
 	}
 }
 

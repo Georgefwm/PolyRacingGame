@@ -94,6 +94,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="FX")
 	UAudioComponent* TyreSoundComponent;
 
+	UPROPERTY()
+	float BaseTyreSoundMultiplier;
+
 	virtual void PossessedBy(AController* NewController) override;
 	
 	void SetupInputMappingContext();
