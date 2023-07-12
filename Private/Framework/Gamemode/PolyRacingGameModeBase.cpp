@@ -1,6 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Framework/GameMode/PolyRacingGameModeBase.h"
+
+#include "ChaosWheeledVehicleMovementComponent.h"
+#include "CheckpointActor.h"
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "Blueprint/UserWidget.h"
 #include "Controller/PolyRacingPlayerController.h"
@@ -81,6 +84,34 @@ void APolyRacingGameModeBase::Logout(AController* Exiting)
 	}
 	
 	ConnectedPlayers.Remove(LobbyPlayerController);
+}
+
+void APolyRacingGameModeBase::RestartPlayer(AController* NewPlayer)
+{
+	Super::RestartPlayer(NewPlayer);
+}
+
+void APolyRacingGameModeBase::RestartPlayerAtCheckpoint(APolyRacingPlayerController* PlayerController)
+{
+	int LastCheckpoint = PlayerController->GetPlayerState<APolyRacingPlayerState>()->LastCheckpoint;
+
+	FTransform TeleportTransform;
+	
+	if (CheckpointActors.IsValidIndex(LastCheckpoint))
+	{
+		TeleportTransform = CheckpointActors[LastCheckpoint]->GetTransform();
+	}
+	else
+	{
+		TeleportTransform = CheckpointActors[0]->GetTransform();
+	}
+
+	FVector TeleportLocationOffset = FVector(0.0f, 0.0f, 20.0f);
+	
+	PlayerController->VehiclePawn->TeleportTo(TeleportTransform.GetLocation() + TeleportLocationOffset,
+		TeleportTransform.GetRotation().Rotator());
+	
+	PlayerController->VehiclePawn->GetChaosVehicleMovementComponent()->ResetVehicleState();
 }
 
 bool APolyRacingGameModeBase::ReadyToStartMatch_Implementation()

@@ -116,6 +116,14 @@ public:
 	void Server_NotifyFinishedRace(APolyRacingPlayerController* PlayerController);
 	void Server_NotifyFinishedRace_Implementation(APolyRacingPlayerController* PlayerController);
 
+	
+	void RequestCheckpointRestart(APolyRacingPlayerController* PlayerController);
+	
+	UFUNCTION(Server, Reliable)
+	void Server_RequestCheckpointRestart(APolyRacingPlayerController* PlayerController);
+	void Server_RequestCheckpointRestart_Implementation(APolyRacingPlayerController* PlayerController);
+
+	
 	void AddWidgetToScreen(TSubclassOf<UUserWidget> Widget);
 
 	UFUNCTION(Client, Reliable)

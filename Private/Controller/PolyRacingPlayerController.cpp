@@ -329,6 +329,17 @@ void APolyRacingPlayerController::Server_NotifyFinishedRace_Implementation(APoly
 	NotifyFinishedRace(PlayerController);
 }
 
+void APolyRacingPlayerController::RequestCheckpointRestart(APolyRacingPlayerController* PlayerController)
+{
+	GetWorld()->GetAuthGameMode<APolyRacingGameModeBase>()->RestartPlayerAtCheckpoint(PlayerController);
+}
+
+void APolyRacingPlayerController::Server_RequestCheckpointRestart_Implementation(
+	APolyRacingPlayerController* PlayerController)
+{
+	RequestCheckpointRestart(PlayerController);
+}
+
 void APolyRacingPlayerController::AddWidgetToScreen(TSubclassOf<UUserWidget> Widget)
 {
 	// TODO: Remove as this is only called during end event

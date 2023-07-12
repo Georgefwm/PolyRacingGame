@@ -119,7 +119,7 @@ void ACheckpointActor::BeginPlay()
 		Checkpoint->CheckpointCount = Actors.Num();
 	}
 	
-	AGameModeBase* PotentialCheckpointGameMode = GetWorld()->GetAuthGameMode();
+	APolyRacingGameModeBase* PotentialCheckpointGameMode = GetWorld()->GetAuthGameMode<APolyRacingGameModeBase>();
 	if (!PotentialCheckpointGameMode->Implements<UCheckpointGameMode>())
 		return;
 

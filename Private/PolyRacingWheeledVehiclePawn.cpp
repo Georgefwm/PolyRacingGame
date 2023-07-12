@@ -9,7 +9,9 @@
 #include "Camera/CameraComponent.h"
 #include "ChaosVehicles/Public/ChaosVehicleMovementComponent.h"
 #include "Components/AudioComponent.h"
+#include "Controller/PolyRacingPlayerController.h"
 #include "Customisation/VehicleCustomisationComponent.h"
+#include "Framework/PolyRacingPlayerState.h"
 #include "GameFramework/SpringArmComponent.h"
 
 
@@ -39,7 +41,7 @@ APolyRacingWheeledVehiclePawn::APolyRacingWheeledVehiclePawn(const FObjectInitia
 	SpringArmComponent->SetRelativeLocation(FVector(0.f, 0.f, 120.f));
 	SpringArmComponent->SetRelativeRotation(FRotator::MakeFromEuler(FVector(0.f, -10.f, 0.f)));
 	SpringArmComponent->bEnableCameraRotationLag = true;
-	SpringArmComponent->CameraRotationLagSpeed = 2.f;  // Lower = slower
+	SpringArmComponent->CameraRotationLagSpeed = 1.f;  // Lower = slower
 	SpringArmComponent->bInheritRoll = false;
 	
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("Camera");
@@ -118,14 +120,18 @@ void APolyRacingWheeledVehiclePawn::Tick(float DeltaTime)
 		return;
 
 	int TyreSlippingCount = 0;
+	int NoContactCount = 0;
 
 	for (int WheelIndex = 0; WheelIndex < GetChaosVehicleMovementComponent()->GetNumWheels(); WheelIndex++)
 	{
 		FWheelStatus const WheelStatus = GetChaosVehicleMovementComponent()->GetWheelState(WheelIndex);
 		UNiagaraComponent* WheelNiagaraComponent = WheelNiagaraComponents.GetData()[WheelIndex];
+
+		// Apparently FWheelStatus.bInContact doesnt work
+		bool WheelHasContact = GetChaosVehicleMovementComponent()->Wheels[WheelIndex]->IsInAir();
 		
 		// If we arent skidding then stop the effect
-		if (!WheelStatus.bIsSkidding && !WheelStatus.bIsSlipping)  // Apparently WheelStatus.bInContact doesnt work
+		if (!WheelStatus.bIsSkidding && !WheelStatus.bIsSlipping || !WheelHasContact) 
 		{
 			if (WheelNiagaraComponent)
 			{
@@ -136,6 +142,9 @@ void APolyRacingWheeledVehiclePawn::Tick(float DeltaTime)
 				
 				WheelNiagaraComponents[WheelIndex] = nullptr;
 			}
+
+			if (!WheelHasContact)
+				NoContactCount++;
 			
 			continue;
 		}
@@ -156,6 +165,17 @@ void APolyRacingWheeledVehiclePawn::Tick(float DeltaTime)
 			WheelNiagaraComponents[WheelIndex] = NewComponent;
 		}
 	}
+
+	if (NoContactCount == 4)
+	{
+		RollTimer += DeltaTime;
+
+		if (RollTimer > 10)
+			HandleVehicleReset();
+	}
+	else
+		RollTimer = 0;
+	
 
 	if (TyreSlippingCount > 0)
 	{
@@ -226,6 +246,15 @@ void APolyRacingWheeledVehiclePawn::ApplyBrake(const FInputActionValue& Value)
 void APolyRacingWheeledVehiclePawn::ApplySteering(const FInputActionValue& Value)
 {
 	GetVehicleMovementComponent()->SetSteeringInput(Value.Get<float>());
+}
+
+void APolyRacingWheeledVehiclePawn::HandleVehicleReset()
+{
+	APolyRacingPlayerController* PlayerController = GetController<APolyRacingPlayerController>();
+	if (!PlayerController)
+		return;
+		
+	PlayerController->Server_RequestCheckpointRestart(PlayerController);
 }
 
 void APolyRacingWheeledVehiclePawn::OnHandBrakePressed()

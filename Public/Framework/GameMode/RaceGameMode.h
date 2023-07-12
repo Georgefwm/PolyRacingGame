@@ -19,9 +19,6 @@ public:
 	// Sets default values for this actor's properties
 	ARaceGameMode();
 
-	UPROPERTY()
-	TArray<class ACheckpointActor*> CheckpointActors;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

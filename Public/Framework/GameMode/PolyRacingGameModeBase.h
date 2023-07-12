@@ -17,6 +17,9 @@ public:
 
 	UPROPERTY()
 	TArray<class APolyRacingPlayerController*> ConnectedPlayers;
+	
+	UPROPERTY()
+	TArray<class ACheckpointActor*> CheckpointActors;
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
 	TSubclassOf<UUserWidget> GameModeWidget;
@@ -41,6 +44,10 @@ public:
 	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 
 	virtual void Logout(AController* Exiting) override;
+
+	virtual void RestartPlayer(AController* NewPlayer) override;
+	
+	virtual void RestartPlayerAtCheckpoint(APolyRacingPlayerController* PlayerController);
 
 	virtual bool ReadyToStartMatch_Implementation() override;
 	

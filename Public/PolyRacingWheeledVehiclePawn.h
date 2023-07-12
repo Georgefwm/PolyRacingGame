@@ -97,6 +97,9 @@ public:
 	UPROPERTY()
 	float BaseTyreSoundMultiplier;
 
+	UPROPERTY()
+	float RollTimer = 0.0f;
+
 	virtual void PossessedBy(AController* NewController) override;
 	
 	void SetupInputMappingContext();
@@ -108,6 +111,8 @@ public:
 	void ApplyBrake(const FInputActionValue& Value);
 	
 	void ApplySteering(const FInputActionValue& Value);
+
+	void HandleVehicleReset();
 
 	void OnHandBrakePressed();
 	void OnHandBrakeReleased();
