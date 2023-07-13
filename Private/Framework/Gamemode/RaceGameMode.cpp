@@ -28,6 +28,18 @@ void ARaceGameMode::HandleStartingNewPlayer_Implementation(APlayerController* Ne
 	JoiningPlayer->Client_RequestVehicleSpawn();
 }
 
+void ARaceGameMode::HandleQualifierHasStarted()
+{
+}
+
+void ARaceGameMode::HandleQualifierHasEnded()
+{
+}
+
+void ARaceGameMode::HandleMainEventHasStarted()
+{
+}
+
 void ARaceGameMode::RestartPlayer(AController* NewPlayer)
 {
 	Super::RestartPlayer(NewPlayer); // prob remove
