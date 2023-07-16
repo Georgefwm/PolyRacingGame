@@ -31,7 +31,7 @@ void ATimeTrialGameMode::HandleMatchIsWaitingToStart()
 	
 	for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Starting defered player now"))
+		UE_LOG(LogTemp, Warning, TEXT("Starting defered players now"))
 		HandleStartingNewPlayer_Implementation(PlayerController);
 	}
 }

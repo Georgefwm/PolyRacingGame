@@ -69,7 +69,10 @@ void APolyRacingGameModeBase::PostLogin(APlayerController* NewPlayer)
 
 void APolyRacingGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
-	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+	if (APolyRacingPlayerController* PlayerController = Cast<APolyRacingPlayerController>(NewPlayer))
+	{
+		PlayerController->GetPlayerState<APolyRacingPlayerState>()->bIsReady = true;
+	}
 }
 
 void APolyRacingGameModeBase::Logout(AController* Exiting)
@@ -122,7 +125,7 @@ void APolyRacingGameModeBase::RestartPlayerAtCheckpoint(APolyRacingPlayerControl
 
 bool APolyRacingGameModeBase::ReadyToStartMatch_Implementation()
 {
-	for (APolyRacingPlayerController* Player : ConnectedPlayers)
+	for (const APolyRacingPlayerController* Player : ConnectedPlayers)
 	{
 		if (!Player->GetPlayerState<APolyRacingPlayerState>()->bIsReady)
 			return false;
@@ -133,7 +136,7 @@ bool APolyRacingGameModeBase::ReadyToStartMatch_Implementation()
 
 bool APolyRacingGameModeBase::ReadyToEndMatch_Implementation()
 {
-	for (APolyRacingPlayerController* Player : ConnectedPlayers)
+	for (const APolyRacingPlayerController* Player : ConnectedPlayers)
 	{
 		// Have all players completed the final lap?
 		if (Player->GetPlayerState<APolyRacingPlayerState>()->EventEndTime < 0.2f)
