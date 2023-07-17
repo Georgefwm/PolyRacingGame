@@ -106,7 +106,8 @@ void APolyRacingGameModeBase::RestartPlayerAtCheckpoint(APolyRacingPlayerControl
 	}
 	else
 	{
-		TeleportTransform = CheckpointActors[0]->GetTransform();
+		UE_LOG(LogTemp, Warning, TEXT("Checkpoints disabled for current game mode"))
+		// TeleportTransform = CheckpointActors[0]->GetTransform();
 	}
 
 	FVector TeleportLocationOffset = FVector(0.0f, 0.0f, 30.0f);
