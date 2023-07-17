@@ -95,7 +95,10 @@ public:
 	UMaterialInterface* SkidMarkMaterial;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="FX")
-	UAudioComponent* TyreSoundComponent;
+	UAudioComponent* TyreAudioComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="FX")
+	UAudioComponent* EngineAudioComponent;
 
 	UPROPERTY()
 	float BaseTyreSoundMultiplier;
