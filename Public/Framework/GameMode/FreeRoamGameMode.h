@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "CheckpointGameMode.h"
 #include "PolyRacingGameModeBase.h"
 #include "FreeRoamGameMode.generated.h"
 
@@ -9,7 +10,7 @@ struct FPresetVehicleConfiguration;
 
 
 UCLASS()
-class POLYRACINGGAME_API AFreeRoamGameMode : public APolyRacingGameModeBase
+class POLYRACINGGAME_API AFreeRoamGameMode : public APolyRacingGameModeBase, public ICheckpointGameMode
 {
 	GENERATED_BODY()
 
@@ -32,5 +33,7 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	virtual void Logout(AController* ExitingPlayer) override;
+
+	virtual void AddCheckpoints(TArray<ACheckpointActor*>& Checkpoints) override;
 	
 };
