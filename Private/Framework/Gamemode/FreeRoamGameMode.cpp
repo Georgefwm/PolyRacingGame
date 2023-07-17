@@ -1,6 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Framework/GameMode/FreeRoamGameMode.h"
+#include "CheckpointActor.h"
 #include "Controller/PolyRacingPlayerController.h"
 
 
@@ -68,6 +69,15 @@ void AFreeRoamGameMode::PostLogin(APlayerController* NewPlayer)
 void AFreeRoamGameMode::Logout(AController* ExitingPlayer)
 {
 	Super::Logout(ExitingPlayer);
+}
+
+void AFreeRoamGameMode::AddCheckpoints(TArray<ACheckpointActor*>& Checkpoints)
+{
+	CheckpointActors = Checkpoints;
+	
+	CheckpointActors.Sort([](const ACheckpointActor& CpA, const ACheckpointActor& CpB) {
+		return  CpA.CheckpointNumber < CpB.CheckpointNumber;
+	});
 }
 
 
