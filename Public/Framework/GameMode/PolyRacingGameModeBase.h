@@ -6,6 +6,15 @@
 #include "PolyRacingGameModeBase.generated.h"
 
 
+// Normal gameplay is occurring. Sub-states occur during MatchState::InProgress
+namespace MatchSubState
+{
+	POLYRACINGGAME_API const FName Qualifier;
+	POLYRACINGGAME_API const FName PostQualifier;
+	POLYRACINGGAME_API const FName PreMainEvent;	
+	POLYRACINGGAME_API const FName MainEvent;
+}
+
 UCLASS()
 class POLYRACINGGAME_API APolyRacingGameModeBase : public AGameMode
 {
@@ -15,6 +24,7 @@ public:
 
 	APolyRacingGameModeBase();
 
+	// TODO: Move this to GameState class
 	UPROPERTY()
 	TArray<class APolyRacingPlayerController*> ConnectedPlayers;
 	
@@ -29,15 +39,17 @@ public:
 	
 	FTimerHandle CountDownTimerHandle;
 
-protected:
+	// Used to set initial state on StartMatch()
+	UPROPERTY()
+	FName SubState = MatchSubState::MainEvent;
 
-	
+	virtual void SetMatchSubState(FName NewState);
+
+protected:
 	
 	virtual void BeginPlay() override;
 
 public:
-	
-	virtual void StartMatch() override;
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
@@ -51,11 +63,17 @@ public:
 
 	virtual bool ReadyToStartMatch_Implementation() override;
 	
-	virtual bool ReadyToEndMatch_Implementation() override;
+	virtual void StartMatch() override;
 	
-	virtual void CheckIfShouldStart();
+	virtual void HandleQualifierHasStarted();
+	
+	virtual void HandleQualifierHasEnded();
 
-	virtual void CheckIfShouldEnd();
+	virtual void HandleMainEventIsWaitingToStart();
+	
+	virtual void HandleMainEventHasStarted();
+	
+	virtual bool ReadyToEndMatch_Implementation() override;
 
 	virtual void BeginCountDownSequence();
 

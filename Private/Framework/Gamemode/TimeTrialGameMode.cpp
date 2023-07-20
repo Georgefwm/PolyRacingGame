@@ -14,6 +14,8 @@ ATimeTrialGameMode::ATimeTrialGameMode()
 {
 	static ConstructorHelpers::FClassFinder<UUserWidget> EndEventWidgetFinder(TEXT("/Game/UI/WidgetBlueprints/WBP_ResultTime"));
 	EndEventWidget = EndEventWidgetFinder.Class;
+
+	SubState = MatchSubState::PreMainEvent;
 }
 
 void ATimeTrialGameMode::BeginPlay()
@@ -40,10 +42,10 @@ void ATimeTrialGameMode::HandleMatchHasStarted()
 {
 	Super::HandleMatchHasStarted();
 
-	for (APolyRacingPlayerController* Player : ConnectedPlayers)
-	{
-		EnableInput(Player);
-	}
+	// for (APolyRacingPlayerController* Player : ConnectedPlayers)
+	// {
+	// 	EnableInput(Player);
+	// }
 }
 
 void ATimeTrialGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)

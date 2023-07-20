@@ -5,6 +5,7 @@
 #include "CheckpointActor.h"
 #include "Controller/PolyRacingPlayerController.h"
 #include "Framework/PolyRacingPlayerState.h"
+#include "Subsystem/MapSubsystem.h"
 
 
 ARaceGameMode::ARaceGameMode()
@@ -25,11 +26,28 @@ void ARaceGameMode::HandleStartingNewPlayer_Implementation(APlayerController* Ne
 	if (!JoiningPlayer)
 		return;
 	
-	JoiningPlayer->Client_RequestVehicleSpawn();
+	JoiningPlayer->UnPossess(); // Necessary for playing level sequence
+
+	UMapSubsystem* MapSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UMapSubsystem>();
+	 
+	if (ULevelSequence* Sequence = MapSubsystem->GetCurrentLevelIntroSequence())
+		JoiningPlayer->Client_PlayLevelIntroSequence(Sequence);  // Play intro sequence if one is set,
+	else
+		JoiningPlayer->Client_RequestVehicleSpawn();  // Just spawn the players vehicle if no sequence found
+}
+
+void ARaceGameMode::StartMatch()
+{
+	Super::StartMatch();
+
+	SubState = MatchSubState::Qualifier;
+
+	HandleQualifierHasStarted();
 }
 
 void ARaceGameMode::HandleQualifierHasStarted()
 {
+	BeginCountDownSequence();
 }
 
 void ARaceGameMode::HandleQualifierHasEnded()

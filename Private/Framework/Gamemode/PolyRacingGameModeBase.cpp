@@ -4,11 +4,14 @@
 
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "CheckpointActor.h"
+#include "NetworkMessage.h"
 #include "PolyRacingWheeledVehiclePawn.h"
+#include "StartPositionActor.h"
 #include "Blueprint/UserWidget.h"
 #include "Controller/PolyRacingPlayerController.h"
 #include "Framework/PolyRacingGameState.h"
 #include "Framework/PolyRacingPlayerState.h"
+#include "Kismet/GameplayStatics.h"
 #include "Subsystem/GameModeSubsystem.h"
 #include "UI/InGameHUD.h"
 
@@ -26,17 +29,74 @@ APolyRacingGameModeBase::APolyRacingGameModeBase()
 	GameStateClass			= APolyRacingGameState::StaticClass();
 }
 
+void APolyRacingGameModeBase::SetMatchSubState(FName NewState)
+{
+	SubState = NewState;
+	
+	if		(SubState == MatchSubState::Qualifier)     HandleQualifierHasStarted();
+	else if (SubState == MatchSubState::PostQualifier) HandleQualifierHasEnded();
+	else if (SubState == MatchSubState::PreMainEvent)  HandleMainEventIsWaitingToStart();
+	else if (SubState == MatchSubState::MainEvent)     HandleMainEventHasStarted();
+}
+
 // Called when the game starts or when spawned
 void APolyRacingGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void APolyRacingGameModeBase::StartMatch()
 {
 	Super::StartMatch();
+	
+	// Default Value of SubState is the starting state
+	SetMatchSubState(SubState);
+}
 
+void APolyRacingGameModeBase::HandleQualifierHasStarted()
+{
+	UE_LOG(LogTemp, Warning, TEXT("MatchSubState changed to: %s"), *SubState.ToString())
+	
+	BeginCountDownSequence();
+}
+
+void APolyRacingGameModeBase::HandleQualifierHasEnded()
+{
+	UE_LOG(LogTemp, Warning, TEXT("MatchSubState changed to: %s"), *SubState.ToString())
+	
+	for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
+	{
+		// TODO: Set to Spectator camera
+		PlayerController->UnPossess();
+		PlayerController->GetPlayerState<APolyRacingPlayerState>()->ResetForNextRace();
+	}
+	
+	SetMatchSubState(MatchSubState::PreMainEvent);
+}
+
+void APolyRacingGameModeBase::HandleMainEventIsWaitingToStart()
+{
+	UE_LOG(LogTemp, Warning, TEXT("MatchSubState changed to: %s"), *SubState.ToString())
+	
+	TArray<AActor*> StartPositions;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AStartPositionActor::StaticClass(), StartPositions);
+	
+	if (!StartPositions.IsEmpty())
+		Cast<AStartPositionActor>(StartPositions[0])->ResetSpawnCount();
+	
+	for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
+	{
+		// if (PlayerController->VehiclePawn)
+		// 	PlayerController->VehiclePawn->Destroy();
+		
+		PlayerController->Client_RequestVehicleSpawn();
+	}
+	
+	SetMatchSubState(MatchSubState::MainEvent);
+}
+
+void APolyRacingGameModeBase::HandleMainEventHasStarted()
+{
 	BeginCountDownSequence();
 }
 
@@ -147,34 +207,11 @@ bool APolyRacingGameModeBase::ReadyToEndMatch_Implementation()
 	return true;
 }
 
-void APolyRacingGameModeBase::CheckIfShouldStart()
-{
-	if (MatchState == MatchState::InProgress)
-		return;
-	
-	if (ReadyToStartMatch())
-		StartMatch();
-}
-
-void APolyRacingGameModeBase::CheckIfShouldEnd()
-{
-	if (MatchState != MatchState::InProgress)
-		return;
-	
-	if (ReadyToEndMatch())
-		EndMatch();
-}
-
 void APolyRacingGameModeBase::BeginCountDownSequence()
 {
 	for (APolyRacingPlayerController* Player : ConnectedPlayers)
-	{
 		Player->Client_PlayCountDown();
-
-		if (APolyRacingWheeledVehiclePawn* VehiclePawn = Player->GetPawn<APolyRacingWheeledVehiclePawn>())
-			VehiclePawn->DisableInput(Player);
-	}
-
+	
 	// @ASSUMPTION : Count down animation sequence is 3 seconds long
 	float constexpr CountDownAnimationDuration = 3.0f;
 	GetWorldTimerManager().SetTimer(CountDownTimerHandle, this, &APolyRacingGameModeBase::OnCountDownSequenceEnd,
@@ -197,13 +234,14 @@ void APolyRacingGameModeBase::HandlePlayerHasFinishedEvent(APolyRacingPlayerCont
 	
 	if (EndEventWidget)
 		PlayerController->AddWidgetToScreen(EndEventWidget);
-
-	CheckIfShouldEnd();
-
-	// UMapSubsystem* MapSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UMapSubsystem>();
-	//  
-	// if (ULevelSequence* Sequence = MapSubsystem->GetCurrentLevelOutroSequence())
-	// 	PlayerController->Client_PlayLevelOutroSequence(Sequence);
+	
+	if (ReadyToEndMatch())
+	{
+		if (SubState == MatchSubState::Qualifier)
+			SetMatchSubState(MatchSubState::PostQualifier);
+		else
+			EndMatch();
+	}
 }
 
 void APolyRacingGameModeBase::HandleMatchHasEnded()

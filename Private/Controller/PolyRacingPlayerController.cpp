@@ -265,7 +265,15 @@ void APolyRacingPlayerController::Client_PlayLevelOutroSequence_Implementation(U
 
 void APolyRacingPlayerController::NotifyReadyToStart()
 {
-	GetWorld()->GetAuthGameMode<APolyRacingGameModeBase>()->CheckIfShouldStart();
+	APolyRacingGameModeBase* GameMode = GetWorld()->GetAuthGameMode<APolyRacingGameModeBase>();
+	if (!GameMode)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Error getting GameMode"))
+		return;
+	}
+	
+	if (GameMode->ReadyToStartMatch_Implementation())
+		GameMode->StartMatch();
 }
 
 void APolyRacingPlayerController::Server_NotifyReadyToStart_Implementation()
