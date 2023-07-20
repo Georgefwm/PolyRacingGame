@@ -20,7 +20,8 @@ void AFreeRoamGameMode::BeginPlay()
 
 void AFreeRoamGameMode::StartPlay()
 {
-	Super::StartPlay();
+	// Just enable input straight away
+	OnCountDownSequenceEnd();
 }
 
 void AFreeRoamGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
