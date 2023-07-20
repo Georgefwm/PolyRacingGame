@@ -65,6 +65,11 @@ void AStartPositionActor::BeginPlay()
 	SetActorHiddenInGame(true);
 }
 
+void AStartPositionActor::ResetSpawnCount()
+{
+	CurrentPlayerIndex = 0;
+}
+
 FTransform AStartPositionActor::GetSpawnTransformFromIndex(int PlayerIndex)
 {
 	if (!PreviewMeshes.IsValidIndex(PlayerIndex))

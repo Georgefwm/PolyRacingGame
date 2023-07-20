@@ -21,6 +21,8 @@ public:
 
 	virtual void BeginPlay() override;
 
+	void ResetSpawnCount();
+
 	FTransform GetSpawnTransformFromIndex(int PlayerIndex);
 
 	FTransform GetNextSpawnTransform();
