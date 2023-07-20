@@ -12,6 +12,19 @@ APolyRacingPlayerState::APolyRacingPlayerState()
 	bReplicates = true;
 }
 
+void APolyRacingPlayerState::ResetForNextRace()
+{
+	QualifyingTime = EventEndTime - EventStartTime;
+
+	EventEndTime = 0;
+	EventStartTime = 0;
+	LastCheckpoint = 0;
+	LastLapStartTime = 0;
+	Lap = 0;
+	LapTimes.Empty();
+	bIsReady = false;
+}
+
 // Called when the game starts or when spawned
 void APolyRacingPlayerState::BeginPlay()
 {

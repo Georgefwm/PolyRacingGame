@@ -15,6 +15,9 @@ public:
 	// Sets default values for this actor's properties
 	APolyRacingPlayerState();
 
+	// Calculate qualifying time and reset fields for new race
+	void ResetForNextRace();
+
 	UPROPERTY()
 	bool bIsReady = true;
 
@@ -33,14 +36,17 @@ public:
 	double LastLapStartTime = 0;
 
 	/*
-	 * Timestamp using UWorld::GetTimeSeconds
-	 * Use this for timing instead of StartTime which is derived from AGameMode
-	 */ 
+	Timestamp using UWorld::GetTimeSeconds
+	Use this for timing instead of StartTime which is derived from AGameMode
+	*/ 
 	UPROPERTY()
 	double EventStartTime = 0;
 
 	UPROPERTY()
 	double EventEndTime = 0;
+
+	UPROPERTY()
+	double QualifyingTime = -1;
 
 protected:
 	// Called when the game starts or when spawned
