@@ -271,9 +271,10 @@ void APolyRacingPlayerController::NotifyReadyToStart()
 		UE_LOG(LogTemp, Warning, TEXT("Error getting GameMode"))
 		return;
 	}
+
+	GetPlayerState<APolyRacingPlayerState>()->bIsReady = true;
 	
-	if (GameMode->ReadyToStartMatch_Implementation())
-		GameMode->StartMatch();
+	GameMode->CheckPlayersAreReady();
 }
 
 void APolyRacingPlayerController::Server_NotifyReadyToStart_Implementation()
