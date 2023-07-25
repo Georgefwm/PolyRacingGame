@@ -9,10 +9,10 @@
 // Normal gameplay is occurring. Sub-states occur during MatchState::InProgress
 namespace MatchSubState
 {
-	POLYRACINGGAME_API const FName Qualifier;
-	POLYRACINGGAME_API const FName PostQualifier;
-	POLYRACINGGAME_API const FName PreMainEvent;	
-	POLYRACINGGAME_API const FName MainEvent;
+	extern POLYRACINGGAME_API const FName Qualifier;
+	extern POLYRACINGGAME_API const FName PostQualifier;
+	extern POLYRACINGGAME_API const FName PreMainEvent;	
+	extern POLYRACINGGAME_API const FName MainEvent;
 }
 
 UCLASS()
@@ -82,5 +82,8 @@ public:
 	virtual void HandlePlayerHasFinishedEvent(APolyRacingPlayerController* PlayerController);
 
 	virtual void HandleMatchHasEnded() override;
-	
+
+	virtual void CheckPlayersAreReady();
+
+	virtual void CheckPlayersAreFinished();
 };

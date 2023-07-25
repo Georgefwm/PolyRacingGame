@@ -4,7 +4,6 @@
 
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "CheckpointActor.h"
-#include "NetworkMessage.h"
 #include "PolyRacingWheeledVehiclePawn.h"
 #include "StartPositionActor.h"
 #include "Blueprint/UserWidget.h"
@@ -14,6 +13,15 @@
 #include "Kismet/GameplayStatics.h"
 #include "Subsystem/GameModeSubsystem.h"
 #include "UI/InGameHUD.h"
+
+
+namespace MatchSubState
+{
+	const FName Qualifier     = FName(TEXT("Qualifier"));
+	const FName PostQualifier = FName(TEXT("PostQualifier"));
+	const FName PreMainEvent  = FName(TEXT("PreMainEvent"));
+	const FName MainEvent     = FName(TEXT("MainEvent"));
+}
 
 
 // Sets default values
@@ -32,6 +40,7 @@ APolyRacingGameModeBase::APolyRacingGameModeBase()
 void APolyRacingGameModeBase::SetMatchSubState(FName NewState)
 {
 	SubState = NewState;
+	UE_LOG(LogTemp, Warning, TEXT("MatchSubState changed to: %s"), *SubState.ToString())
 	
 	if		(SubState == MatchSubState::Qualifier)     HandleQualifierHasStarted();
 	else if (SubState == MatchSubState::PostQualifier) HandleQualifierHasEnded();
@@ -55,15 +64,11 @@ void APolyRacingGameModeBase::StartMatch()
 
 void APolyRacingGameModeBase::HandleQualifierHasStarted()
 {
-	UE_LOG(LogTemp, Warning, TEXT("MatchSubState changed to: %s"), *SubState.ToString())
-	
 	BeginCountDownSequence();
 }
 
 void APolyRacingGameModeBase::HandleQualifierHasEnded()
 {
-	UE_LOG(LogTemp, Warning, TEXT("MatchSubState changed to: %s"), *SubState.ToString())
-	
 	for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
 	{
 		// TODO: Set to Spectator camera
@@ -76,8 +81,6 @@ void APolyRacingGameModeBase::HandleQualifierHasEnded()
 
 void APolyRacingGameModeBase::HandleMainEventIsWaitingToStart()
 {
-	UE_LOG(LogTemp, Warning, TEXT("MatchSubState changed to: %s"), *SubState.ToString())
-	
 	TArray<AActor*> StartPositions;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AStartPositionActor::StaticClass(), StartPositions);
 	
@@ -91,8 +94,6 @@ void APolyRacingGameModeBase::HandleMainEventIsWaitingToStart()
 		
 		PlayerController->Client_RequestVehicleSpawn();
 	}
-	
-	SetMatchSubState(MatchSubState::MainEvent);
 }
 
 void APolyRacingGameModeBase::HandleMainEventHasStarted()
@@ -248,17 +249,50 @@ void APolyRacingGameModeBase::HandleMatchHasEnded()
 {
 	Super::HandleMatchHasEnded();
 
-	if (ConnectedPlayers.Num() <= 1)
+	for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
+	{
+		FTimerHandle LeaveGameTimerHandle = FTimerHandle();
+		GetWorld()->GetTimerManager().SetTimer(LeaveGameTimerHandle,
+			PlayerController,
+			&APolyRacingPlayerController::StartLeavingMatchSinglePlayer,
+			5.f,
+			false);
+	}
+	
+}
+
+void APolyRacingGameModeBase::CheckPlayersAreReady()
+{
+	if (!ReadyToStartMatch_Implementation())
+		return;
+
+	if (SubState == MatchSubState::PreMainEvent)
+		SetMatchSubState(MatchSubState::MainEvent);
+	else
+		EndMatch();
+}
+
+void APolyRacingGameModeBase::CheckPlayersAreFinished()
+{
+	if (SubState == MatchSubState::Qualifier)
 	{
 		for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
 		{
-			FTimerHandle LeaveGameTimerHandle = FTimerHandle();
-			GetWorld()->GetTimerManager().SetTimer(LeaveGameTimerHandle,
-				PlayerController,
-				&APolyRacingPlayerController::StartLeavingMatchSinglePlayer,
-				5.f,
-				false);
+			if (PlayerController->GetPlayerState<APolyRacingPlayerState>()->QualifyingTime >= 0)
+				return;
 		}
+
+		SetMatchSubState(MatchSubState::PostQualifier);
+		return;
 	}
+
+	for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
+	{
+		APolyRacingPlayerState* PlayerState = PlayerController->GetPlayerState<APolyRacingPlayerState>();
+		if (PlayerState->EventEndTime - PlayerState->EventStartTime < 0)
+			return;
+	}
+
+	HandleMatchHasEnded();
 }
 
