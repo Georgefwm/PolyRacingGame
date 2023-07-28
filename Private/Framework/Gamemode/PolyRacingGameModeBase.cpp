@@ -187,10 +187,14 @@ void APolyRacingGameModeBase::RestartPlayerAtCheckpoint(APolyRacingPlayerControl
 
 bool APolyRacingGameModeBase::ReadyToStartMatch_Implementation()
 {
-	for (const APolyRacingPlayerController* Player : ConnectedPlayers)
+	for (APolyRacingPlayerController* Player : ConnectedPlayers)
 	{
 		if (!Player->GetPlayerState<APolyRacingPlayerState>()->bIsReady)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Not ready to start match"))
 			return false;
+		}
+			
 	}
 
 	return true;
@@ -200,9 +204,13 @@ bool APolyRacingGameModeBase::ReadyToEndMatch_Implementation()
 {
 	for (const APolyRacingPlayerController* Player : ConnectedPlayers)
 	{
-		// Have all players completed the final lap?
+		// Have all players completed the event?
 		if (Player->GetPlayerState<APolyRacingPlayerState>()->EventEndTime < 0.2f)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Not ready to end match"))
 			return false;
+		}
+			
 	}
 
 	return true;
@@ -235,30 +243,30 @@ void APolyRacingGameModeBase::HandlePlayerHasFinishedEvent(APolyRacingPlayerCont
 	
 	if (EndEventWidget)
 		PlayerController->AddWidgetToScreen(EndEventWidget);
-	
-	if (ReadyToEndMatch())
-	{
-		if (SubState == MatchSubState::Qualifier)
-			SetMatchSubState(MatchSubState::PostQualifier);
-		else
-			EndMatch();
-	}
+}
+
+void APolyRacingGameModeBase::EndMatch()
+{
+	Super::EndMatch();
+
+	HandleMatchHasEnded();
 }
 
 void APolyRacingGameModeBase::HandleMatchHasEnded()
 {
 	Super::HandleMatchHasEnded();
 
+	UE_LOG(LogTemp, Warning, TEXT("HANDLEMATCHHASENDED"))
+	
 	for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
-	{
-		FTimerHandle LeaveGameTimerHandle = FTimerHandle();
+	{		
+		FTimerHandle LeaveGameTimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(LeaveGameTimerHandle,
 			PlayerController,
 			&APolyRacingPlayerController::StartLeavingMatchSinglePlayer,
 			5.f,
 			false);
 	}
-	
 }
 
 void APolyRacingGameModeBase::CheckPlayersAreReady()
@@ -269,7 +277,7 @@ void APolyRacingGameModeBase::CheckPlayersAreReady()
 	if (SubState == MatchSubState::PreMainEvent)
 		SetMatchSubState(MatchSubState::MainEvent);
 	else
-		EndMatch();
+		SetMatchSubState(MatchSubState::Qualifier);
 }
 
 void APolyRacingGameModeBase::CheckPlayersAreFinished()
@@ -289,10 +297,10 @@ void APolyRacingGameModeBase::CheckPlayersAreFinished()
 	for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
 	{
 		APolyRacingPlayerState* PlayerState = PlayerController->GetPlayerState<APolyRacingPlayerState>();
-		if (PlayerState->EventEndTime - PlayerState->EventStartTime < 0)
+		if (PlayerState->EventEndTime < 0)
 			return;
 	}
 
-	HandleMatchHasEnded();
+	EndMatch();
 }
 

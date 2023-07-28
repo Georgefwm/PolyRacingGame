@@ -81,6 +81,8 @@ public:
 
 	virtual void HandlePlayerHasFinishedEvent(APolyRacingPlayerController* PlayerController);
 
+	virtual void EndMatch() override;
+
 	virtual void HandleMatchHasEnded() override;
 
 	virtual void CheckPlayersAreReady();

@@ -98,5 +98,19 @@ void ATimeTrialGameMode::BeginCountDownSequence()
 void ATimeTrialGameMode::HandlePlayerHasFinishedEvent(APolyRacingPlayerController* PlayerController)
 {
 	Super::HandlePlayerHasFinishedEvent(PlayerController);
+
+	if (ReadyToEndMatch())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Ready to end match"))
+		
+		if (SubState == MatchSubState::Qualifier)
+			SetMatchSubState(MatchSubState::PostQualifier);
+		else
+			EndMatch();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Not ready to end match"))
+	}
 }
 
