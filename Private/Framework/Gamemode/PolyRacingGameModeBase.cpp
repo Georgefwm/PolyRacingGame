@@ -35,6 +35,8 @@ APolyRacingGameModeBase::APolyRacingGameModeBase()
 
 	PlayerStateClass		= APolyRacingPlayerState::StaticClass();
 	GameStateClass			= APolyRacingGameState::StaticClass();
+
+	InitialSubState			= MatchSubState::PreMainEvent;
 }
 
 void APolyRacingGameModeBase::SetMatchSubState(FName NewState)
@@ -59,7 +61,7 @@ void APolyRacingGameModeBase::StartMatch()
 	Super::StartMatch();
 	
 	// Default Value of SubState is the starting state
-	SetMatchSubState(SubState);
+	SetMatchSubState(InitialSubState);
 }
 
 void APolyRacingGameModeBase::HandleQualifierHasStarted()

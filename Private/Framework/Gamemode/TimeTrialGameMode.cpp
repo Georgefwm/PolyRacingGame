@@ -15,7 +15,7 @@ ATimeTrialGameMode::ATimeTrialGameMode()
 	static ConstructorHelpers::FClassFinder<UUserWidget> EndEventWidgetFinder(TEXT("/Game/UI/WidgetBlueprints/WBP_ResultTime"));
 	EndEventWidget = EndEventWidgetFinder.Class;
 
-	SubState = MatchSubState::PreMainEvent;
+	InitialSubState = MatchSubState::PreMainEvent;
 }
 
 void ATimeTrialGameMode::BeginPlay()

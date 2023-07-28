@@ -38,10 +38,13 @@ public:
 	TSubclassOf<UUserWidget> EndEventWidget;
 	
 	FTimerHandle CountDownTimerHandle;
-
-	// Used to set initial state on StartMatch()
+	
 	UPROPERTY()
-	FName SubState = MatchSubState::MainEvent;
+	FName SubState = MatchSubState::PreMainEvent;
+
+	// Used for restarting the game
+	UPROPERTY()
+	FName InitialSubState = MatchSubState::PreMainEvent;
 
 	virtual void SetMatchSubState(FName NewState);
 
