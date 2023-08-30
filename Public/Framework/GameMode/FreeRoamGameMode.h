@@ -20,20 +20,13 @@ public:
 	
 	virtual void BeginPlay() override;
 
-	virtual void StartPlay() override;
+	virtual void HandleMatchIsWaitingToStart() override;
+
+	virtual void HandleMatchHasStarted() override;
 
 	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 
-	virtual void InitializeHUDForPlayer_Implementation(APlayerController* NewPlayer) override;
-	
-	virtual void Tick(float DeltaTime) override;
-
-	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
-
-	virtual void PostLogin(APlayerController* NewPlayer) override;
-
-	virtual void Logout(AController* ExitingPlayer) override;
+	virtual void RestartPlayer(AController* NewPlayer) override;
 
 	virtual void AddCheckpoints(TArray<ACheckpointActor*>& Checkpoints) override;
-	
 };

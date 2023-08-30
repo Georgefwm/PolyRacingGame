@@ -127,7 +127,7 @@ FReply SSinglePlayerMenuWidget::OnTimeTrialClicked() const
 	
 	FString const GameModeName = FString("TimeTrial");
 	FString const MapName = FString("Docks");
-	FString const LevelOptions = FString("?listen game=" + GameModeSubsystem->GetGameModePath(GameModeName).ToString());
+	FString const LevelOptions = FString("listen game=" + GameModeSubsystem->GetGameModePath(GameModeName).ToString());
 	
 	GameModeSubsystem->SetCurrentGameMode(GameModeName);
 	MapSubsystem->SetCurrentMap(MapName);
@@ -144,7 +144,7 @@ FReply SSinglePlayerMenuWidget::OnFreeRoamClicked() const
 	
 	FString const GameModeName = FString("FreeRoam");
 	FString const MapName = FString("Docks");
-	FString const LevelOptions = FString("?listen game=" + GameModeSubsystem->GetGameModePath(GameModeName).ToString());
+	FString const LevelOptions = FString("listen game=" + GameModeSubsystem->GetGameModePath(GameModeName).ToString());
 	
 	GameModeSubsystem->SetCurrentGameMode(GameModeName);
 	MapSubsystem->SetCurrentMap(MapName);

@@ -29,7 +29,6 @@ void ATimeTrialGameMode::HandleMatchIsWaitingToStart()
 
 	if (!HasAuthority())
 		return;
-
 	
 	for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
 	{
@@ -77,8 +76,6 @@ void ATimeTrialGameMode::RestartPlayer(AController* NewPlayer)
 	APolyRacingPlayerState* PlayerState = NewPlayer->GetPlayerState<APolyRacingPlayerState>();
 	if (!PlayerState)
 		return;
-
-	
 }
 
 void ATimeTrialGameMode::AddCheckpoints(TArray<ACheckpointActor*>& Checkpoints)

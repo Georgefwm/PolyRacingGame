@@ -3,73 +3,61 @@
 #include "Framework/GameMode/FreeRoamGameMode.h"
 #include "CheckpointActor.h"
 #include "Controller/PolyRacingPlayerController.h"
+#include "Framework/PolyRacingPlayerState.h"
 
 
 // Sets default values
 AFreeRoamGameMode::AFreeRoamGameMode()
 	: APolyRacingGameModeBase()
 {
+	InitialSubState = MatchSubState::PreMainEvent;
 }
 
 void AFreeRoamGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	GetWorld()->GetGameInstance()->EnableListenServer(true, 7779);
 }
 
-void AFreeRoamGameMode::StartPlay()
+void AFreeRoamGameMode::HandleMatchIsWaitingToStart()
 {
-	// Just enable input straight away
-	OnCountDownSequenceEnd();
+	Super::HandleMatchIsWaitingToStart();
+
+	if (!HasAuthority())
+		return;
+	
+	for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Starting defered players now"))
+		HandleStartingNewPlayer_Implementation(PlayerController);
+	}
+}
+
+void AFreeRoamGameMode::HandleMatchHasStarted()
+{
+	Super::HandleMatchHasStarted();
 }
 
 void AFreeRoamGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
-	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
-
-	APolyRacingPlayerController* JoiningPlayer = Cast<APolyRacingPlayerController>(NewPlayer);
-	if (!JoiningPlayer)
+	if (GetMatchState() == MatchState::EnteringMap)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Player start defered"))
 		return;
 	}
 	
-	JoiningPlayer->Client_RequestVehicleSpawn();
-}
-
-void AFreeRoamGameMode::InitializeHUDForPlayer_Implementation(APlayerController* NewPlayer)
-{
-	Super::InitializeHUDForPlayer_Implementation(NewPlayer);
-}
-
-void AFreeRoamGameMode::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-void AFreeRoamGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId,
-	FString& ErrorMessage)
-{
-	Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
-}
-
-void AFreeRoamGameMode::PostLogin(APlayerController* NewPlayer)
-{
-	Super::PostLogin(NewPlayer);
-
 	APolyRacingPlayerController* JoiningPlayer = Cast<APolyRacingPlayerController>(NewPlayer);
 	if (!JoiningPlayer)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("GAMEMODE: invalid player tried to join the lobby"))
 		return;
-	}
 	
-	ConnectedPlayers.Add(JoiningPlayer);
+	JoiningPlayer->UnPossess();
+	JoiningPlayer->Client_RequestVehicleSpawn();  // Just spawn the players vehicle
 }
 
-void AFreeRoamGameMode::Logout(AController* ExitingPlayer)
+void AFreeRoamGameMode::RestartPlayer(AController* NewPlayer)
 {
-	Super::Logout(ExitingPlayer);
+	APolyRacingPlayerState* PlayerState = NewPlayer->GetPlayerState<APolyRacingPlayerState>();
+	if (!PlayerState)
+		return;
 }
 
 void AFreeRoamGameMode::AddCheckpoints(TArray<ACheckpointActor*>& Checkpoints)
@@ -78,7 +66,5 @@ void AFreeRoamGameMode::AddCheckpoints(TArray<ACheckpointActor*>& Checkpoints)
 	
 	CheckpointActors.Sort([](const ACheckpointActor& CpA, const ACheckpointActor& CpB) {
 		return  CpA.CheckpointNumber < CpB.CheckpointNumber;
-	});
+	});	
 }
-
-

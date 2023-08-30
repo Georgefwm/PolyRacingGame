@@ -15,6 +15,7 @@
 #include "UI/InGameHUD.h"
 
 
+// It would be ideal to have game mode specific states but this will have to do for now
 namespace MatchSubState
 {
 	const FName Qualifier     = FName(TEXT("Qualifier"));
@@ -59,9 +60,6 @@ void APolyRacingGameModeBase::BeginPlay()
 void APolyRacingGameModeBase::StartMatch()
 {
 	Super::StartMatch();
-	
-	// Default Value of SubState is the starting state
-	SetMatchSubState(InitialSubState);
 }
 
 void APolyRacingGameModeBase::HandleQualifierHasStarted()
