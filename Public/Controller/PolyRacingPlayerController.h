@@ -27,9 +27,6 @@ public:
 	UPROPERTY(Replicated)
 	FPresetVehicleConfiguration VehicleConfiguration;
 
-	UPROPERTY(Replicated)
-	APolyRacingWheeledVehiclePawn* VehiclePawn;
-
 	UPROPERTY()
 	ULevelSequencePlayer* SequencePlayer;
 

@@ -137,7 +137,7 @@ void APolyRacingPlayerController::SpawnVehicleForPlayer(const FPresetVehicleConf
 		
 		PlayerController->UnPossess();
 		PlayerController->Possess(NewVehicle);
-		PlayerController->VehiclePawn = NewVehicle;
+		PlayerController->SetPawn(NewVehicle);
 
 		NewVehicle->DisableInput(PlayerController);
 		
@@ -300,8 +300,12 @@ void APolyRacingPlayerController::OnCountDownSequenceEnd()
 	
 	PolyRacingPlayerState->EventStartTime = CurrentTimeStamp;
 	PolyRacingPlayerState->LastLapStartTime = CurrentTimeStamp;
-	
-	VehiclePawn->EnableInput(this);
+
+	if (APolyRacingWheeledVehiclePawn* Vehicle = Cast<APolyRacingWheeledVehiclePawn>(GetPawn()))
+	{
+		Vehicle->EnableInput(this);
+	}
+	else UE_LOG(LogTemp, Warning, TEXT("APolyRacingPlayerController: Cast to APolyRacingWheeledVehiclePawn failed"))
 }
 
 void APolyRacingPlayerController::Client_OnCountDownSequenceEnd_Implementation()
@@ -384,7 +388,7 @@ void APolyRacingPlayerController::LeaveMatchSinglePlayer()
 	
 	FString const GameModeName = FString("MainMenu");
 	FString const MapName = FString("MainMenu");
-	FString const LevelOptions = FString("?game=" + GameModeSubsystem->GetGameModePath(GameModeName).ToString());
+	FString const LevelOptions = FString("game=" + GameModeSubsystem->GetGameModePath(GameModeName).ToString());
 	
 	GameModeSubsystem->SetCurrentGameMode(GameModeName);
 	MapSubsystem->SetCurrentMap(MapName);
