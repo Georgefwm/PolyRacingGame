@@ -128,8 +128,7 @@ void APolyRacingWheeledVehiclePawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UChaosWheeledVehicleMovementComponent* ChaosMovementComponent = GetChaosVehicleMovementComponent();
-
-	// TODO: Find query for idle RPM
+	
 	float constexpr IdleRpm = 1000;
 	float FlooredRpmAsPercentage = (ChaosMovementComponent->GetEngineRotationSpeed() - IdleRpm - 10) / ChaosMovementComponent->GetEngineMaxRotationSpeed();
 
