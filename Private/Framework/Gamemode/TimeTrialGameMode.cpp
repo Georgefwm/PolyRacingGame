@@ -5,6 +5,7 @@
 #include "CheckpointActor.h"
 #include "LevelSequence.h"
 #include "Controller/PolyRacingPlayerController.h"
+#include "Framework/PolyRacingGameState.h"
 #include "Framework/PolyRacingPlayerState.h"
 #include "Subsystem/MapSubsystem.h"
 
@@ -30,7 +31,7 @@ void ATimeTrialGameMode::HandleMatchIsWaitingToStart()
 	if (!HasAuthority())
 		return;
 	
-	for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
+	for (APolyRacingPlayerController* PlayerController : GetGameState<APolyRacingGameState>()->ConnectedPlayers)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Starting defered players now"))
 		HandleStartingNewPlayer_Implementation(PlayerController);

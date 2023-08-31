@@ -3,6 +3,7 @@
 #include "Framework/GameMode/FreeRoamGameMode.h"
 #include "CheckpointActor.h"
 #include "Controller/PolyRacingPlayerController.h"
+#include "Framework/PolyRacingGameState.h"
 #include "Framework/PolyRacingPlayerState.h"
 
 
@@ -24,8 +25,8 @@ void AFreeRoamGameMode::HandleMatchIsWaitingToStart()
 
 	if (!HasAuthority())
 		return;
-	
-	for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
+
+	for (APolyRacingPlayerController* PlayerController : GetGameState<APolyRacingGameState>()->ConnectedPlayers)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Starting defered players now"))
 		HandleStartingNewPlayer_Implementation(PlayerController);

@@ -10,6 +10,11 @@ APolyRacingGameState::APolyRacingGameState()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+const TArray<APolyRacingPlayerController*> APolyRacingGameState::GetConnectedPlayers()
+{
+	return ConnectedPlayers;
+}
+
 // Called when the game starts or when spawned
 void APolyRacingGameState::BeginPlay()
 {

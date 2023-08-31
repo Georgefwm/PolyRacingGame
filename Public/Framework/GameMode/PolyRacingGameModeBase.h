@@ -5,6 +5,8 @@
 #include "GameFramework/GameMode.h"
 #include "PolyRacingGameModeBase.generated.h"
 
+class APolyRacingPlayerController;
+
 
 // Normal gameplay is occurring. Sub-states occur during MatchState::InProgress
 namespace MatchSubState
@@ -23,10 +25,6 @@ class POLYRACINGGAME_API APolyRacingGameModeBase : public AGameMode
 public:
 
 	APolyRacingGameModeBase();
-
-	// TODO: Move this to GameState class
-	UPROPERTY()
-	TArray<class APolyRacingPlayerController*> ConnectedPlayers;
 	
 	UPROPERTY()
 	TArray<class ACheckpointActor*> CheckpointActors;

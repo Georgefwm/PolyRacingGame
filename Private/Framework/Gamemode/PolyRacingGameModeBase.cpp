@@ -69,7 +69,7 @@ void APolyRacingGameModeBase::HandleQualifierHasStarted()
 
 void APolyRacingGameModeBase::HandleQualifierHasEnded()
 {
-	for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
+	for (APolyRacingPlayerController* PlayerController : GetGameState<APolyRacingGameState>()->ConnectedPlayers)
 	{
 		// TODO: Set to Spectator camera
 		PlayerController->UnPossess();
@@ -86,8 +86,8 @@ void APolyRacingGameModeBase::HandleMainEventIsWaitingToStart()
 	
 	if (!StartPositions.IsEmpty())
 		Cast<AStartPositionActor>(StartPositions[0])->ResetSpawnCount();
-	
-	for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
+
+	for (APolyRacingPlayerController* PlayerController : GetGameState<APolyRacingGameState>()->ConnectedPlayers)
 	{
 		// if (PlayerController->VehiclePawn)
 		// 	PlayerController->VehiclePawn->Destroy();
@@ -112,7 +112,7 @@ void APolyRacingGameModeBase::PostLogin(APlayerController* NewPlayer)
 		return;
 	}
 	
-	ConnectedPlayers.Add(JoiningPlayer);
+	GetGameState<APolyRacingGameState>()->ConnectedPlayers.Add(JoiningPlayer);
 	
 	JoiningPlayer->GetPlayerState<APolyRacingPlayerState>()->bIsReady = false;
 	
@@ -146,8 +146,8 @@ void APolyRacingGameModeBase::Logout(AController* Exiting)
 		UE_LOG(LogTemp, Warning, TEXT("APolyRacingGameMode: Player logout error"))
 		return;
 	}
-	
-	ConnectedPlayers.Remove(LobbyPlayerController);
+
+	GetGameState<APolyRacingGameState>()->ConnectedPlayers.Remove(LobbyPlayerController);
 }
 
 void APolyRacingGameModeBase::RestartPlayer(AController* NewPlayer)
@@ -189,9 +189,9 @@ void APolyRacingGameModeBase::RestartPlayerAtCheckpoint(APolyRacingPlayerControl
 
 bool APolyRacingGameModeBase::ReadyToStartMatch_Implementation()
 {
-	for (APolyRacingPlayerController* Player : ConnectedPlayers)
+	for (APolyRacingPlayerController* PlayerController : GetGameState<APolyRacingGameState>()->ConnectedPlayers)
 	{
-		if (!Player->GetPlayerState<APolyRacingPlayerState>()->bIsReady)
+		if (!PlayerController->GetPlayerState<APolyRacingPlayerState>()->bIsReady)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Not ready to start match"))
 			return false;
@@ -204,10 +204,10 @@ bool APolyRacingGameModeBase::ReadyToStartMatch_Implementation()
 
 bool APolyRacingGameModeBase::ReadyToEndMatch_Implementation()
 {
-	for (const APolyRacingPlayerController* Player : ConnectedPlayers)
+	for (APolyRacingPlayerController* PlayerController : GetGameState<APolyRacingGameState>()->ConnectedPlayers)
 	{
 		// Have all players completed the event?
-		if (Player->GetPlayerState<APolyRacingPlayerState>()->EventEndTime < 0.2f)
+		if (PlayerController->GetPlayerState<APolyRacingPlayerState>()->EventEndTime < 0.2f)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Not ready to end match"))
 			return false;
@@ -220,8 +220,8 @@ bool APolyRacingGameModeBase::ReadyToEndMatch_Implementation()
 
 void APolyRacingGameModeBase::BeginCountDownSequence()
 {
-	for (APolyRacingPlayerController* Player : ConnectedPlayers)
-		Player->Client_PlayCountDown();
+	for (APolyRacingPlayerController* PlayerController : GetGameState<APolyRacingGameState>()->ConnectedPlayers)
+		PlayerController->Client_PlayCountDown();
 	
 	// @ASSUMPTION : Count down animation sequence is 3 seconds long
 	float constexpr CountDownAnimationDuration = 3.0f;
@@ -231,8 +231,8 @@ void APolyRacingGameModeBase::BeginCountDownSequence()
 
 void APolyRacingGameModeBase::OnCountDownSequenceEnd()
 {
-	for (APolyRacingPlayerController* Player : ConnectedPlayers)
-		Player->Client_OnCountDownSequenceEnd();
+	for (APolyRacingPlayerController* PlayerController : GetGameState<APolyRacingGameState>()->ConnectedPlayers)
+		PlayerController->Client_OnCountDownSequenceEnd();
 }
 
 void APolyRacingGameModeBase::HandlePlayerHasFinishedEvent(APolyRacingPlayerController* PlayerController)
@@ -260,7 +260,7 @@ void APolyRacingGameModeBase::HandleMatchHasEnded()
 
 	UE_LOG(LogTemp, Warning, TEXT("HANDLEMATCHHASENDED"))
 	
-	for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
+	for (APolyRacingPlayerController* PlayerController : GetGameState<APolyRacingGameState>()->ConnectedPlayers)
 	{		
 		FTimerHandle LeaveGameTimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(LeaveGameTimerHandle,
@@ -286,7 +286,7 @@ void APolyRacingGameModeBase::CheckPlayersAreFinished()
 {
 	if (SubState == MatchSubState::Qualifier)
 	{
-		for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
+		for (APolyRacingPlayerController* PlayerController : GetGameState<APolyRacingGameState>()->ConnectedPlayers)
 		{
 			if (PlayerController->GetPlayerState<APolyRacingPlayerState>()->QualifyingTime >= 0)
 				return;
@@ -296,7 +296,7 @@ void APolyRacingGameModeBase::CheckPlayersAreFinished()
 		return;
 	}
 
-	for (APolyRacingPlayerController* PlayerController : ConnectedPlayers)
+	for (APolyRacingPlayerController* PlayerController : GetGameState<APolyRacingGameState>()->ConnectedPlayers)
 	{
 		APolyRacingPlayerState* PlayerState = PlayerController->GetPlayerState<APolyRacingPlayerState>();
 		if (PlayerState->EventEndTime < 0)
