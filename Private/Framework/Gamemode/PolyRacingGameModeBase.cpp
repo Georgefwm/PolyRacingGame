@@ -257,8 +257,6 @@ void APolyRacingGameModeBase::EndMatch()
 void APolyRacingGameModeBase::HandleMatchHasEnded()
 {
 	Super::HandleMatchHasEnded();
-
-	UE_LOG(LogTemp, Warning, TEXT("HANDLEMATCHHASENDED"))
 	
 	for (APolyRacingPlayerController* PlayerController : GetGameState<APolyRacingGameState>()->ConnectedPlayers)
 	{		

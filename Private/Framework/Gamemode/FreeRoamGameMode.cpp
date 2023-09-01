@@ -25,7 +25,7 @@ void AFreeRoamGameMode::HandleMatchIsWaitingToStart()
 
 	if (!HasAuthority())
 		return;
-
+	
 	for (APolyRacingPlayerController* PlayerController : GetGameState<APolyRacingGameState>()->ConnectedPlayers)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Starting defered players now"))
@@ -36,6 +36,16 @@ void AFreeRoamGameMode::HandleMatchIsWaitingToStart()
 void AFreeRoamGameMode::HandleMatchHasStarted()
 {
 	Super::HandleMatchHasStarted();
+}
+
+void AFreeRoamGameMode::HandleMainEventIsWaitingToStart()
+{
+	Super::HandleMainEventIsWaitingToStart();
+}
+
+void AFreeRoamGameMode::HandleMainEventHasStarted()
+{
+	OnCountDownSequenceEnd();
 }
 
 void AFreeRoamGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
@@ -56,9 +66,7 @@ void AFreeRoamGameMode::HandleStartingNewPlayer_Implementation(APlayerController
 
 void AFreeRoamGameMode::RestartPlayer(AController* NewPlayer)
 {
-	APolyRacingPlayerState* PlayerState = NewPlayer->GetPlayerState<APolyRacingPlayerState>();
-	if (!PlayerState)
-		return;
+	Super::RestartPlayer(NewPlayer);
 }
 
 void AFreeRoamGameMode::AddCheckpoints(TArray<ACheckpointActor*>& Checkpoints)

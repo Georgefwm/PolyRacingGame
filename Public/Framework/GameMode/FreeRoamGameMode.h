@@ -24,6 +24,11 @@ public:
 
 	virtual void HandleMatchHasStarted() override;
 
+	virtual void HandleMainEventIsWaitingToStart() override;
+
+	// Override this so the countdown timer animation doesn't play
+	virtual void HandleMainEventHasStarted() override;
+
 	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 
 	virtual void RestartPlayer(AController* NewPlayer) override;
